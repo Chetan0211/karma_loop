@@ -6,9 +6,10 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "https://ga.jspm.io/npm:cropperjs@1.5.13/dist/cropper.css", rel: "stylesheet" %>
     <%= javascript_importmap_tags %>
   </head>
-  <body>
+  <body class="full-screen">
     <p class="notice"><%= notice %></p>
     <p class="alert"><%= alert %></p>
     <%= yield %>

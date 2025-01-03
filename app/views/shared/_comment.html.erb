@@ -1,0 +1,45 @@
+<!--
+comment - Contains the instance of a mocdel
+-->
+<div class="comment" id="<%= comment.id %>">
+  <p><strong><%= comment.commenter.username %>:</strong></p>
+  <%= comment.comment %>
+  <button id="reply_comment_button_<%= comment.id %>">Reply</button>
+  <%= form_with url: post_add_comment_path(post_id: params[:id]), model: Comment.new, remote: true, id: "reply_comment_form_#{comment.id}", html: { style: "display: none;" } do |form| %>
+    <%= form.hidden_field :parent_id, value: comment.id %>
+    <div>
+      <%= form.label :comment, "Add a Comment:" %>
+      <%= form.rich_text_area :comment, id:"id:comment_comment_#{comment.id}" %>
+    </div>
+    <button id="cancel_reply_comment_form_<%= comment.id %>", type="button">Cancel</button>
+    <%= form.submit "Post Comment" %>
+  <% end %>
+  <!-- Replies -->
+  <% if comment.replies.any? %>
+    <div class="replies">
+      <% comment.replies.each do |reply| %>
+        <%= render partial: 'shared/comment', locals: { comment: reply } %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+<script>
+  const reply_comment_button_<%= comment.id.gsub('-', '_') %> = document.getElementById("reply_comment_button_<%= comment.id %>");
+  const reply_comment_form_<%= comment.id.gsub('-', '_') %> = document.getElementById("reply_comment_form_<%= comment.id %>");
+  const cancel_reply_comment_form_<%= comment.id.gsub('-', '_') %> = document.getElementById("cancel_reply_comment_form_<%= comment.id %>");
+
+  reply_comment_button_<%= comment.id.gsub('-', '_') %>.addEventListener("click", (event) => {
+    reply_comment_button_<%= comment.id.gsub('-', '_') %>.style.display = "none";
+    reply_comment_form_<%= comment.id.gsub('-', '_') %>.style.display = "block";
+  });
+
+  cancel_reply_comment_form_<%= comment.id.gsub('-', '_') %>.addEventListener("click", (event) => {
+    reply_comment_button_<%= comment.id.gsub('-', '_') %>.style.display = "block";
+    reply_comment_form_<%= comment.id.gsub('-', '_') %>.style.display = "none";
+  });
+
+  reply_comment_form_<%= comment.id.gsub('-', '_') %>.addEventListener("submit", (event) => {
+    reply_comment_button_<%= comment.id.gsub('-', '_') %>.style.display = "block";
+    reply_comment_form_<%= comment.id.gsub('-', '_') %>.style.display = "none";
+  });
+</script>

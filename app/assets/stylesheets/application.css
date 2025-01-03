@@ -13,3 +13,18 @@
  *= require_tree .
  *= require_self
  */
+
+@import "trix";
+@import "actiontext";
+
+ 
+ html, body {
+  margin: 0;
+  padding: 0; /* Prevent scrolling */
+}
+
+ .full-screen {
+  position: relative; /* or absolute if necessary */
+  width: 100vw;
+  min-height: 100vh;
+}

@@ -1,0 +1,15 @@
+<%= form_with url: :post_index,model: @post do |f| %>
+  <div>
+    <%= f.label :title%>
+    <%= f.text_field :title %>
+  </div>
+  <div>
+    <%= f.label :content_category_id, "Select Category" %>
+    <%= f.select :content_category_id, @content_categories.map { |c| [c.category, c.id] }, { include_blank: "Choose a Category" }, class: "form-control" %>
+  </div>
+  <div>
+    <%= f.label :description%>
+    <%= f.rich_text_area :description %>
+  </div>
+  <%= f.submit %>
+<% end %>

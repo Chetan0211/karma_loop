@@ -1,0 +1,27 @@
+# == Schema Information
+#
+# Table name: comments
+#
+#  id           :uuid             not null, primary key
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  commenter_id :uuid             not null
+#  parent_id    :uuid
+#  post_id      :uuid             not null
+#
+# Foreign Keys
+#
+#  fk_rails_...  (commenter_id => users.id)
+#  fk_rails_...  (parent_id => comments.id) ON DELETE => cascade
+#  fk_rails_...  (post_id => posts.id)
+#
+
+# This model initially had no columns defined. If you add columns to the
+# model remove the "{}" from the fixture names and add the columns immediately
+# below each fixture, per the syntax in the comments below
+#
+one: {}
+# column: value
+#
+two: {}
+# column: value

@@ -1,0 +1,5 @@
+<% if @comment.parent_id == nil%>
+  document.getElementById("comments").append("<%= j render partial: 'shared/comment', locals: { comment: @comment } %>");
+<% else %>
+  document.getElementById("<%= @comment.id %>").append("<%= j render partial: 'shared/comment', locals: { comment: @comment } %>");
+<% end %>
