@@ -27,6 +27,7 @@ class Post < ApplicationRecord
   belongs_to :user
   belongs_to :content_category, inverse_of: :posts
   has_many :comments, dependent: :destroy
+  has_many :posts_reactions, dependent: :destroy
 
   scope :with_description, ->{
     joins("INNER JOIN action_text_rich_texts on action_text_rich_texts.record_type = 'Post' AND action_text_rich_texts.record_id = posts.id AND action_text_rich_texts.name = 'description'").select("*")

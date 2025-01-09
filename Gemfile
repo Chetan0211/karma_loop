@@ -75,4 +75,5 @@ group :development do
 end
 
 gem 'ruby-vips'
-gem 'image_processing', '~> 1.2'
+gem "trailblazer-rails"
+gem "reform-rails"

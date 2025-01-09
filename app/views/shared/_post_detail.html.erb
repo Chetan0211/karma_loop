@@ -5,7 +5,14 @@ comments
 -->
 <h1><%= post.title %></h1>
 <%= post.description %>
-<p><%= link_to "Like" %> <%= (post.likes - post.dislikes).abs %> <%= link_to "Dislike" %>, comments: <%= post.comments.count %></p>
+<div id="reaction_div_parent", class="">
+  <span>
+    <%= link_to "Like", post_post_reaction_path(post_id: post.id, reaction:"like"), id:"like_button_parent",remote: true, data: { turbo_method: "get" } %>
+    <span><%= (post.likes - post.dislikes) %></span>
+    <%= link_to "Dislike", post_post_reaction_path(post_id: post.id, reaction:"dislike"), id:"dislike_button_parent",remote: true, data: { turbo_method: "get" } %>
+  </span>
+</div>
+<p>comments: <%= post.comments.count %></p>
 <h2>Comments</h2>
 <button id="parent_comment_button">Add a Comment</button>
 <%= form_with url: post_add_comment_path(post_id: params[:id]), model: [ post, Comment.new ], remote: true, id: "parent_comment_form", html: { style: "display: none;" } do |form| %>

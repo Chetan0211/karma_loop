@@ -14,7 +14,8 @@ Rails.application.routes.draw do
 
   resources :post, only: [:new, :create, :show] do
     post "comment" => "post#comment", as: :add_comment
-
+    get "post_reaction" => "post#post_reaction", as: :post_reaction
+    get "comment_reaction" => "post#comment_reaction", as: :comment_reaction
   end
   
   scope :profile do
