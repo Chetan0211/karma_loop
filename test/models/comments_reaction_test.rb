@@ -7,7 +7,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  comment_id :uuid             not null
-#  post_id    :uuid
+#  post_id    :uuid             not null
 #  user_id    :uuid             not null
 #
 # Indexes
