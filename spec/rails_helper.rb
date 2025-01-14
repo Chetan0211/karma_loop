@@ -47,6 +47,9 @@ RSpec.configure do |config|
   # Configuring Factory bot
   config.include FactoryBot::Syntax::Methods
 
+  #Configuring devise to test controllers
+  config.include Devise::Test::IntegrationHelpers, type: :request
+
   Shoulda::Matchers.configure do |config|
     config.integrate do |with|
       with.test_framework :rspec

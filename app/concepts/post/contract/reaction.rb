@@ -1,4 +1,4 @@
-class Post::Contract::PostReaction < Reform::Form
+class Post::Contract::Reaction < ApplicationContract
   property :post_id
   property :user_id
   property :reaction

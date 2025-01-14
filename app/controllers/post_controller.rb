@@ -43,7 +43,7 @@ class PostController < ApplicationController
       user_id: current_user.id,
       reaction: params[:reaction]
     }
-    result = Post::PostReaction.call(post_reaction: reaction)
+    result = Post::Reaction.call(post_reaction: reaction)
     head :ok if result.success?
     head :bad_request unless result.success?
   end

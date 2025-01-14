@@ -1,6 +1,6 @@
-class Post::PostReaction < Trailblazer::Operation
+class Post::Reaction < Trailblazer::Operation
   step :setup_model
-  step Contract::Build(constant: Post::Contract::PostReaction)
+  step Contract::Build(constant: Post::Contract::Reaction)
   step Contract::Validate()
   step Contract::Persist()
 

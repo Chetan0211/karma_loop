@@ -70,6 +70,7 @@ group :test do
   gem 'shoulda-matchers'
   gem 'factory_bot_rails'
   gem 'faker'
+  gem 'trailblazer-developer'
 end
 
 gem "devise", "~> 4.9"
@@ -81,3 +82,4 @@ end
 gem 'ruby-vips'
 gem "trailblazer-rails"
 gem "reform-rails"
+gem 'dry-types'
