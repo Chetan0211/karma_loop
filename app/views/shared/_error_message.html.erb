@@ -1,0 +1,45 @@
+<div id="notification" class="fixed top-4 right-4 bg-red-500 text-white p-4 rounded shadow-lg fade-in notification-container">
+  <%= message %>
+</div>
+<script>
+  // Automatically hide the notification after 5 seconds
+  setTimeout(() => {
+    const notification = document.getElementById('notification');
+    if (notification) {
+      notification.classList.add('fade-out');
+      setTimeout(() => notification.remove(), 500); // Allow fade-out animation to complete
+    }
+  }, 5000);
+</script>
+<style>
+  .fade-in {
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+  }
+
+  .fade-out {
+    animation: fadeOut 0.5s forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+  }
+</style>

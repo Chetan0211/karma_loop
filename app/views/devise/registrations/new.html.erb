@@ -3,26 +3,41 @@
   <%= render "devise/shared/error_messages", resource: resource %>
   <div class="field">
     <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+    <%= f.email_field :email, autofocus: true, autocomplete: "email", value: flash[:signup_params]&.dig("email") %>
+    <% if flash[:errors]&.dig("email").present?%>
+      <p style="color: red"><%= flash[:errors]["email"].first %></p>
+    <% end %>
   </div>
   <div class="field">
     <%= f.label :username %><br />
-    <%= f.text_field :username, autofocus: true, autocomplete: "username" %>
+    <%= f.text_field :username, autofocus: true, autocomplete: "username", value: flash[:signup_params]&.dig("username") %>
+    <% if flash[:errors]&.dig("username").present?%>
+      <p style="color: red"><%= flash[:errors]["username"].first %></p>
+    <% end %>
   </div>
   <div class="field">
     <%= f.label :dob %><br />
-    <%= f.date_field :dob, autofocus: true, autocomplete: "dob", max: Date.today %>
+    <%= f.date_field :dob, autofocus: true, autocomplete: "dob", max: Date.today, value: flash[:signup_params]&.dig("dob") %>
+    <% if flash[:errors]&.dig("dob").present?%>
+      <p style="color: red"><%= flash[:errors]["dob"].first %></p>
+    <% end %>
   </div>
   <div class="field">
     <%= f.label :password %>
     <% if @minimum_password_length %>
       <em>(<%= @minimum_password_length %> characters minimum)</em>
     <% end %><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
+    <%= f.password_field :password, autocomplete: "new-password", value: flash[:signup_params]&.dig("password") %>
+    <% if flash[:errors]&.dig("password").present?%>
+      <p style="color: red"><%= flash[:errors]["password"].first %></p>
+    <% end %>
   </div>
   <div class="field">
     <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+    <%= f.password_field :password_confirmation, autocomplete: "new-password", value: flash[:signup_params]&.dig("password_confirmation") %>
+    <% if flash[:errors]&.dig("password_confirmation").present?%>
+      <p style="color: red"><%= flash[:errors]["password_confirmation"].first %></p>
+    <% end %>
   </div>
   <div class="actions">
     <%= f.submit "Sign up" %>

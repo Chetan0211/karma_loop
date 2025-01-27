@@ -28,3 +28,21 @@
   width: 100vw;
   min-height: 100vh;
 }
+
+.notification-container{
+  position: absolute;
+  top: 10px; /* Position it slightly below the top */
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%); /* Adjust to truly center */
+  z-index: 9999; /* Ensure it appears above other elements */
+  pointer-events: none; /* Avoid interaction */
+  background-color: rgba(255, 0, 0, 0.8); /* Semi-transparent red */
+  color: white; /* Text color */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  font-size: 16px; /* Adjust font size */
+  max-width: 90%; /* Prevent it from being too wide */
+  padding: 10px 20px; /* Add some padding */
+  text-align: center; /* Center the text */
+  pointer-events: none; /* Avoid interaction */
+}

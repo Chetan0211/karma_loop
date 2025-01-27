@@ -23,6 +23,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
         respond_with resource
       end
     else
+      flash[:errors] = result['contract.default'].errors
+      flash[:signup_params] = user_params
       redirect_to new_user_registration_path
     end
   end

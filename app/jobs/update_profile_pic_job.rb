@@ -18,6 +18,17 @@ class UpdateProfilePicJob < ApplicationJob
         content_type: profile_picture.content_type
       );
 
+      user.save!
+
+      if user.errors.any?
+        Turbo::StreamsChannel.broadcast_update_to(
+          "#{user.id}error_notifications",
+          target: "error-notifications",
+          partial: "shared/error_message",
+          locals: { message: "Checking turbo" }
+        )
+      end
+
       cropped_temp_file.close;
       cropped_temp_file.unlink;
     else
