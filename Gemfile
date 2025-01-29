@@ -83,3 +83,5 @@ gem 'ruby-vips'
 gem "trailblazer-rails"
 gem "reform-rails"
 gem 'dry-types'
+gem "sidekiq", "~> 7.3"
+gem "redis", "~> 5.0.6"

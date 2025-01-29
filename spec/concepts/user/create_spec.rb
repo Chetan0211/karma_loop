@@ -157,5 +157,4 @@ RSpec.describe User::Create do
       expect(result['contract.default'].errors[:dob]).to include("Date of birth can't be blank.")
     end
   end
-  
 end
