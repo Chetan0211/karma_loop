@@ -44,8 +44,21 @@ class PostController < ApplicationController
       reaction: params[:reaction]
     }
     result = Post::Reaction.call(post_reaction: reaction)
-    head :ok if result.success?
-    head :bad_request unless result.success?
+    if result.success?
+      head :ok
+    else
+      head :bad_request
+      Turbo::StreamsChannel.broadcast_update_to(
+          "#{user.id}error_notifications",
+          target: "error-notifications",
+          partial: "shared/error_message",
+          locals: { message: "Something went wrong. Can't able to react to the post" }
+        )
+    end
+  end
+
+  def post_reaction_remove
+    
   end
 
   def comment_reaction

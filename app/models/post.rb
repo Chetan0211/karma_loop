@@ -32,4 +32,11 @@ class Post < ApplicationRecord
   scope :with_description, ->{
     joins("INNER JOIN action_text_rich_texts on action_text_rich_texts.record_type = 'Post' AND action_text_rich_texts.record_id = posts.id AND action_text_rich_texts.name = 'description'").select("*")
   }
+
+  def current_user_reaction(user_id)
+    posts_reactions.where(user_id: user_id).first.reaction
+  end
+
+  
+
 end

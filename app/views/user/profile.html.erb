@@ -40,6 +40,9 @@
     <% end %>
     <p>Posts: <%= @posts.count%></p>
     <h3>Posts</h3>
+    <% @posts.each do |post| %>
+      <%= render "shared/post", post: post %>
+    <% end %>
   </div>
   <div id="noti" class="full-screen" style="position: fixed; display: none; background: rgba(0, 0, 0, 0.7);justify-content: center; align-items: center; z-index: 1000;">
     <button id="close_crop">Close</button>
