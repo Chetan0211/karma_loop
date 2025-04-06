@@ -1,3 +1,35 @@
-<h1>Index page</h1>
-<%= link_to "Profile", user_profile_path(id: @user.id)%>
-<p><%= link_to "Log out", destroy_user_session_path, data:{turbo_method: :delete} %></p>
+<header class="py-4 border-b border-gray-300">
+  <div class="container mx-5 px-1 flex items-center justify-between">
+    <div class="logo-container flex items-center">
+      <%= link_to root_path, class: "inline-block" do %>
+        <%= image_tag("logo.png", alt: "Company Logo", class: "h-10") %>
+      <% end %>
+    </div>
+
+    <div class="search-container flex-grow mx-4">
+      <%= form_with url: "", method: :get, local: true, class: "flex" do |form| %>
+        <%= form.text_field :query, placeholder: "Search...", class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+        <%= form.button type: :submit, class: "bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md ml-2" do %>
+          <i class="fas fa-search"></i>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="actions-container flex items-center space-x-4">
+      <% if user_signed_in? %>
+        <%= link_to "", class: "bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center" do %>
+            <i class="fas fa-plus mr-2"></i> Create
+        <% end %>
+
+        <%= link_to "Log out", destroy_user_session_path, data: { turbo_method: :delete }, class: "bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md" %>
+      <% else %>
+        <%= link_to "Log in", new_user_session_path, class: "bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md" %>
+      <% end %>
+    </div>
+  </div>
+</header>
+
+<div class="content-wrapper container mx-auto px-4 mt-8">
+  <h1 class="text-3xl font-bold">Index page</h1>
+  <%= link_to "Profile", user_profile_path(id: @user.id), class: "text-blue-500 hover:underline" if user_signed_in? %>
+</div>

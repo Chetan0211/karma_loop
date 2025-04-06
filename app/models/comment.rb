@@ -29,4 +29,8 @@ class Comment < ApplicationRecord
   scope :with_comment, -> {
     joins("INNER JOIN action_text_rich_texts ON action_text_rich_texts.record_type = 'Comment' AND action_text_rich_texts.record_id = comments.id AND action_text_rich_texts.name = 'comment'").select("*")
   }
+
+  def current_user_reaction(user_id)
+    comments_reactions.where(user_id: user_id).first&.reaction
+  end
 end

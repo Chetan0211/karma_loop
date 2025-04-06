@@ -63,3 +63,84 @@ export function parentLikeToggle() {
     });
   });
 }
+
+export function commentLikeToggle() {
+  const comment_like_buttons = document.querySelectorAll('[id^="comment_like_button_"]');
+  const comment_dislike_buttons = document.querySelectorAll('[id^="comment_dislike_button_"]');
+
+  comment_like_buttons.forEach((comment_like_button) => { 
+    comment_like_button.addEventListener("click", (event) => {
+      // event.preventDefault();
+      // let redirect_link = event.currentTarget.href;
+      // Turbo.visit(redirect_link, { action: "replace" });
+      let current_url = new URL(event.currentTarget.href);
+      let id = comment_like_button.id.replace("comment_like_button_", "")
+      let comment_reaction = document.getElementById("comment_reaction_" + id);
+
+      let comment_dislike_button = document.getElementById("comment_dislike_button_" + id);
+      let comment_dislike_button_url = new URL(comment_dislike_button.href);
+
+      comment_dislike_button_url.searchParams.set('reaction', 'dislike');
+      comment_dislike_button.href = comment_dislike_button_url;
+
+      if (comment_reaction.classList.contains("like")) {
+        comment_reaction.classList = [];
+        comment_reaction.getElementsByTagName("span")[1].textContent = parseInt(comment_reaction.getElementsByTagName("span")[1].textContent.trim()) - 1;
+        current_url.searchParams.set('reaction', 'like');
+        event.currentTarget.href = current_url;
+      }
+      else if (comment_reaction.classList.contains("dislike")) {
+        
+        comment_reaction.classList = [];
+        comment_reaction.classList.add("like");
+        comment_reaction.getElementsByTagName("span")[1].textContent = parseInt(comment_reaction.getElementsByTagName("span")[1].textContent.trim()) + 2;
+        current_url.searchParams.set('reaction', null);
+        
+        event.currentTarget.href = current_url;
+      }
+      else {
+        comment_reaction.classList.add("like");
+        comment_reaction.getElementsByTagName("span")[1].textContent = parseInt(comment_reaction.getElementsByTagName("span")[1].textContent.trim()) + 1;
+        current_url.searchParams.set('reaction', null);
+        event.currentTarget.href = current_url;
+      }
+    });
+  });
+
+  comment_dislike_buttons.forEach((comment_dislike_button) => { 
+    comment_dislike_button.addEventListener("click", (event) => {
+      // event.preventDefault();
+      // let redirect_link = event.currentTarget.href;
+      // Turbo.visit(redirect_link, { action: "replace" });
+      let current_url = new URL(event.currentTarget.href);
+      let id = comment_dislike_button.id.replace("comment_dislike_button_", "")
+      let comment_reaction = document.getElementById("comment_reaction_" + id);
+      
+      let comment_like_button = document.getElementById("comment_like_button_" + id);
+      let comment_like_button_url = new URL(comment_like_button.href);
+
+      comment_like_button_url.searchParams.set('reaction', 'like');
+      comment_like_button.href = comment_like_button_url;
+
+      if (comment_reaction.classList.contains("dislike")) {
+        comment_reaction.classList = [];
+        comment_reaction.getElementsByTagName("span")[1].textContent = parseInt(comment_reaction.getElementsByTagName("span")[1].textContent.trim()) + 1;
+        current_url.searchParams.set('reaction', 'dislike');
+        event.currentTarget.href = current_url;
+      }
+      else if (comment_reaction.classList.contains("like")) {
+        comment_reaction.classList = [];
+        comment_reaction.classList.add("dislike");
+        comment_reaction.getElementsByTagName("span")[1].textContent = parseInt(comment_reaction.getElementsByTagName("span")[1].textContent.trim()) - 2;
+        current_url.searchParams.set('reaction', null);
+        event.currentTarget.href = current_url;
+      }
+      else {
+        comment_reaction.classList.add("dislike");
+        comment_reaction.getElementsByTagName("span")[1].textContent = parseInt(comment_reaction.getElementsByTagName("span")[1].textContent.trim()) - 1;
+        current_url.searchParams.set('reaction', null);
+        event.currentTarget.href = current_url;
+      }
+    });
+  });
+}

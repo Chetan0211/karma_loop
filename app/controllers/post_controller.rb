@@ -11,7 +11,6 @@ class PostController < ApplicationController
   
   def create
     @post = Post.new(post_params)
-    @post.content_category = ContentCategory.find_by(category: "Test")
     @post.user = current_user
     if @post.save
       redirect_to @post, notice: 'Post was successfully created.'
@@ -49,7 +48,7 @@ class PostController < ApplicationController
     else
       head :bad_request
       Turbo::StreamsChannel.broadcast_update_to(
-          "#{user.id}error_notifications",
+          "#{current_user.id}error_notifications",
           target: "error-notifications",
           partial: "shared/error_message",
           locals: { message: "Something went wrong. Can't able to react to the post" }
@@ -57,27 +56,31 @@ class PostController < ApplicationController
     end
   end
 
-  def post_reaction_remove
-    
-  end
-
   def comment_reaction
-    reaction = CommentReaction.new
-    reaction.post_id = params[:post_id]
-    reaction.comment_id = params[:comment_id]
-    reaction.user_id = current_user.id
-    reaction.reaction = params[:reaction]
-    if reaction.save!
-      head :no_content
+    reaction={
+      post_id: params[:post_id],
+      comment_id: params[:comment_id],
+      user_id: current_user.id,
+      reaction: params[:reaction]
+    }
+    result = params[:reaction] == nil ? Comment::ReactionDelete.call(comment_reaction: reaction) : Comment::Reaction.call(comment_reaction: reaction)
+    if result.success?
+      head :ok
     else
-      head :no_content
+      head :bad_request
+      Turbo::StreamsChannel.broadcast_update_to(
+          "#{current_user.id}error_notifications",
+          target: "error-notifications",
+          partial: "shared/error_message",
+          locals: { message: "Something went wrong. Can't able to react to the comment" }
+        )
     end
   end
 
   private 
 
   def post_params
-    params.require(:post).permit(:title, :description)
+    params.require(:post).permit(:title, :description, :content_category_id)
   end
 
   def comment_params

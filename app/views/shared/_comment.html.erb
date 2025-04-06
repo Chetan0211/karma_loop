@@ -4,7 +4,13 @@ comment - Contains the instance of a mocdel
 <div class="comment" id="<%= comment.id %>">
   <p><strong><%= comment.commenter.username %>:</strong></p>
   <%= comment.comment %>
-  <p><%= link_to "Like", post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction:"like") %> <%= (comment.likes - comment.dislikes).abs %> <%= link_to "Dislike", post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction:"dislike") %></p>
+  <div id="comment_reaction_<%=comment.id%>", class="<%=comment.current_user_reaction(current_user.id)%>">
+    <span>
+      <%= link_to "Like", post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction:comment.current_user_reaction(current_user.id) == 'like' ? nil:"like"), id:"comment_like_button_#{comment.id}",remote: true, data: { turbo_method: "get" } %>
+      <span><%= (comment.likes - comment.dislikes).abs %></span>
+      <%= link_to "Dislike", post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction:comment.current_user_reaction(current_user.id) == 'dislike' ? nil:"dislike"), id:"comment_dislike_button_#{comment.id}",remote: true, data: { turbo_method: "get" } %>
+    </span>
+  </div>
   <button id="reply_comment_button_<%= comment.id %>">Reply</button>
   <%= form_with url: post_add_comment_path(post_id: params[:id]), model: Comment.new, remote: true, id: "reply_comment_form_#{comment.id}", html: { style: "display: none;" } do |form| %>
     <%= form.hidden_field :parent_id, value: comment.id %>

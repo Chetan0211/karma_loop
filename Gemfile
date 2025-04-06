@@ -12,6 +12,8 @@ gem "sprockets-rails"
 # gem "sqlite3", ">= 1.4"
 
 gem "pg", "~> 1.5"
+gem "tailwindcss-rails", "~> 2.6"
+gem 'font-awesome-sass', '~> 6.4.2'
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"

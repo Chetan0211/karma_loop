@@ -34,9 +34,6 @@ class Post < ApplicationRecord
   }
 
   def current_user_reaction(user_id)
-    posts_reactions.where(user_id: user_id).first.reaction
+    posts_reactions.where(user_id: user_id).first&.reaction
   end
-
-  
-
 end
