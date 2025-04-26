@@ -1,46 +1,84 @@
-<h2>Sign up</h2>
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email", value: flash[:signup_params]&.dig("email") %>
-    <% if flash[:errors]&.dig("email").present?%>
-      <p style="color: red"><%= flash[:errors]["email"].first %></p>
+<div class="bg-gray-100 flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+  <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md space-y-8">
+    <div>
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        Create your account
+      </h2>
+    </div>
+    <% if resource.errors.full_messages.present? %>
+      <div id="form-error-message" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+        <strong class="font-bold">Error!</strong>
+        <span class="block sm:inline">Something went wrong. Please check the form and try again.</span>
+      </div>
     <% end %>
-  </div>
-  <div class="field">
-    <%= f.label :username %><br />
-    <%= f.text_field :username, autofocus: true, autocomplete: "username", value: flash[:signup_params]&.dig("username") %>
-    <% if flash[:errors]&.dig("username").present?%>
-      <p style="color: red"><%= flash[:errors]["username"].first %></p>
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+      <div class="rounded-md">
+        <div class="mb-4">
+          <%= f.label :username, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :username, 
+            autofocus: true, 
+            autocomplete: "username",
+            placeholder:"Choose a username", 
+            value: flash[:signup_params]&.dig("username"),
+            class: "appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm transition duration-150 ease-in-out" %>
+          <% if flash[:errors]&.dig("username").present?%>
+            <p class="mt-1 text-xs text-red-600"><%= flash[:errors]["username"].first %></p>
+          <% end %>
+        </div>
+        <div class="mb-4">
+          <%= f.label :email, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.email_field :email, 
+            autofocus: true, 
+            autocomplete: "email",
+            placeholder: "you@example.com", 
+            value: flash[:signup_params]&.dig("email"),
+            class: "appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm transition duration-150 ease-in-out" %>
+          <% if flash[:errors]&.dig("email").present?%>
+            <p class="mt-1 text-xs text-red-600"><%= flash[:errors]["email"].first %></p>
+          <% end %>
+        </div>
+        <div class="mb-4">
+          <%= f.label :dob, class:"block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.date_field :dob, 
+            autofocus: true, 
+            autocomplete: "dob", 
+            max: Date.today, 
+            value: flash[:signup_params]&.dig("dob"),
+            class: "appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm transition duration-150 ease-in-out" %>
+          <% if flash[:errors]&.dig("dob").present?%>
+            <p class="mt-1 text-xs text-red-600"><%= flash[:errors]["dob"].first %></p>
+          <% end %>
+        </div>
+        <div class="mb-4">
+          <%= f.label :password, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.password_field :password, 
+            autocomplete: "new-password",
+            placeholder:"Create a password",
+            value: flash[:signup_params]&.dig("password"),
+            class: "appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm transition duration-150 ease-in-out" %>
+          <% if flash[:errors]&.dig("password").present?%>
+            <p class="mt-1 text-xs text-red-600"><%= flash[:errors]["password"].first %></p>
+          <% end %>
+        </div>
+        <div class="mb-6">
+          <%= f.label :password_confirmation, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.password_field :password_confirmation, 
+            autocomplete: "new-password",
+            placeholder: "Confirm your password", 
+            value: flash[:signup_params]&.dig("password_confirmation"),
+            class: "appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm transition duration-150 ease-in-out" %>
+          <% if flash[:errors]&.dig("password_confirmation").present?%>
+            <p class="mt-1 text-xs text-red-600"><%= flash[:errors]["password_confirmation"].first %></p>
+          <% end %>
+        </div>
+      </div>
+      <div>
+        <%= f.submit "Sign up", class: "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out" %>
+      </div>
     <% end %>
+    <p class="mt-6 text-center text-sm text-gray-700">
+      Already have an account?
+      <%= link_to "Sign in", new_session_path(resource_name), class: "font-medium text-purple-600 hover:text-purple-500 hover:underline" %>
+    </p>
   </div>
-  <div class="field">
-    <%= f.label :dob %><br />
-    <%= f.date_field :dob, autofocus: true, autocomplete: "dob", max: Date.today, value: flash[:signup_params]&.dig("dob") %>
-    <% if flash[:errors]&.dig("dob").present?%>
-      <p style="color: red"><%= flash[:errors]["dob"].first %></p>
-    <% end %>
-  </div>
-  <div class="field">
-    <%= f.label :password %>
-    <% if @minimum_password_length %>
-      <em>(<%= @minimum_password_length %> characters minimum)</em>
-    <% end %><br />
-    <%= f.password_field :password, autocomplete: "new-password", value: flash[:signup_params]&.dig("password") %>
-    <% if flash[:errors]&.dig("password").present?%>
-      <p style="color: red"><%= flash[:errors]["password"].first %></p>
-    <% end %>
-  </div>
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password", value: flash[:signup_params]&.dig("password_confirmation") %>
-    <% if flash[:errors]&.dig("password_confirmation").present?%>
-      <p style="color: red"><%= flash[:errors]["password_confirmation"].first %></p>
-    <% end %>
-  </div>
-  <div class="actions">
-    <%= f.submit "Sign up" %>
-  </div>
-<% end %>
-<%= render "devise/shared/links" %>
+</div>

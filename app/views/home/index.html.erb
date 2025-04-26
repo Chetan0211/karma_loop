@@ -1,35 +1,213 @@
-<header class="py-4 border-b border-gray-300">
-  <div class="container mx-5 px-1 flex items-center justify-between">
-    <div class="logo-container flex items-center">
-      <%= link_to root_path, class: "inline-block" do %>
-        <%= image_tag("logo.png", alt: "Company Logo", class: "h-10") %>
-      <% end %>
+<%= render "shared/header"%>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <div class="md:col-span-2 space-y-4">
+
+                <div class="bg-white p-3 rounded-md shadow flex items-center space-x-3">
+                     <span class="inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100 flex-shrink-0"> <svg class="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                     </span>
+                     <input type="text" placeholder="Create Post" class="flex-grow p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition duration-150 ease-in-out min-w-0"> <button class="p-2 text-gray-400 hover:text-purple-600 flex-shrink-0"> <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                     </button>
+                     <button class="p-2 text-gray-400 hover:text-purple-600 flex-shrink-0"> <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                     </button>
+                </div>
+
+                <div class="bg-white p-2 rounded-md shadow flex items-center space-x-2 sm:space-x-4 text-sm font-medium text-gray-500 overflow-x-auto"> <button class="flex items-center space-x-1 px-3 py-1 rounded-full bg-gray-200 text-gray-800 flex-shrink-0"> <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.586 2.586a2 2 0 012.828 0l2.828 2.828a2 2 0 010 2.828l-12.586 12.586a2 2 0 01-2.828 0l-2.828-2.828a2 2 0 010-2.828l12.586-12.586zM10 16a6 6 0 100-12 6 6 0 000 12z" clip-rule="evenodd"></path></svg>
+                        <span>Hot</span>
+                    </button>
+                    <button class="flex items-center space-x-1 px-3 py-1 rounded-full hover:bg-gray-100 flex-shrink-0"> <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path></svg>
+                         <span>New</span>
+                    </button>
+                    <button class="flex items-center space-x-1 px-3 py-1 rounded-full hover:bg-gray-100 flex-shrink-0"> <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                         <span>Top</span>
+                    </button>
+                     </div>
+
+                <div class="bg-white rounded-md shadow overflow-hidden flex">
+                    <div class="flex flex-col items-center bg-gray-50 p-2 space-y-1 w-10 flex-shrink-0"> <button class="text-gray-400 hover:text-purple-600 rounded-full p-0.5">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                        <span class="text-xs font-bold text-gray-800">1.2k</span>
+                        <button class="text-gray-400 hover:text-blue-600 rounded-full p-0.5"> <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1.293-7.293l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 10.586V7a1 1 0 112 0v3.586l1.293-1.293a1 1 0 111.414 1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                    </div>
+
+                    <div class="p-3 sm:p-4 flex-grow min-w-0"> <div class="text-xs text-gray-500 mb-1 truncate"> <a href="#" class="font-semibold text-gray-800 hover:underline">k/communityName</a>
+                            <span class="mx-1">•</span>
+                            <span>Posted by <a href="#" class="hover:underline">u/username</a></span>
+                            <span class="hidden sm:inline"> 4 hours ago</span> </div>
+
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2"> <a href="#" class="hover:text-purple-700">This is an Example Post Title That Might Be Quite Long</a>
+                        </h3>
+
+                        <p class="text-sm text-gray-700 mb-3 max-h-24 overflow-hidden"> This is the body content of the post. It could be text, an image preview, or a link preview. We can limit the height and show a fade effect if it's too long...
+                        </p>
+                        <div class="flex items-center space-x-2 sm:space-x-4 text-xs font-medium text-gray-500"> <a href="#" class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded">
+                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                                <span class="hidden sm:inline">35 Comments</span> </a>
+                            <button class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded">
+                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12s-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path></svg>
+                                <span class="hidden sm:inline">Share</span> </button>
+                            <button class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded">
+                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                                <span class="hidden sm:inline">Save</span> </button>
+                            <button class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded ml-auto"> <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+                                </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-md shadow overflow-hidden flex">
+                    <div class="flex flex-col items-center bg-gray-50 p-2 space-y-1 w-10 flex-shrink-0"> <button class="text-gray-400 hover:text-purple-600 rounded-full p-0.5">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                        <span class="text-xs font-bold text-gray-800">1.2k</span>
+                        <button class="text-gray-400 hover:text-blue-600 rounded-full p-0.5"> <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1.293-7.293l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 10.586V7a1 1 0 112 0v3.586l1.293-1.293a1 1 0 111.414 1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                    </div>
+
+                    <div class="p-3 sm:p-4 flex-grow min-w-0"> <div class="text-xs text-gray-500 mb-1 truncate"> <a href="#" class="font-semibold text-gray-800 hover:underline">k/communityName</a>
+                            <span class="mx-1">•</span>
+                            <span>Posted by <a href="#" class="hover:underline">u/username</a></span>
+                            <span class="hidden sm:inline"> 4 hours ago</span> </div>
+
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">
+                            <a href="#" class="hover:text-purple-700">This is an Example Post Title For a Post With an Image</a>
+                        </h3>
+
+                        <div class="my-3"> <img
+                                src="https://placehold.co/600x400/dae0e6/777?text=Post+Image\n(Replace+Src)"
+                                alt="Post image description"
+                                class="w-full max-h-[500px] object-contain rounded-md bg-gray-100" onerror="this.onerror=null; this.src='https://placehold.co/600x400/f87171/ffffff?text=Image+Load+Error';" >
+                        </div>
+
+
+                        <div class="flex items-center space-x-2 sm:space-x-4 text-xs font-medium text-gray-500"> <a href="#" class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded">
+                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                                <span class="hidden sm:inline">35 Comments</span> </a>
+                            <button class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded">
+                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12s-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path></svg>
+                                <span class="hidden sm:inline">Share</span> </button>
+                            <button class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded">
+                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                                <span class="hidden sm:inline">Save</span> </button>
+                            <button class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded ml-auto"> <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+                                </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Start of gallery -->
+                <div class="bg-white rounded-md shadow overflow-hidden flex">
+                    <div class="flex flex-col items-center bg-gray-50 p-2 space-y-1 w-10 flex-shrink-0"> <button class="text-gray-400 hover:text-purple-600 rounded-full p-0.5">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                        <span class="text-xs font-bold text-gray-800">2.5k</span> <button class="text-gray-400 hover:text-blue-600 rounded-full p-0.5"> <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1.293-7.293l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 10.586V7a1 1 0 112 0v3.586l1.293-1.293a1 1 0 111.414 1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                    </div>
+
+                    <div class="p-3 sm:p-4 flex-grow min-w-0"> <div class="text-xs text-gray-500 mb-1 truncate"> <a href="#" class="font-semibold text-gray-800 hover:underline">k/pics</a> <span class="mx-1">•</span>
+                            <span>Posted by <a href="#" class="hover:underline">u/galleryUser</a></span> <span class="hidden sm:inline"> 8 hours ago</span> </div>
+
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">
+                            <a href="#" class="hover:text-purple-700">A Post With Multiple Images (Gallery Example)</a> </h3>
+
+                        <div class="my-3 bg-gray-200 rounded-md overflow-hidden relative group"> <div class="flex overflow-x-auto snap-x snap-mandatory space-x-1 no-scrollbar" id="gallery-scroll-container"> <div class="snap-center flex-shrink-0 w-5/6 md:w-auto"> <img
+                                        src="https://placehold.co/600x400/a5b4fc/FFFFFF?text=Image+1"
+                                        alt="Gallery image 1"
+                                        class="w-full h-auto max-h-[500px] object-contain" onerror="this.onerror=null; this.src='https://placehold.co/600x400/f87171/ffffff?text=Image+Load+Error';"
+                                    >
+                                </div>
+                                <div class="snap-center flex-shrink-0 w-5/6 md:w-auto"> <img
+                                        src="https://placehold.co/600x400/818cf8/FFFFFF?text=Image+2"
+                                        alt="Gallery image 2"
+                                        class="w-full h-auto max-h-[500px] object-contain"
+                                        onerror="this.onerror=null; this.src='https://placehold.co/600x400/f87171/ffffff?text=Image+Load+Error';"
+                                    >
+                                </div>
+                                <div class="snap-center flex-shrink-0 w-5/6 md:w-auto"> <img
+                                        src="https://placehold.co/600x400/6366f1/FFFFFF?text=Image+3"
+                                        alt="Gallery image 3"
+                                        class="w-full h-auto max-h-[500px] object-contain"
+                                        onerror="this.onerror=null; this.src='https://placehold.co/600x400/f87171/ffffff?text=Image+Load+Error';"
+                                    >
+                                </div>
+                                <div class="snap-center flex-shrink-0 w-5/6 md:w-auto"> <img
+                                        src="https://placehold.co/600x400/4f46e5/FFFFFF?text=Image+4"
+                                        alt="Gallery image 4"
+                                        class="w-full h-auto max-h-[500px] object-contain"
+                                        onerror="this.onerror=null; this.src='https://placehold.co/600x400/f87171/ffffff?text=Image+Load+Error';"
+                                    >
+                                </div>
+                            </div>
+                             <button onclick="scrollGallery(this, -1)" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity focus:outline-none focus:ring-2 focus:ring-white mx-1">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                             </button>
+                             <button onclick="scrollGallery(this, 1)" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity focus:outline-none focus:ring-2 focus:ring-white mx-1">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                             </button>
+                        </div>
+
+
+                        <div class="flex items-center space-x-2 sm:space-x-4 text-xs font-medium text-gray-500"> <a href="#" class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded">
+                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                                <span class="hidden sm:inline">78 Comments</span> </a>
+                            <button class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded">
+                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12s-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path></svg>
+                                <span class="hidden sm:inline">Share</span> </button>
+                            <button class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded">
+                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                                <span class="hidden sm:inline">Save</span> </button>
+                            <button class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded ml-auto"> <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+                                </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- End of gallery -->
+                <div class="bg-white rounded-md shadow h-48 flex items-center justify-center text-gray-400">Another Post Card</div>
+                <div class="bg-white rounded-md shadow h-48 flex items-center justify-center text-gray-400">Yet Another Post Card</div>
+
+            </div>
+
+            <div class="hidden md:block space-y-4">
+                <div class="bg-white p-4 rounded-md shadow">
+                    <h4 class="font-semibold mb-3 border-b pb-2">Community Info</h4>
+                    <p class="text-sm text-gray-600 mb-2">Welcome to k/communityName! A place to discuss...</p>
+                    <button class="w-full bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out">Join</button>
+                </div>
+
+                 <div class="bg-white p-4 rounded-md shadow">
+                    <h4 class="font-semibold mb-3 border-b pb-2">Trending Topics</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-purple-600 hover:underline">#topic1</a></li>
+                        <li><a href="#" class="text-purple-600 hover:underline">#very_long_topic_example</a></li>
+                        <li><a href="#" class="text-purple-600 hover:underline">#topic3</a></li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-4 rounded-md shadow sticky top-20"> <h4 class="font-semibold mb-3 border-b pb-2">Site Rules</h4>
+                     <ol class="list-decimal list-inside space-y-1 text-xs text-gray-600">
+                        <li>Be respectful.</li>
+                        <li>No spamming.</li>
+                        <li>Relevant content only.</li>
+                    </ol>
+                </div>
+            </div>
+
+        </div>
     </div>
-
-    <div class="search-container flex-grow mx-4">
-      <%= form_with url: "", method: :get, local: true, class: "flex" do |form| %>
-        <%= form.text_field :query, placeholder: "Search...", class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
-        <%= form.button type: :submit, class: "bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md ml-2" do %>
-          <i class="fas fa-search"></i>
-        <% end %>
-      <% end %>
-    </div>
-
-    <div class="actions-container flex items-center space-x-4">
-      <% if user_signed_in? %>
-        <%= link_to "", class: "bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center" do %>
-            <i class="fas fa-plus mr-2"></i> Create
-        <% end %>
-
-        <%= link_to "Log out", destroy_user_session_path, data: { turbo_method: :delete }, class: "bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md" %>
-      <% else %>
-        <%= link_to "Log in", new_user_session_path, class: "bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md" %>
-      <% end %>
-    </div>
-  </div>
-</header>
-
-<div class="content-wrapper container mx-auto px-4 mt-8">
-  <h1 class="text-3xl font-bold">Index page</h1>
-  <%= link_to "Profile", user_profile_path(id: @user.id), class: "text-blue-500 hover:underline" if user_signed_in? %>
-</div>
+    <script>
+        function scrollGallery(button, direction) {
+            const galleryContainer = button.closest('.relative').querySelector('.overflow-x-auto');
+            if (galleryContainer) {
+                // Calculate the scroll amount (e.g., width of one image container)
+                // Using clientWidth as an approximation for one item's visible width
+                const scrollAmount = galleryContainer.clientWidth * 0.85; // Scroll slightly less than full width
+                galleryContainer.scrollBy({
+                    left: scrollAmount * direction,
+                    behavior: 'smooth' // Smooth scrolling
+                });
+            }
+        }
+    </script>

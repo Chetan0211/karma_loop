@@ -3,6 +3,7 @@
 # Table name: posts
 #
 #  id                  :uuid             not null, primary key
+#  content_type        :text             default("post"), not null
 #  deleted_at          :datetime
 #  dislikes            :integer          default(0), not null
 #  likes               :integer          default(0), not null
@@ -15,6 +16,7 @@
 # Indexes
 #
 #  index_posts_on_content_category_id  (content_category_id)
+#  index_posts_on_content_type         (content_type)
 #  index_posts_on_user_id              (user_id)
 #
 # Foreign Keys
