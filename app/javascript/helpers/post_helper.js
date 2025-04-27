@@ -28,17 +28,17 @@ export function parentLikeToggle() {
       let id = parent_like_button.id.replace("like_button_parent_", "")
       let reaction_div_parent = document.getElementById("reaction_div_parent_"+id);
       if (reaction_div_parent.classList.contains("like")) {
-        reaction_div_parent.classList = [];
-        reaction_div_parent.getElementsByTagName("span")[1].textContent = parseInt(reaction_div_parent.getElementsByTagName("span")[1].textContent.trim()) - 1;
+        reaction_div_parent.classList.remove("like");
+        reaction_div_parent.querySelector("span").textContent = parseInt(reaction_div_parent.querySelector("span").textContent.trim()) - 1;
       }
       else if (reaction_div_parent.classList.contains("dislike")) {
-        reaction_div_parent.classList = [];
+        reaction_div_parent.classList.remove("dislike");
         reaction_div_parent.classList.add("like");
-        reaction_div_parent.getElementsByTagName("span")[1].textContent = parseInt(reaction_div_parent.getElementsByTagName("span")[1].textContent.trim()) + 2;
+        reaction_div_parent.querySelector("span").textContent = parseInt(reaction_div_parent.querySelector("span").textContent.trim()) + 2;
       }
       else {
         reaction_div_parent.classList.add("like");
-        reaction_div_parent.getElementsByTagName("span")[1].textContent = parseInt(reaction_div_parent.getElementsByTagName("span")[1].textContent.trim()) + 1;
+        reaction_div_parent.querySelector("span").textContent = parseInt(reaction_div_parent.querySelector("span").textContent.trim()) + 1;
       }
     });
   });
@@ -48,17 +48,17 @@ export function parentLikeToggle() {
       let id = parent_dislike_button.id.replace("dislike_button_parent_", "")
       let reaction_div_parent = document.getElementById("reaction_div_parent_"+id);
       if (reaction_div_parent.classList.contains("dislike")) {
-        reaction_div_parent.classList = [];
-        reaction_div_parent.getElementsByTagName("span")[1].textContent = parseInt(reaction_div_parent.getElementsByTagName("span")[1].textContent.trim()) + 1;
+        reaction_div_parent.classList.remove("dislike");
+        reaction_div_parent.querySelector("span").textContent = parseInt(reaction_div_parent.querySelector("span").textContent.trim()) + 1;
       }
       else if (reaction_div_parent.classList.contains("like")) {
-        reaction_div_parent.classList = [];
+        reaction_div_parent.classList.remove("like");
         reaction_div_parent.classList.add("dislike");
-        reaction_div_parent.getElementsByTagName("span")[1].textContent = parseInt(reaction_div_parent.getElementsByTagName("span")[1].textContent.trim()) - 2;
+        reaction_div_parent.querySelector("span").textContent = parseInt(reaction_div_parent.querySelector("span").textContent.trim()) - 2;
       }
       else {
         reaction_div_parent.classList.add("dislike");
-        reaction_div_parent.getElementsByTagName("span")[1].textContent = parseInt(reaction_div_parent.getElementsByTagName("span")[1].textContent.trim()) - 1;
+        reaction_div_parent.querySelector("span").textContent = parseInt(reaction_div_parent.querySelector("span").textContent.trim()) - 1;
       }
     });
   });
@@ -70,6 +70,8 @@ export function commentLikeToggle() {
 
   comment_like_buttons.forEach((comment_like_button) => { 
     comment_like_button.addEventListener("click", (event) => {
+      //TODO: This is not working efficiently as links gets changed before event gets fired.
+      //Solution: Either use 2 buttons and try turbo streams.
       // event.preventDefault();
       // let redirect_link = event.currentTarget.href;
       // Turbo.visit(redirect_link, { action: "replace" });
@@ -84,25 +86,24 @@ export function commentLikeToggle() {
       comment_dislike_button.href = comment_dislike_button_url;
 
       if (comment_reaction.classList.contains("like")) {
-        comment_reaction.classList = [];
-        comment_reaction.getElementsByTagName("span")[1].textContent = parseInt(comment_reaction.getElementsByTagName("span")[1].textContent.trim()) - 1;
+        comment_reaction.classList.remove("like");
+        comment_reaction.querySelector("span").textContent = parseInt(comment_reaction.querySelector("span").textContent.trim()) - 1;
         current_url.searchParams.set('reaction', 'like');
-        event.currentTarget.href = current_url;
+        comment_like_button.href = current_url;
       }
       else if (comment_reaction.classList.contains("dislike")) {
         
-        comment_reaction.classList = [];
+        comment_reaction.classList.remove("dislike");
         comment_reaction.classList.add("like");
-        comment_reaction.getElementsByTagName("span")[1].textContent = parseInt(comment_reaction.getElementsByTagName("span")[1].textContent.trim()) + 2;
-        current_url.searchParams.set('reaction', null);
-        
-        event.currentTarget.href = current_url;
+        comment_reaction.querySelector("span").textContent = parseInt(comment_reaction.querySelector("span").textContent.trim()) + 2;
+        current_url.searchParams.delete('reaction');
+        comment_like_button.href = current_url;
       }
       else {
         comment_reaction.classList.add("like");
-        comment_reaction.getElementsByTagName("span")[1].textContent = parseInt(comment_reaction.getElementsByTagName("span")[1].textContent.trim()) + 1;
-        current_url.searchParams.set('reaction', null);
-        event.currentTarget.href = current_url;
+        comment_reaction.querySelector("span").textContent = parseInt(comment_reaction.querySelector("span").textContent.trim()) + 1;
+        current_url.searchParams.delete('reaction');
+        comment_like_button.href = current_url;
       }
     });
   });
@@ -123,23 +124,23 @@ export function commentLikeToggle() {
       comment_like_button.href = comment_like_button_url;
 
       if (comment_reaction.classList.contains("dislike")) {
-        comment_reaction.classList = [];
-        comment_reaction.getElementsByTagName("span")[1].textContent = parseInt(comment_reaction.getElementsByTagName("span")[1].textContent.trim()) + 1;
+        comment_reaction.classList.remove("dislike");
+        comment_reaction.querySelector("span").textContent = parseInt(comment_reaction.querySelector("span").textContent.trim()) + 1;
         current_url.searchParams.set('reaction', 'dislike');
-        event.currentTarget.href = current_url;
+        comment_dislike_button.href = current_url;
       }
       else if (comment_reaction.classList.contains("like")) {
-        comment_reaction.classList = [];
+        comment_reaction.classList.remove("like");
         comment_reaction.classList.add("dislike");
-        comment_reaction.getElementsByTagName("span")[1].textContent = parseInt(comment_reaction.getElementsByTagName("span")[1].textContent.trim()) - 2;
-        current_url.searchParams.set('reaction', null);
-        event.currentTarget.href = current_url;
+        comment_reaction.querySelector("span").textContent = parseInt(comment_reaction.querySelector("span").textContent.trim()) - 2;
+        current_url.searchParams.delete('reaction');
+        comment_dislike_button.href = current_url;
       }
       else {
         comment_reaction.classList.add("dislike");
-        comment_reaction.getElementsByTagName("span")[1].textContent = parseInt(comment_reaction.getElementsByTagName("span")[1].textContent.trim()) - 1;
-        current_url.searchParams.set('reaction', null);
-        event.currentTarget.href = current_url;
+        comment_reaction.querySelector("span").textContent = parseInt(comment_reaction.querySelector("span").textContent.trim()) - 1;
+        current_url.searchParams.delete('reaction');
+        comment_dislike_button.href = current_url;
       }
     });
   });

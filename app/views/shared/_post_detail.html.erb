@@ -3,31 +3,7 @@ post
 comments
 
 -->
-<h1><%= post.title %></h1>
-<%= post.description %>
-<div id="reaction_div_parent_<%=post.id%>", class="<%=post.current_user_reaction(current_user.id)%>">
-  <span>
-    <%= link_to "Like", post_post_reaction_path(post_id: post.id, reaction:"like"), id:"like_button_parent_#{post.id}",remote: true, data: { turbo_method: "get" } %>
-    <span><%= (post.likes - post.dislikes) %></span>
-    <%= link_to "Dislike", post_post_reaction_path(post_id: post.id, reaction:"dislike"), id:"dislike_button_parent_#{post.id}",remote: true, data: { turbo_method: "get" } %>
-  </span>
-</div>
-<p>comments: <%= post.comments.count %></p>
-<h2>Comments</h2>
-<button id="parent_comment_button">Add a Comment</button>
-<%= form_with url: post_add_comment_path(post_id: params[:id]), model: [ post, Comment.new ], remote: true, id: "parent_comment_form", html: { style: "display: none;" } do |form| %>
-  <%= form.hidden_field :parent_id, value: nil %>
-  <div>
-    <%= form.label :comment, "Add a Comment:" %>
-    <%= form.rich_text_area :comment, id:"comment_comment_parent" %>
-  </div>
-  <button id="cancel_parent_comment_form", type="button">Cancel</button>
-  <%= form.submit "Post Comment" %>
-<% end %>
-<% if post.comments.count > 0 %>
-  <div id="comments">
-    <% post.comments.where(parent_id:nil).each do |comment| %>
-      <%= render partial: 'shared/comment', locals: { comment: comment, post: post } %>
-    <% end %>
-  </div>
+<% if post.content_type == 'blog' %>
+  <%= render "shared/blog_post", post: post %>
+<% elsif post.content_type == 'image' %>
 <% end %>

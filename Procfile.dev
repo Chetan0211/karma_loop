@@ -1,2 +1,2 @@
-web: bin/rails server -b 192.168.0.160
+web: bin/rails server
 css: bin/rails tailwindcss:watch
