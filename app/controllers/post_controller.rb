@@ -42,7 +42,7 @@ class PostController < ApplicationController
       user_id: current_user.id,
       reaction: params[:reaction]
     }
-    result = Post::Reaction.call(post_reaction: reaction)
+    result = params[:reaction] == nil ? Post::ReactionDelete.call(post_reaction: reaction) : Post::Reaction.call(post_reaction: reaction)
     if result.success?
       head :ok
     else
@@ -63,8 +63,7 @@ class PostController < ApplicationController
       user_id: current_user.id,
       reaction: params[:reaction]
     }
-    debugger
-    result = (params[:reaction] == nil || params[:reaction] == "null") ? Comment::ReactionDelete.call(comment_reaction: reaction) : Comment::Reaction.call(comment_reaction: reaction)
+    result = params[:reaction] == nil ? Comment::ReactionDelete.call(comment_reaction: reaction) : Comment::Reaction.call(comment_reaction: reaction)
     if result.success?
       head :ok
     else

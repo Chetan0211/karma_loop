@@ -1,45 +1,50 @@
-<div id="notification" class="fixed top-4 right-4 bg-red-500 text-white p-4 rounded shadow-lg fade-in notification-container">
-  <%= message %>
+<div
+id="notification"
+x-data="{ showBanner: true, autoCloseTimeout: null  }"
+x-init="
+  autoCloseTimeout = setTimeout(() => { showBanner = false }, 5000); // Set timeout on init
+  $watch('showBanner', (value) => { // Optional: Clear timeout if manually closed early
+  if (!value && autoCloseTimeout) {
+  clearTimeout(autoCloseTimeout);
+  }
+  })
+  "
+  x-show="showBanner"
+  x-transition:enter="transition ease-out duration-300 transform"
+  x-transition:enter-start="-translate-y-full opacity-0"
+  x-transition:enter-end="translate-y-0 opacity-100"
+  x-transition:leave="transition ease-in duration-200 transform"
+  x-transition:leave-start="translate-y-0 opacity-100"
+  x-transition:leave-end="-translate-y-full opacity-0"
+  class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-xl bg-red-100 border border-red-300 text-red-700 p-4 shadow-lg rounded-md"
+  role="alert">
+  <div class="max-w-7xl mx-auto flex items-center">
+    <div class="flex-shrink-0 mr-3">
+      <i class="fa-solid fa-circle-exclamation text-red-500 text-xl"></i>
+    </div>
+    <div class="flex-grow text-sm">
+      <p class="font-bold">Error!</p>
+      <p><%= message %></p>
+    </div>
+    <div class="ml-4 flex-shrink-0">
+      <%# <button
+    @click="showBanner = false"
+    type="button"
+    class="text-red-500 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-red-100 rounded-full p-1"
+    aria-label="Close">
+    <span class="sr-only">Close</span>
+    <i class="fa-solid fa-xmark text-lg"></i>
+</button> %>
+    </div>
+  </div>
 </div>
 <script>
-  // Automatically hide the notification after 5 seconds
-  setTimeout(() => {
-    const notification = document.getElementById('notification');
-    if (notification) {
-      notification.classList.add('fade-out');
-      setTimeout(() => notification.remove(), 500); // Allow fade-out animation to complete
-    }
-  }, 5000);
+  function hideBanner(){
+    const errorBanner = document.getElementById('notification');
+    errorBanner.classList.remove('banner-visible');
+    errorBanner.classList.add('banner-hidden');
+    setTimeout(() => errorBanner.remove(), 500);
+  }
+
+  setTimeout(hideBanner, 4000);
 </script>
-<style>
-  .fade-in {
-    opacity: 0;
-    animation: fadeIn 0.5s forwards;
-  }
-
-  .fade-out {
-    animation: fadeOut 0.5s forwards;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fadeOut {
-    from {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    to {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-  }
-</style>

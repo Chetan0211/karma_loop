@@ -6,20 +6,30 @@ post
   <%= link_to post_post_reaction_path(post_id: post.id, reaction:"like"), 
     id:"like_button_parent_#{post.id}",
     remote: true,
-    class: "text-gray-400 hover:text-purple-600 rounded-full p-0.5",
+    class: "text-gray-400 hover:text-purple-600 rounded-full p-0.5 #{post.current_user_reaction(current_user.id) == 'like' ? "hidden" : ""}",
     data: { turbo_method: "get" } do %>
-    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd"></path>
-    </svg>
+    <%= icon(icon: :like_icon, options: {class:"fa-fw text-base w-5 h-5"}) %>
+  <% end %>
+  <%= link_to post_post_reaction_path(post_id: post.id, reaction: nil), 
+    id:"liked_button_parent_#{post.id}",
+    remote: true,
+    class: "text-gray-400 text-purple-600 rounded-full p-0.5 #{post.current_user_reaction(current_user.id) == 'like' ? "" : "hidden"}",
+    data: { turbo_method: "get" } do %>
+    <%= icon(icon: :like_icon, options: {class:"fa-fw text-base w-5 h-5"}) %>
   <% end %>
   <span class="text-xs font-bold text-gray-800"><%= post.likes - post.dislikes %></span>
   <%= link_to post_post_reaction_path(post_id: post.id, reaction:"dislike"), 
     id:"dislike_button_parent_#{post.id}",
     remote: true, 
-    class: "text-gray-400 hover:text-blue-600 rounded-full p-0.5",
+    class: "text-gray-400 hover:text-blue-600 rounded-full p-0.5 #{post.current_user_reaction(current_user.id) == 'dislike' ? "hidden" : ""}",
     data: { turbo_method: "get" } do %>
-    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1.293-7.293l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 10.586V7a1 1 0 112 0v3.586l1.293-1.293a1 1 0 111.414 1.414z" clip-rule="evenodd"></path>
-    </svg>
+    <%= icon(icon: :dislike_icon, options: {class:"fa-fw text-base w-5 h-5"}) %>
+  <% end %>
+  <%= link_to post_post_reaction_path(post_id: post.id, reaction: nil), 
+    id:"disliked_button_parent_#{post.id}",
+    remote: true, 
+    class: "text-gray-400 text-blue-600 rounded-full p-0.5 #{post.current_user_reaction(current_user.id) == 'dislike' ? "" : "hidden"}",
+    data: { turbo_method: "get" } do %>
+    <%= icon(icon: :dislike_icon, options: {class:"fa-fw text-base w-5 h-5"}) %>
   <% end %>
 </div>

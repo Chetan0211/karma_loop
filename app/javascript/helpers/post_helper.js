@@ -20,45 +20,74 @@ export function parentCommentToggle() {
 }
 
 export function parentLikeToggle() {
-  const parent_like_buttons = document.querySelectorAll('[id^="like_button_parent"]');
+  const parent_like_buttons = document.querySelectorAll('[id^="like_button_parent_"]');
   const parent_dislike_buttons = document.querySelectorAll('[id^="dislike_button_parent"]');
 
-  parent_like_buttons.forEach((parent_like_button) => { 
-    parent_like_button.addEventListener("click", (event) => {
-      let id = parent_like_button.id.replace("like_button_parent_", "")
-      let reaction_div_parent = document.getElementById("reaction_div_parent_"+id);
+  parent_like_buttons.forEach((button) => { 
+    button.addEventListener("click", (event) => {
+      let id = button.id.includes("like_button_parent_liked_") ? button.id.replace("like_button_parent_liked_", "") : button.id.replace("like_button_parent_", ""); 
+      
+      let parent_like_button = document.getElementById("like_button_parent_" + id);
+      let parent_like_button_liked = document.getElementById("like_button_parent_liked_" + id);
+      let parent_dislike_button_disliked = document.getElementById("dislike_button_parent_disliked_" + id);
+      let parent_dislike_button = document.getElementById("dislike_button_parent_" + id);
+
+
+      let reaction_div_parent = document.getElementById("reaction_div_parent_" + id);
       if (reaction_div_parent.classList.contains("like")) {
         reaction_div_parent.classList.remove("like");
         reaction_div_parent.querySelector("span").textContent = parseInt(reaction_div_parent.querySelector("span").textContent.trim()) - 1;
+        parent_like_button_liked.classList.add("hidden");
+        parent_like_button.classList.remove("hidden");
       }
       else if (reaction_div_parent.classList.contains("dislike")) {
         reaction_div_parent.classList.remove("dislike");
         reaction_div_parent.classList.add("like");
         reaction_div_parent.querySelector("span").textContent = parseInt(reaction_div_parent.querySelector("span").textContent.trim()) + 2;
+        parent_dislike_button.classList.remove("hidden");
+        parent_dislike_button_disliked.classList.add("hidden");
+        parent_like_button_liked.classList.remove("hidden");
+        parent_like_button.classList.add("hidden");
       }
       else {
         reaction_div_parent.classList.add("like");
         reaction_div_parent.querySelector("span").textContent = parseInt(reaction_div_parent.querySelector("span").textContent.trim()) + 1;
+        parent_like_button_liked.classList.remove("hidden");
+        parent_like_button.classList.add("hidden");
       }
     });
   });
 
-  parent_dislike_buttons.forEach((parent_dislike_button) => { 
-    parent_dislike_button.addEventListener("click", (event) => {
-      let id = parent_dislike_button.id.replace("dislike_button_parent_", "")
-      let reaction_div_parent = document.getElementById("reaction_div_parent_"+id);
+  parent_dislike_buttons.forEach((button) => { 
+    button.addEventListener("click", (event) => {
+      let id = button.id.includes("dislike_button_parent_disliked_") ? button.id.replace("dislike_button_parent_disliked_", "") : button.id.replace("dislike_button_parent_", "");
+
+      let parent_like_button = document.getElementById("like_button_parent_" + id);
+      let parent_like_button_liked = document.getElementById("like_button_parent_liked_" + id);
+      let parent_dislike_button_disliked = document.getElementById("dislike_button_parent_disliked_" + id);
+      let parent_dislike_button = document.getElementById("dislike_button_parent_" + id);
+
+      let reaction_div_parent = document.getElementById("reaction_div_parent_" + id);
       if (reaction_div_parent.classList.contains("dislike")) {
         reaction_div_parent.classList.remove("dislike");
         reaction_div_parent.querySelector("span").textContent = parseInt(reaction_div_parent.querySelector("span").textContent.trim()) + 1;
+        parent_dislike_button_disliked.classList.add("hidden");
+        parent_dislike_button.classList.remove("hidden");
       }
       else if (reaction_div_parent.classList.contains("like")) {
         reaction_div_parent.classList.remove("like");
         reaction_div_parent.classList.add("dislike");
         reaction_div_parent.querySelector("span").textContent = parseInt(reaction_div_parent.querySelector("span").textContent.trim()) - 2;
+        parent_like_button.classList.remove("hidden");
+        parent_like_button_liked.classList.add("hidden");
+        parent_dislike_button_disliked.classList.remove("hidden");
+        parent_dislike_button.classList.add("hidden");
       }
       else {
         reaction_div_parent.classList.add("dislike");
         reaction_div_parent.querySelector("span").textContent = parseInt(reaction_div_parent.querySelector("span").textContent.trim()) - 1;
+        parent_dislike_button_disliked.classList.remove("hidden");
+        parent_dislike_button.classList.add("hidden");
       }
     });
   });
@@ -68,79 +97,70 @@ export function commentLikeToggle() {
   const comment_like_buttons = document.querySelectorAll('[id^="comment_like_button_"]');
   const comment_dislike_buttons = document.querySelectorAll('[id^="comment_dislike_button_"]');
 
-  comment_like_buttons.forEach((comment_like_button) => { 
-    comment_like_button.addEventListener("click", (event) => {
-      //TODO: This is not working efficiently as links gets changed before event gets fired.
-      //Solution: Either use 2 buttons and try turbo streams.
-      // event.preventDefault();
-      // let redirect_link = event.currentTarget.href;
-      // Turbo.visit(redirect_link, { action: "replace" });
-      let current_url = new URL(event.currentTarget.href);
-      let id = comment_like_button.id.replace("comment_like_button_", "")
+  comment_like_buttons.forEach((button) => { 
+    button.addEventListener("click", (event) => {
+      let id = button.id.includes("comment_like_button_liked_") ? button.id.replace("comment_like_button_liked_", "") : button.id.replace("comment_like_button_", "")
       let comment_reaction = document.getElementById("comment_reaction_" + id);
 
+      let comment_like_button = document.getElementById("comment_like_button_" + id);
+      let comment_liked_button = document.getElementById("comment_like_button_liked_" + id);
       let comment_dislike_button = document.getElementById("comment_dislike_button_" + id);
-      let comment_dislike_button_url = new URL(comment_dislike_button.href);
-
-      comment_dislike_button_url.searchParams.set('reaction', 'dislike');
-      comment_dislike_button.href = comment_dislike_button_url;
+      let comment_disliked_button = document.getElementById("comment_dislike_button_disliked_" + id);
 
       if (comment_reaction.classList.contains("like")) {
         comment_reaction.classList.remove("like");
         comment_reaction.querySelector("span").textContent = parseInt(comment_reaction.querySelector("span").textContent.trim()) - 1;
-        current_url.searchParams.set('reaction', 'like');
-        comment_like_button.href = current_url;
+        comment_liked_button.classList.add("hidden");
+        comment_like_button.classList.remove("hidden");
       }
       else if (comment_reaction.classList.contains("dislike")) {
-        
         comment_reaction.classList.remove("dislike");
         comment_reaction.classList.add("like");
         comment_reaction.querySelector("span").textContent = parseInt(comment_reaction.querySelector("span").textContent.trim()) + 2;
-        current_url.searchParams.delete('reaction');
-        comment_like_button.href = current_url;
+        comment_disliked_button.classList.add("hidden");
+        comment_dislike_button.classList.remove("hidden");
+        comment_liked_button.classList.remove("hidden");
+        comment_like_button.classList.add("hidden");
       }
       else {
         comment_reaction.classList.add("like");
         comment_reaction.querySelector("span").textContent = parseInt(comment_reaction.querySelector("span").textContent.trim()) + 1;
-        current_url.searchParams.delete('reaction');
-        comment_like_button.href = current_url;
+        comment_liked_button.classList.remove("hidden");
+        comment_like_button.classList.add("hidden");
       }
     });
   });
 
-  comment_dislike_buttons.forEach((comment_dislike_button) => { 
-    comment_dislike_button.addEventListener("click", (event) => {
-      // event.preventDefault();
-      // let redirect_link = event.currentTarget.href;
-      // Turbo.visit(redirect_link, { action: "replace" });
-      let current_url = new URL(event.currentTarget.href);
-      let id = comment_dislike_button.id.replace("comment_dislike_button_", "")
+  comment_dislike_buttons.forEach((button) => { 
+    button.addEventListener("click", (event) => {
+      let id = button.id.includes("comment_dislike_button_disliked_") ? button.id.replace("comment_dislike_button_disliked_", "") : button.id.replace("comment_dislike_button_", "")
       let comment_reaction = document.getElementById("comment_reaction_" + id);
       
       let comment_like_button = document.getElementById("comment_like_button_" + id);
-      let comment_like_button_url = new URL(comment_like_button.href);
-
-      comment_like_button_url.searchParams.set('reaction', 'like');
-      comment_like_button.href = comment_like_button_url;
+      let comment_liked_button = document.getElementById("comment_like_button_liked_" + id);
+      let comment_dislike_button = document.getElementById("comment_dislike_button_" + id);
+      let comment_disliked_button = document.getElementById("comment_dislike_button_disliked_" + id);
 
       if (comment_reaction.classList.contains("dislike")) {
         comment_reaction.classList.remove("dislike");
         comment_reaction.querySelector("span").textContent = parseInt(comment_reaction.querySelector("span").textContent.trim()) + 1;
-        current_url.searchParams.set('reaction', 'dislike');
-        comment_dislike_button.href = current_url;
+        comment_disliked_button.classList.add("hidden");
+        comment_dislike_button.classList.remove("hidden");
       }
       else if (comment_reaction.classList.contains("like")) {
         comment_reaction.classList.remove("like");
         comment_reaction.classList.add("dislike");
         comment_reaction.querySelector("span").textContent = parseInt(comment_reaction.querySelector("span").textContent.trim()) - 2;
-        current_url.searchParams.delete('reaction');
-        comment_dislike_button.href = current_url;
+        comment_like_button.classList.remove("hidden");
+        comment_liked_button.classList.add("hidden");
+        comment_disliked_button.classList.remove("hidden");
+        comment_dislike_button.classList.add("hidden");
       }
       else {
         comment_reaction.classList.add("dislike");
         comment_reaction.querySelector("span").textContent = parseInt(comment_reaction.querySelector("span").textContent.trim()) - 1;
-        current_url.searchParams.delete('reaction');
-        comment_dislike_button.href = current_url;
+        comment_disliked_button.classList.remove("hidden");
+        comment_dislike_button.classList.add("hidden");
       }
     });
   });

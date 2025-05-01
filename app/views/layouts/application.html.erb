@@ -15,6 +15,9 @@
     <div id="error-notifications">
     </div>
     <div class="full-screen">
+      <% if current_user %>
+        <%= render "shared/header" %>
+      <% end %>
       <p class="notice"><%= notice %></p>
       <p class="alert"><%= alert %></p>
       <%= yield %>

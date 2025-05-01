@@ -14,21 +14,43 @@ comment - Contains the instance of a mocdel
       <span class="text-gray-500 mx-1">•</span>
       <span class="text-gray-500"><%= comment.created_at %></span>
     </div>
-    <div class="text-sm text-gray-800 mb-2">
+    <div class="text-sm text-gray-800 mb-2 mx">
       <%= comment.comment %>
     </div>
     <div id="comment_reaction_<%=comment.id%>" class="flex items-center space-x-3 text-xs text-gray-500 font-medium <%=comment.current_user_reaction(current_user.id)%>">
-      <%= link_to post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction:comment.current_user_reaction(current_user.id) == 'like' ? nil:"like"), id:"comment_like_button_#{comment.id}", class: "flex items-center space-x-1 hover:text-purple-600",remote: true, data: { turbo_method: "get" }  do %>
-        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd"></path>
-        </svg>
-      <% end %>
+      <div>
+        <%= link_to post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction: "like"), 
+          id:"comment_like_button_#{comment.id}", 
+          class: "flex items-center space-x-1 hover:text-purple-600 #{comment.current_user_reaction(current_user.id) == "like" ? "hidden" : ""}",
+          remote: true, 
+          data: { turbo_method: "get" }  do %>
+          <%= icon(icon: :like_icon, options:{class:"fa-fw text-base w-4 h-4"}) %>
+        <% end %>
+        <%= link_to post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction: nil), 
+          id:"comment_like_button_liked_#{comment.id}", 
+          class: "flex items-center space-x-1 text-purple-600 #{comment.current_user_reaction(current_user.id) == "like" ? "" : "hidden"}",
+          remote: true, 
+          data: { turbo_method: "get" }  do %>
+          <%= icon(icon: :like_icon, options:{class:"fa-fw text-base w-4 h-4"}) %>
+        <% end %>
+      </div>
       <span class="font-semibold text-gray-700 w-6 text-center"><%= (comment.likes - comment.dislikes) %></span>
-      <%= link_to post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction:comment.current_user_reaction(current_user.id) == 'dislike' ? nil:"dislike"), id:"comment_dislike_button_#{comment.id}", class: "flex items-center space-x-1 hover:text-blue-600",remote: true, data: { turbo_method: "get" } do %>
-        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1.293-7.293l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 10.586V7a1 1 0 112 0v3.586l1.293-1.293a1 1 0 111.414 1.414z" clip-rule="evenodd"></path>
-        </svg>
-      <% end %>
+      <div>
+        <%= link_to post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction: "dislike"), 
+          id:"comment_dislike_button_#{comment.id}", 
+          class: "flex items-center space-x-1 hover:text-blue-600 #{comment.current_user_reaction(current_user.id) == "dislike" ? "hidden" : ""}",
+          remote: true, 
+          data: { turbo_method: "get" } do %>
+          <%= icon(icon: :dislike_icon, options:{class:"fa-fw text-base w-4 h-4"}) %>
+        <% end %>
+        <%= link_to post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction: nil), 
+          id:"comment_dislike_button_disliked_#{comment.id}", 
+          class: "flex items-center space-x-1 text-blue-600 #{comment.current_user_reaction(current_user.id) == "dislike" ? "" : "hidden"}",
+          remote: true, 
+          data: { turbo_method: "get" } do %>
+          <%= icon(icon: :dislike_icon, options:{class:"fa-fw text-base w-4 h-4"}) %>
+        <% end %>
+      </div>
       <button id="reply_comment_button_<%= comment.id %>" class="hover:underline">Reply</button>
     </div>
     <div class="flex items-center space-x-3 text-xs text-gray-500 font-medium">
