@@ -59,6 +59,21 @@ module IconViewHelper
     tag.i(class: "fa-solid fa-user #{classes.strip}",**options.except(:class))
   end
 
+  def circle_exclamation_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-circle-exclamation #{classes.strip}",**options.except(:class))
+  end
+
+  def triangle_exclamation_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-triangle-exclamation #{classes.strip}",**options.except(:class))
+  end
+
+  def cricle_check_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-circle-check #{classes.strip}",**options.except(:class))
+  end
+
   def icon(icon:, options:{})
     result = nil
     begin

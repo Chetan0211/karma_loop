@@ -1,6 +1,6 @@
 <!--
 Params to pass here:
-post
+post: Model
 -->
 <div id="reaction_div_parent_<%=post.id%>" class="flex flex-col items-center bg-gray-50 p-2 space-y-1 w-10 flex-shrink-0 <%=post.current_user_reaction(current_user.id)%>">
   <%= link_to post_post_reaction_path(post_id: post.id, reaction:"like"), 
@@ -11,9 +11,9 @@ post
     <%= icon(icon: :like_icon, options: {class:"fa-fw text-base w-5 h-5"}) %>
   <% end %>
   <%= link_to post_post_reaction_path(post_id: post.id, reaction: nil), 
-    id:"liked_button_parent_#{post.id}",
+    id:"like_button_parent_liked_#{post.id}",
     remote: true,
-    class: "text-gray-400 text-purple-600 rounded-full p-0.5 #{post.current_user_reaction(current_user.id) == 'like' ? "" : "hidden"}",
+    class: "text-purple-600 rounded-full p-0.5 #{post.current_user_reaction(current_user.id) == 'like' ? "" : "hidden"}",
     data: { turbo_method: "get" } do %>
     <%= icon(icon: :like_icon, options: {class:"fa-fw text-base w-5 h-5"}) %>
   <% end %>
@@ -26,9 +26,9 @@ post
     <%= icon(icon: :dislike_icon, options: {class:"fa-fw text-base w-5 h-5"}) %>
   <% end %>
   <%= link_to post_post_reaction_path(post_id: post.id, reaction: nil), 
-    id:"disliked_button_parent_#{post.id}",
+    id:"dislike_button_parent_disliked_#{post.id}",
     remote: true, 
-    class: "text-gray-400 text-blue-600 rounded-full p-0.5 #{post.current_user_reaction(current_user.id) == 'dislike' ? "" : "hidden"}",
+    class: "text-blue-600 rounded-full p-0.5 #{post.current_user_reaction(current_user.id) == 'dislike' ? "" : "hidden"}",
     data: { turbo_method: "get" } do %>
     <%= icon(icon: :dislike_icon, options: {class:"fa-fw text-base w-5 h-5"}) %>
   <% end %>

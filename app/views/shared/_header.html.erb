@@ -1,11 +1,11 @@
-<nav class="bg-white shadow-md sticky top-0 z-40">
+<nav data-controller="header" class="bg-white shadow-md sticky top-0 z-40">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
       <div class="flex-shrink-0">
-        <a href="#" class="flex items-center text-purple-600 hover:text-purple-700 transition duration-150 ease-in-out">
+        <%= link_to root_path(), class:"flex items-center text-purple-600 hover:text-purple-700 transition duration-150 ease-in-out" do %>
           <%= image_tag("logo.png", alt: "K-loop Logo", class: "h-8 w-auto mr-2") %>
           <span class="text-2xl font-bold">k-loop</span>
-        </a>
+        <% end %>
       </div>
       <div class="hidden md:flex flex-grow justify-center px-4">
         <div class="relative w-full max-w-lg">
@@ -51,9 +51,9 @@
                 x-transition:leave-end="transform opacity-0 scale-95"
                 @click.away="open = false"
                 class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1" >
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" id="user-menu-item-0">Your Profile</a>
+              <%= link_to "Your Profile", user_profile_path(id: current_user.id), class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100", role:"menuitem", tabindex: "-1" %>
               <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" id="user-menu-item-1">Settings</a>
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" id="user-menu-item-2">Sign out</a>
+              <%= link_to "Sign out", destroy_user_session_path(), data: { turbo_method: "delete" }, class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100", role:"menuitem", tabindex: "-1" %>
             </div>
           </div>
         </div>
@@ -101,46 +101,11 @@
         </button>
       </div>
       <div class="mt-3 px-2 space-y-1">
-        <a href="#" class="block rounded-md px-3 py-2 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-800">Your Profile</a>
+        <%= link_to "Your Profile", user_profile_path(id: current_user.id), class: "block rounded-md px-3 py-2 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-800" %>
         <a href="#" class="block rounded-md px-3 py-2 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-800">Settings</a>
-        <a href="#" class="block rounded-md px-3 py-2 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-800">Sign out</a>
+        <%= link_to "Sign out", destroy_user_session_path(), data: { turbo_method: "delete" }, class: "block rounded-md px-3 py-2 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-800" %>
       </div>
     </div>
   </div>
 </nav>
-<script>
-  const menuButton = document.getElementById('mobile-menu-button');
-  const mobileMenu = document.getElementById('mobile-menu');
-  const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
-  const closeButton = document.getElementById('mobile-menu-close-button'); // Get the close button inside the menu
-
-  function openMenu() {
-      mobileMenu.classList.remove('translate-x-full'); // Slide in
-      mobileMenuOverlay.classList.remove('hidden'); // Show overlay
-      document.body.classList.add('overflow-hidden'); // Prevent body scroll
-      menuButton.setAttribute('aria-expanded', 'true');
-  }
-
-  function closeMenu() {
-      mobileMenu.classList.add('translate-x-full'); // Slide out
-      mobileMenuOverlay.classList.add('hidden'); // Hide overlay
-      document.body.classList.remove('overflow-hidden'); // Allow body scroll
-      menuButton.setAttribute('aria-expanded', 'false');
-  }
-
-  // Event listener for the hamburger button
-  menuButton.addEventListener('click', () => {
-      const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
-      if (isExpanded) {
-          closeMenu();
-      } else {
-          openMenu();
-      }
-  });
-
-  // Event listener for the close button inside the menu
-  closeButton.addEventListener('click', closeMenu);
-
-  // Event listener for the overlay (closes menu when clicked)
-  mobileMenuOverlay.addEventListener('click', closeMenu);
-</script>
+<!--TODO: In mobile view hamburger view is causing issues with js. Need to fix it.-->
