@@ -1,10 +1,13 @@
-<h1><%= post.title %></h1>
-<%= post.description %>
-<div id="reaction_div_parent_<%=post.id%>", class="<%=post.current_user_reaction(current_user.id)%>">
-  <span>
-    <%= link_to "Like", post_post_reaction_path(post_id: post.id, reaction:"like"), id:"like_button_parent_#{post.id}",remote: true, data: { turbo_method: "get" } %>
-    <span><%= (post.likes - post.dislikes) %></span>
-    <%= link_to "Dislike", post_post_reaction_path(post_id: post.id, reaction:"dislike"), id:"dislike_button_parent_#{post.id}",remote: true, data: { turbo_method: "get" } %>
-    <span>comments: <%= post.comments.count %></span>
-  </span>
-</div>
+<!--
+Params to pass here:
+post: Model
+-->
+<% case post.content_type%>
+<% when 'blog'%>
+  <%= render "shared/blog_post_min", post: post %>
+<% when 'image'%>
+  <!-- TODO: Need to remove multiple images once done -->
+  <%= render "shared/image_post_min", multiple_images: false, post: post %>
+<% when 'video'%>
+  <!-- TODO: Yet to develop -->
+<% end %>

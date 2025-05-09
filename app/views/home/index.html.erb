@@ -2,20 +2,8 @@
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     <div class="md:col-span-2 space-y-4">
       <% @posts.each do |post| %>
-        <% case post.content_type%>
-        <% when 'blog'%>
-          <%= render "shared/blog_post_min", post: post %>
-        <% when 'image'%>
-          <!-- TODO: Need to remove multiple images once done -->
-          <%= render "shared/image_post_min", multiple_images: false, post: post %>
-        <% when 'video'%>
-          <!-- TODO: Yet to develop -->
-        <% end %>
+        <%= render "shared/post", post: post %>
       <% end %>
-      <%# render "shared/image_post", multiple_images: false %>
-      <!-- Start of gallery -->
-      <%# render "shared/image_post", multiple_images: true %>
-      <!-- End of gallery -->
     </div>
     <div class="hidden md:block space-y-4">
       <div class="bg-white p-4 rounded-md shadow">

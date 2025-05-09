@@ -59,6 +59,11 @@ module IconViewHelper
     tag.i(class: "fa-solid fa-user #{classes.strip}",**options.except(:class))
   end
 
+  def regular_user_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-regular fa-user #{classes.strip}",**options.except(:class))
+  end
+
   def circle_exclamation_icon(options={})
     classes = options.fetch(:class,"")
     tag.i(class: "fa-solid fa-circle-exclamation #{classes.strip}",**options.except(:class))
@@ -72,6 +77,31 @@ module IconViewHelper
   def cricle_check_icon(options={})
     classes = options.fetch(:class,"")
     tag.i(class: "fa-solid fa-circle-check #{classes.strip}",**options.except(:class))
+  end
+
+  def pen_to_square_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-pen-to-square #{classes.strip}",**options.except(:class))
+  end
+
+  def cake_candles_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-cake-candles #{classes.strip}",**options.except(:class))
+  end
+
+  def gear_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-gear #{classes.strip}",**options.except(:class))
+  end
+
+  def sliders_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-sliders #{classes.strip}",**options.except(:class))
+  end
+
+  def arrow_right_from_bracket_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-arrow-right-from-bracket #{classes.strip}",**options.except(:class))
   end
 
   def icon(icon:, options:{})

@@ -1,62 +1,118 @@
-<div data-controller="user--profile" class="full-screen" style="position: absolute">
-  <div style="position: absolute">
-    <h1><%= @user.username%></h1>
-    <% if @user.id == current_user.id %>
-      <div id="profile_picture_section" style="display: <%= @user.profile_picture.present? ? 'block' : 'none' %>">
-        <%= image_tag @user.profile_picture.attached? ? url_for(@user.profile_picture) : "", id:"profile_image", style: "width: 100px; height: 100px; display: block;" %>
-        <%= link_to "Remove Picture", remove_profile_picture_path(current_user.id), remote: true, id: "remove_picture",data: { turbo_method: "delete" }  %>
-        <button id="update_picture">Update Picture</button>
-      </div>
-      <div id="upload_picture_section" style="display: <%= @user.profile_picture.present? ? 'none' : 'block' %>">
-        <p>No profile picture uploaded.</p>
-        <button id="upload_picture">Upload Picture</button>
-      </div>
-      <p>Email: <%= @user.email%></p>
-      <p>Description: <%= @user.description %></p>
-      <p>Date of Birth: <%= @user.dob%></p>
-      <button id="edit_password">Edit Password</button>
-      <%= form_with url: update_password_path(current_user.id), method: :patch, id:"edit_password_form", html: { style: "display: none;" } do |f| %>
-        <div>
-          <%= f.label :current_password %>
-          <%= f.password_field :current_password, id: "password" %>
-        </div>
-        <div>
-          <%= f.label :new_password %>
-          <%= f.password_field :new_password, id: "password_confirmation" %>
-        </div>
-        <div>
-          <%= f.label :confirm_new_password %>
-          <%= f.password_field :confirm_new_password, id: "confirm_new_password" %>
-        </div>
-        <%= f.submit "Update Password" %>
-        <button id="cancel_update_password", type="button">Cancel</button>
-      <% end %>
-    <% else %>
-      <% if @user.profile_picture.present? %>
-        <p>Profile picture present</p>
-      <% else %>
-        <p>No profile picture uploaded.</p>
-      <% end %>
-    <% end %>
-    <p>Posts: <%= @posts.count%></p>
-    <h3>Posts</h3>
-    <% @posts.each do |post| %>
-      <%= render "shared/post", post: post %>
-    <% end %>
+<div data-controller="user--profile" id="profile_component" x-data="{ activeTab: 'posts', isEditModalOpen: false, isCropperModalOpen: false, profilePresent: <%= @user.profile_picture.attached? %> }">
+  <div class="bg-gradient-to-r from-purple-500 to-indigo-600 h-32 sm:h-40">
   </div>
-  <div id="noti" class="full-screen" style="position: fixed; display: none; background: rgba(0, 0, 0, 0.7);justify-content: center; align-items: center; z-index: 1000;">
-    <button id="close_crop">Close</button>
-    <div style="background: white; overflow:hidden; height: 600px; width: 600px;">
-      <%= form_with scope: :picture,url: update_profile_picture_path(current_user.id), model: "pic", multipart: true do |f| %>
-        <%= f.file_field :profile_picture, id: 'profile_picture_input', accept: 'image/*', style: 'display: none !important;' %>
-        <div id="cropping_stack" style="height: 500px; width: 500px;">
-          <img id="preview_image" src="" alt="Crop Preview">
-          <%= f.hidden_field :crop_x, id: "crop_x" %>
-          <%= f.hidden_field :crop_y, id: "crop_y" %>
-          <%= f.hidden_field :crop_size, id: "crop_size" %>
-          <%= f.submit 'Upload Cropped Image', id:"upload_cropped_image" %>
+  <div class="bg-white shadow-sm pb-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="-mt-12 sm:-mt-16 flex flex-col sm:flex-row sm:items-end sm:space-x-5">
+        <div class="flex-shrink-0">
+          <span class="h-24 w-24 sm:h-32 sm:w-32 overflow-hidden rounded-full bg-gray-200 border-4 border-white flex items-center justify-center">
+            <% if @user.profile_picture.attached? %>
+              <%= image_tag url_for(@user.profile_picture) %>
+            <% else %>
+              <%= icon(icon: :user_icon, options:{class: "text-gray-500 text-5xl sm:text-6xl"} ) %>
+            <% end %>
+          </span>
         </div>
-      <% end %>
+        <div class="mt-3 md:mt-0 md:pt-12 flex-grow flex flex-col items-start md:flex-row md:items-baseline md:justify-between">
+          <div class="mb-3 md:mb-0 w-full min-w-0">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 truncate">DisplayName has to be 30 char</h1>
+            <p class="text-sm font-medium text-gray-500 truncate">k/<%= @user.username%></p>
+          </div>
+          <% if @user.id == current_user.id %>
+            <button type="button" @click="isEditModalOpen = true" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out flex-shrink-0">
+              <%= icon(icon: :pen_to_square_icon, options:{class: "mr-1.5"}) %> Edit Profile
+            </button>
+          <% end %>
+        </div>
+      </div>
     </div>
   </div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="md:col-span-2 space-y-4">
+        <div class="border-b border-gray-200 bg-white rounded-t-md shadow-sm">
+          <nav class="-mb-px flex space-x-6 sm:space-x-8 px-4 sm:px-6" aria-label="Tabs">
+            <button @click="activeTab = 'posts'" :class="{ 'border-purple-500 text-purple-600': activeTab === 'posts', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'posts' }" class="whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors duration-150 ease-in-out focus:outline-none">
+              Posts
+            </button>
+            <button @click="activeTab = 'saved'" :class="{ 'border-purple-500 text-purple-600': activeTab === 'saved', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'saved' }" class="whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors duration-150 ease-in-out focus:outline-none">
+              Saved
+            </button>
+          </nav>
+        </div>
+        <div class="space-y-4">
+          <div x-show="activeTab === 'posts'" x-transition class="space-y-4">
+            <% @posts.each do |post| %>
+              <%= render "shared/post", post: post %>
+            <% end %>
+          </div>
+          <div x-show="activeTab === 'saved'" x-transition class="space-y-4">
+            <div class="bg-white rounded-md shadow p-4 text-center text-gray-500">
+              Saved posts and comments will appear here. (Content structure similar to posts/comments)
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hidden md:block space-y-4">
+        <div class="bg-white p-4 rounded-md shadow">
+          <h4 class="font-semibold mb-3 border-b pb-2 text-gray-800">UsernameHere</h4>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between">
+              <span class="font-medium text-gray-600">Post Karma</span>
+              <span class="font-semibold text-gray-800"><%= number_with_delimiter(@posts.count) %></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium text-gray-600">Comment Karma</span>
+              <span class="font-semibold text-gray-800"><%= number_with_delimiter(@user.comments.count) %></span>
+            </div>
+            <div class="flex justify-between items-center mt-3 pt-3 border-t">
+              <span class="font-medium text-gray-600">Cake day</span>
+              <span class="font-semibold text-gray-800 flex items-center">
+                <%= icon(icon: :cake_candles_icon, options:{class: "text-purple-600 mr-1.5"}) %>
+                <%= @user.dob.strftime("%B %d, %Y") %>
+              </span>
+            </div>
+          </div>
+          <div class="mt-4 flex space-x-2">
+            <% if @user.id != current_user.id %>
+              <button class="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>Follow</span>
+              </button>
+            <% end %>
+            <button class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out border border-gray-300">
+              <i class="fa-regular fa-comment-dots"></i>
+              <span>Chat</span>
+            </button>
+          </div>
+        </div>
+        <div class="bg-white p-4 rounded-md shadow">
+          <h4 class="font-semibold mb-3 text-gray-800">Communities</h4>
+          <ul class="space-y-3">
+            <li class="flex items-center space-x-3">
+              <span class="inline-block h-6 w-6 rounded-full bg-blue-500 flex items-center justify-center">
+                <i class="fa-solid fa-users text-white text-xs"></i>
+              </span>
+              <a href="#" class="text-sm font-medium text-gray-700 hover:text-purple-600 hover:underline">k/someCommunity</a>
+            </li>
+            <li class="flex items-center space-x-3">
+              <span class="inline-block h-6 w-6 rounded-full bg-green-500 flex items-center justify-center">
+                <i class="fa-solid fa-leaf text-white text-xs"></i>
+              </span>
+              <a href="#" class="text-sm font-medium text-gray-700 hover:text-purple-600 hover:underline">k/anotherCommunity</a>
+            </li>
+            <li class="flex items-center space-x-3">
+              <span class="inline-block h-6 w-6 rounded-full bg-red-500 flex items-center justify-center">
+                <i class="fa-solid fa-camera text-white text-xs"></i>
+              </span>
+              <a href="#" class="text-sm font-medium text-gray-700 hover:text-purple-600 hover:underline">k/pics</a>
+            </li>
+          </ul>
+          <a href="#" class="mt-3 block text-center text-xs text-purple-600 hover:underline">View All</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <%= render "edit_profile" %>
+  <%= render "crop_profile_pic" %>
 </div>

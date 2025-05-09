@@ -1,0 +1,32 @@
+<div data-controller="user--profile" class="full-screen" style="position: absolute">
+  <div style="position: absolute">
+    <h1><%= @user.username%></h1>
+    <% if @user.id == current_user.id %>
+      <div id="profile_picture_section" style="display: <%= @user.profile_picture.present? ? 'block' : 'none' %>">
+        <%= image_tag @user.profile_picture.attached? ? url_for(@user.profile_picture) : "", id:"profile_image", style: "width: 100px; height: 100px; display: block;" %>
+        <%= link_to "Remove Picture", remove_profile_picture_path(current_user.id), remote: true, id: "remove_picture",data: { turbo_method: "delete" }  %>
+        <button id="update_picture">Update Picture</button>
+      </div>
+      <div id="upload_picture_section" style="display: <%= @user.profile_picture.present? ? 'none' : 'block' %>">
+        <p>No profile picture uploaded.</p>
+        <button id="upload_picture">Upload Picture</button>
+      </div>
+    <% else %>
+    <% end %>
+  </div>
+  <div id="noti" class="full-screen" style="position: fixed; display: none; background: rgba(0, 0, 0, 0.7);justify-content: center; align-items: center; z-index: 1000;">
+    <button id="close_crop">Close</button>
+    <div style="background: white; overflow:hidden; height: 600px; width: 600px;">
+      <%= form_with scope: :picture,url: update_profile_picture_path(current_user.id), model: "pic", multipart: true do |f| %>
+        <%= f.file_field :profile_picture, id: 'profile_picture_input', accept: 'image/*', style: 'display: none !important;' %>
+        <div id="cropping_stack" style="height: 500px; width: 500px;">
+          <img id="preview_image" src="" alt="Crop Preview">
+          <%= f.hidden_field :crop_x, id: "crop_x" %>
+          <%= f.hidden_field :crop_y, id: "crop_y" %>
+          <%= f.hidden_field :crop_size, id: "crop_size" %>
+          <%= f.submit 'Upload Cropped Image', id:"upload_cropped_image" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

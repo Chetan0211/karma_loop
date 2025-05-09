@@ -6,68 +6,26 @@ import { parentLikeToggle } from "../../helpers/post_helper";
 export default class extends Controller {
   connect() {
     parentLikeToggle();
-
-    const upload_picture = document.getElementById('upload_picture');
-    const close_crop = document.getElementById('close_crop');
-    const fileInput = document.getElementById("profile_picture_input");
+    const fileInput = document.getElementById("edit_profile_profile_picture");
     const previewImage = document.getElementById("preview_image");
     const update_picture = document.getElementById("update_picture");
     const remove_picture = document.getElementById("remove_picture");
-    const upload_cropped_image = document.getElementById("upload_cropped_image");
-    const noti = document.getElementById('noti');
-    const profile_image = document.getElementById('profile_image');
-    const edit_password = document.getElementById('edit_password');
-    const edit_password_form = document.getElementById('edit_password_form');
-    const cancel_update_password = document.getElementById('cancel_update_password');
-
-    const profile_pic_container = document.getElementById('profile_picture_section');
-    const upload_picture_section = document.getElementById('upload_picture_section');
+    const upload_cropped_image = document.getElementById("upload_cropped_image_button");
+    const profile_image = document.getElementById('profile_image_preview');
+    const main_profile_picture = document.getElementById('main_profile_picture');
     let cropper;
-    
-    upload_picture.addEventListener('click', (event) => {
-      fileInput.click();
-    });
-
     update_picture.addEventListener('click', (event) => { 
       fileInput.click();
     });
 
-    close_crop.addEventListener('click', (event) => {
-      noti.style.display = 'none';
-
-    });
-
-    edit_password.addEventListener('click', (event) => {
-      edit_password.style.display = 'none';
-      edit_password_form.reset();
-      edit_password_form.style.display = 'block';
-    });
-
-    edit_password_form.addEventListener('submit', (event) => {
-      edit_password.style.display = 'block';
-      edit_password_form.style.display = 'none';
-    });
-
-    cancel_update_password.addEventListener('click', (event) => {
-      edit_password.style.display = 'block';
-      edit_password_form.style.display = 'none';
-     });
-
     upload_cropped_image.addEventListener('click', (event) => {
-      noti.style.display = 'none';
-      profile_pic_container.style.display = 'block';
-      upload_picture_section.style.display = 'none';
-
       let croppedCanvas = cropper.getCroppedCanvas();
-
       profile_image.src = croppedCanvas.toDataURL('image/jpg');
     });
 
     remove_picture.addEventListener('click', (event) => {
-      profile_pic_container.style.display = 'none';
-      upload_picture_section.style.display = 'block';
       profile_image.src = "";
-     });
+    });
 
     fileInput.addEventListener("change", function (event) {
       const file = event.target.files[0];
@@ -75,7 +33,6 @@ export default class extends Controller {
         const reader = new FileReader();
         reader.onload = function (e) {
           previewImage.src = e.target.result;
-          noti.style.display = 'flex';
 
           if (cropper) cropper.destroy();
           cropper = new Cropper(previewImage, {

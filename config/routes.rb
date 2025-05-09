@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   get "profile/:id" => "user#profile", as: :user_profile
 
   post "update_profile_picture/:id" => "user#update_profile_picture", as: :update_profile_picture
+  patch "update_profile/:id" => "user#update_profile", as: :update_profile
   delete "remove_profile_picture/:id" => "user#remove_profile_picture", as: :remove_profile_picture
   patch "update_password/:id" => "user#update_password", as: :update_password
 
