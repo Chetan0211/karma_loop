@@ -10,6 +10,7 @@ class User::Update < Trailblazer::Operation
   def set_model(result, **options)
     result[:model] = User.find(options[:user_id])
     result[:model].display_name = options[:params][:display_name]
+    result[:model].bio = options[:params][:bio]
   end
 
   def update_profile_pic(result, **options)

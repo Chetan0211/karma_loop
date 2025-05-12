@@ -44,6 +44,6 @@ class UserController < ApplicationController
   private
 
   def profile_picture_params
-    params.require(:edit_profile).permit(:profile_picture, :prev_profile_picture, :display_name, :crop_x, :crop_y, :crop_size)
+    params.require(:edit_profile).permit(:profile_picture, :prev_profile_picture, :display_name, :bio, :crop_x, :crop_y, :crop_size)
   end
 end

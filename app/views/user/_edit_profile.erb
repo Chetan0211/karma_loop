@@ -51,8 +51,17 @@ aria-modal="true">
                 <p x-show="displayNameError" class="mt-1 text-xs text-red-600" id="displayNameErrorText">Display name cannot be empty.</p>
               </div>
               <div>
-                <label for="bio" class="block text-sm font-medium text-gray-700">About (Bio)</label>
-                <%= form.text_area :bio, rows: 3, placeholder:"Tell us about yourself...", value: "TODOBioPresent", class: "mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" %>
+                <div class="flex justify-between items-center">
+                  <label for="bio" class="block text-sm font-medium text-gray-700">About (Bio)</label>
+                  <span class="text-xs text-gray-500" x-text="`${bio.length}/200`"></span>
+                </div>
+                <%= form.text_area :bio, 
+                rows: 3, 
+                maxlength: 200, 
+                "x-model"=>"bio",
+                placeholder:"Tell us about yourself...", 
+                value: @user.bio, 
+                class: "mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" %>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Profile Avatar</label>
