@@ -37,8 +37,18 @@ aria-modal="true">
             </h3>
             <%= form_with url: update_profile_path(id: @user), scope: :edit_profile, id: "edit_user_form", method: :patch, class:"space-y-4", multipart: true do |form| %>
               <div>
-                <label for="displayName" class="block text-sm font-medium text-gray-700">Display Name</label>
-                <%= form.text_field :display_name, type: :text, value: "TODODisplayNameHere", class: "mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" %>
+                <div class="flex justify-between items-center">
+                  <label for="displayNameInput" class="block text-sm font-medium text-gray-700">Display Name</label>
+                  <span class="text-xs text-gray-500" x-text="`${displayName.length}/30`"></span>
+                </div>
+                <%= form.text_field :display_name, 
+                type: :text, 
+                value: @user.display_name, 
+                maxlength: 30, 
+                "x-model" => "displayName", 
+                "@blur" => "displayNameError = $el.value.trim().length == 0 ? true : false",
+                class: "mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" %>
+                <p x-show="displayNameError" class="mt-1 text-xs text-red-600" id="displayNameErrorText">Display name cannot be empty.</p>
               </div>
               <div>
                 <label for="bio" class="block text-sm font-medium text-gray-700">About (Bio)</label>
@@ -46,6 +56,7 @@ aria-modal="true">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Profile Avatar</label>
+                <%= form.hidden_field :prev_profile_picture, value: @user.profile_picture.signed_id if @user.profile_picture.attached? %>
                 <%= form.file_field :profile_picture, accept: 'image/*', class:"hidden", "@change" => "isCropperModalOpen = true; profilePresent = $el.files[0] ? true : false"  %>
                 <div class="mt-1 flex items-center space-x-3">
                   <span class="h-12 w-12 overflow-hidden rounded-full bg-gray-100 flex items-center justify-center">
@@ -55,7 +66,7 @@ aria-modal="true">
                   <button id="update_picture" type="button" class="bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
                     Change
                   </button>
-                  <button id="remove_picture" x-show="profilePresent" @click="profilePresent = false" type="button" class="text-sm leading-4 font-medium text-gray-700 hover:text-purple-600">
+                  <button id="remove_picture" x-show="profilePresent" @click="profilePresent = false; " type="button" class="text-sm leading-4 font-medium text-gray-700 hover:text-purple-600">
                     Remove
                   </button>
                 </div>
@@ -87,7 +98,8 @@ aria-modal="true">
         </div>
       </div>
       <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-        <button type="submit" 
+        <button type="submit"
+        id="submit_edit_profile_button" 
         form="edit_user_form" 
         @click="isEditModalOpen = false"
         class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm">

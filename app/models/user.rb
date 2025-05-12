@@ -8,6 +8,7 @@
 #  confirmed_at           :datetime
 #  deleted_at             :datetime
 #  description            :text
+#  display_name           :string(30)       not null
 #  dob                    :datetime         not null
 #  email                  :string           default(""), not null
 #  encrypted_password     :string           default(""), not null
@@ -23,6 +24,7 @@
 # Indexes
 #
 #  index_users_on_confirmation_token    (confirmation_token) UNIQUE
+#  index_users_on_display_name          (display_name)
 #  index_users_on_email                 (email) UNIQUE
 #  index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #  index_users_on_username              (username) UNIQUE

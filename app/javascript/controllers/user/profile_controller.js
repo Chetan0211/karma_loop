@@ -6,6 +6,11 @@ import { parentLikeToggle } from "../../helpers/post_helper";
 export default class extends Controller {
   connect() {
     parentLikeToggle();
+    this.changeImage();
+    this.editDisplayNameField();
+  }
+
+  changeImage() {
     const fileInput = document.getElementById("edit_profile_profile_picture");
     const previewImage = document.getElementById("preview_image");
     const update_picture = document.getElementById("update_picture");
@@ -13,6 +18,7 @@ export default class extends Controller {
     const upload_cropped_image = document.getElementById("upload_cropped_image_button");
     const profile_image = document.getElementById('profile_image_preview');
     const main_profile_picture = document.getElementById('main_profile_picture');
+    const prev_profile_picture = document.getElementById("edit_profile_prev_profile_picture");
     let cropper;
     update_picture.addEventListener('click', (event) => { 
       fileInput.click();
@@ -21,10 +27,16 @@ export default class extends Controller {
     upload_cropped_image.addEventListener('click', (event) => {
       let croppedCanvas = cropper.getCroppedCanvas();
       profile_image.src = croppedCanvas.toDataURL('image/jpg');
+      if(prev_profile_picture != null){
+        prev_profile_picture.value = null;
+      }
     });
 
     remove_picture.addEventListener('click', (event) => {
       profile_image.src = "";
+      if(prev_profile_picture != null){
+        prev_profile_picture.value = null;
+      }
     });
 
     fileInput.addEventListener("change", function (event) {
@@ -49,5 +61,18 @@ export default class extends Controller {
         reader.readAsDataURL(file);
       }
     });
+  }
+
+  editDisplayNameField() {
+    const edit_profile_display_name_field = document.getElementById('edit_profile_display_name');
+    const submit_edit_profile_button = document.getElementById('submit_edit_profile_button');
+
+    submit_edit_profile_button.addEventListener('click', (event) => {
+      let display_name = edit_profile_display_name_field.value;
+      if(display_name.trim().length == 0) {
+        event.preventDefault();
+      }
+    });
+
   }
 }

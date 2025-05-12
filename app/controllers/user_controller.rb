@@ -13,13 +13,12 @@ class UserController < ApplicationController
   end
 
   def update_profile
-    picture = profile_picture_params
-    if picture["profile_picture"] != nil
-      UpdateProfilePicJob.perform_now(params[:id], picture["profile_picture"], picture["crop_x"], picture["crop_y"], picture["crop_size"])
+    status = User::Update.call({params: profile_picture_params, user_id: params[:id]})
+    if status.success?
+      redirect_to user_profile_path(id: params[:id])
     else
-      UpdateProfilePicJob.perform_now(params[:id], nil, 0, 0, 0)
+      #flash[:errors] = status['contract.default'].errors
     end
-    redirect_to user_profile_path(id: params[:id])
   end
 
   def remove_profile_picture
@@ -45,6 +44,6 @@ class UserController < ApplicationController
   private
 
   def profile_picture_params
-    params.require(:edit_profile).permit(:profile_picture, :crop_x, :crop_y, :crop_size)
+    params.require(:edit_profile).permit(:profile_picture, :prev_profile_picture, :display_name, :crop_x, :crop_y, :crop_size)
   end
 end

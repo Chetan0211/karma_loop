@@ -1,9 +1,11 @@
 class UpdateProfilePicJob < ApplicationJob
   queue_as :default
 
-  def perform(user_id, profile_picture, crop_x, crop_y, crop_size)
+  def perform(user_id, profile_picture, prev_pic, crop_x, crop_y, crop_size)
     user = User.find(user_id);
-    if profile_picture.present?
+    if !(profile_picture.present? || prev_pic.present?)
+      user.profile_picture.purge;
+    elsif(profile_picture.present?)
       image = Vips::Image.new_from_file(profile_picture.path);
 
       cropped_image = image.crop(crop_x.to_i, crop_y.to_i, crop_size.to_i, crop_size.to_i);
@@ -31,8 +33,6 @@ class UpdateProfilePicJob < ApplicationJob
 
       cropped_temp_file.close;
       cropped_temp_file.unlink;
-    else
-      user.profile_picture.purge;
     end
   end
 end
