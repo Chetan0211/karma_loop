@@ -7,6 +7,8 @@
 #  deleted_at          :datetime
 #  dislikes            :integer          default(0), not null
 #  likes               :integer          default(0), not null
+#  scope               :text             default("public"), not null
+#  status              :text             not null
 #  title               :string           not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
@@ -17,6 +19,8 @@
 #
 #  index_posts_on_content_category_id  (content_category_id)
 #  index_posts_on_content_type         (content_type)
+#  index_posts_on_scope                (scope)
+#  index_posts_on_status               (status)
 #  index_posts_on_user_id              (user_id)
 #
 # Foreign Keys

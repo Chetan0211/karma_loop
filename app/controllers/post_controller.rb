@@ -10,12 +10,25 @@ class PostController < ApplicationController
   end
   
   def create
-    @post = Post.new(post_params)
-    @post.user = current_user
-    if @post.save
-      redirect_to @post, notice: 'Post was successfully created.'
+    @post = Post.new
+    @content_categories = ContentCategory.all
+    post_params = nil
+    if params[:post]["content_type"] == "image"
+      #TODO need to add image params logic
+    elsif params[:post]["content_type"] == "video"
+      #TODO need to add video params logic
     else
-      render :new
+      post_params = blog_post_params
+    end
+    post_params[:user_id] = current_user.id
+    post_params[:status] = params[:status]
+    result = Post::Create.call(params: post_params)
+    if result.success?
+      flash[:success] = "Post is successfully created."
+      redirect_to result[:model]
+    else
+      flash.now[:error] = "Some error occured. Post is not created."
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -79,8 +92,8 @@ class PostController < ApplicationController
 
   private 
 
-  def post_params
-    params.require(:post).permit(:title, :description, :content_category_id)
+  def blog_post_params
+    params.require(:post).permit(:title, :description, :content_category_id, :content_type)
   end
 
   def comment_params

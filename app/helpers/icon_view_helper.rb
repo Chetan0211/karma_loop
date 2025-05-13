@@ -104,6 +104,16 @@ module IconViewHelper
     tag.i(class: "fa-solid fa-arrow-right-from-bracket #{classes.strip}",**options.except(:class))
   end
 
+  def paper_plane_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-paper-plane #{classes.strip}",**options.except(:class))
+  end
+
+  def circle_info_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-circle-info #{classes.strip}",**options.except(:class))
+  end
+
   def icon(icon:, options:{})
     result = nil
     begin

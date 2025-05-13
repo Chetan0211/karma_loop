@@ -22,10 +22,12 @@
           </div>
         </div>
         <div class="hidden md:flex items-center space-x-4">
-          <button type="button" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out">
+          <%= link_to new_post_path(),
+          type: "button",
+          class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out" do %>
             <%= icon(icon: :plus_icon, options:{class: "text-gray-500 mr-1"}) %>
             Create Post
-          </button>
+          <% end %>
           <button type="button" class="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
             <span class="sr-only">View notifications</span>
             <%= icon(icon: :bell_icon, options:{class: "text-xl"}) %>
