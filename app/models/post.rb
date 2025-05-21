@@ -3,7 +3,7 @@
 # Table name: posts
 #
 #  id                  :uuid             not null, primary key
-#  content_type        :text             default("post"), not null
+#  content_type        :text             default("blog"), not null
 #  deleted_at          :datetime
 #  dislikes            :integer          default(0), not null
 #  likes               :integer          default(0), not null
@@ -30,6 +30,7 @@
 #
 class Post < ApplicationRecord
   has_rich_text :description
+  has_many_attached :images
   belongs_to :user
   belongs_to :content_category, inverse_of: :posts
   has_many :comments, dependent: :destroy

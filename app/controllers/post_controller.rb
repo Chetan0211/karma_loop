@@ -13,8 +13,9 @@ class PostController < ApplicationController
     @post = Post.new
     @content_categories = ContentCategory.all
     post_params = nil
-    if params[:post]["content_type"] == "image"
-      #TODO need to add image params logic
+    if params[:post]["content_type"] == "images"
+      post_params = image_post_params
+      post_params[:description] = params[:post]["image_description"]
     elsif params[:post]["content_type"] == "video"
       #TODO need to add video params logic
     else
@@ -94,6 +95,10 @@ class PostController < ApplicationController
 
   def blog_post_params
     params.require(:post).permit(:title, :description, :content_category_id, :content_type)
+  end
+
+  def image_post_params
+    params.require(:post).permit(:title, :content_category_id, :content_type, images:[])
   end
 
   def comment_params

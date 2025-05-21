@@ -1,4 +1,5 @@
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="{ postType: 'blog', imageFiles: [], videoFile: null, imageUploadInputRef: null }">
+<%= javascript_include_tag "post/new" %>
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="post_new">
   <div class="bg-white p-6 sm:p-8 rounded-lg shadow-lg">
     <div class="mb-6">
       <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Create New Post</h1>
@@ -9,11 +10,11 @@
         <label class="block text-sm font-medium text-gray-700 mb-2">Post Type</label>
         <div class="flex flex-wrap gap-y-2 gap-x-4">
           <label class="flex items-center space-x-2 cursor-pointer">
-            <%= form.radio_button :content_type, "blog", "x-model"=>"postType", class:"focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300" %>
+            <%= form.radio_button :content_type, "blog", "x-model"=>"postType", class:"focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300", checked: true %>
             <span class="text-sm text-gray-700">Blog Post</span>
           </label>
           <label class="flex items-center space-x-2 cursor-pointer">
-            <%= form.radio_button :content_type, "image", "x-model"=>"postType", class:"focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300" %>
+            <%= form.radio_button :content_type, "images", "x-model"=>"postType", class:"focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300" %>
             <span class="text-sm text-gray-700">Image(s)</span>
           </label>
           <label class="flex items-center space-x-2 cursor-pointer">
@@ -38,67 +39,95 @@
         <label for="post-content" class="block text-sm font-medium text-gray-700 mb-1">Content</label>
         <%= form.rich_text_area :description, 
         placeholder: "Start writing your amazing post here...",
-        class:"border-gray-300 w-full p-4 focus:ring-0 rich-text-editor resize-y trix-content" %>
+        class:"border border-gray-300 w-full p-4 focus:ring-0 rich-text-editor resize-y shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-150 ease-in-out bg-white trix-content" %>
         <p class="mt-2 text-xs text-gray-500">You can use toolbar for formatting.</p>
       </div>
-      <div x-show="postType === 'image'" x-transition>
-        <label for="image-upload" class="block text-sm font-medium text-gray-700 mb-1">Upload Images</label>
-        <input
-          type="file"
-          name="image-upload"
-          id="image-upload"
-          multiple
-          accept="image/png, image/jpeg, image/gif"
-          @change="imageFiles = Array.from($event.target.files); $event.target.value = null;" x-ref="imageUploadInputRef" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer">
-          <div class="image-preview-container" x-show="imageFiles.length > 0">
+      <div x-show="postType === 'images'" x-transition>
+        <div>
+          <div class="flex justify-between items-center">
+            <label for="image-upload" class="block text-sm font-medium text-gray-700 mb-1">Upload Images</label>
+            <span class="text-xs text-gray-500" x-text="`${imageFiles.length}/10`"></span>
+          </div>
+          <p x-show="image_error_message" x-text="image_error_message" class="text-red-500 text-sm"></p>
+          <%= form.file_field :images, 
+          accept: 'image/*', 
+          multiple: true,
+          "@change" => "
+          if((imageFiles.length+$event.target.files.length)<=10){
+            imageFiles = [...imageFiles, ...Array.from($event.target.files)]; 
+          }
+          else{
+            image_error_message='You can only select 10 images'; 
+            setTimeout(() => { image_error_message = null }, 4000);
+          };
+          $event.target.value = null; 
+          ", 
+          "x-ref" => "imageUploadInputRef",
+          class: "hidden w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer" %>
+          <div class="image-preview-container">
             <template x-for="(file, index) in imageFiles" :key="index">
               <div class="image-preview-item">
                 <img :src="URL.createObjectURL(file)" :alt="file.name" class="object-cover w-full h-full">
                 <button @click="imageFiles.splice(index, 1); if (imageFiles.length === 0) $refs.imageUploadInputRef.value = null;" type="button" class="remove-btn" title="Remove image">&times;</button>
               </div>
             </template>
+            <div x-show= "imageFiles.length <10 "
+            @click="$refs.imageUploadInputRef.click()" 
+            class="image-add-button border-dashed border-2 rounded-md border-purple-200 p-2">
+              <div class="bg-purple-200 w-full h-full border rounded-md flex items-center justify-center">
+                <%= icon(icon: :plus_icon, options:{class:"text-4xl text-white"}) %>
+              </div>
+            </div>
           </div>
-          <p class="mt-2 text-xs text-gray-500">You can upload multiple images (PNG, JPG, GIF).</p>
+          <p class="mt-2 text-xs text-gray-500">You can upload 10 images (PNG, JPG, GIF).</p>
         </div>
-        <div x-show="postType === 'video'" x-transition>
-          <label for="video-upload" class="block text-sm font-medium text-gray-700 mb-1">Upload Video</label>
-          <input
+        <div>
+          <label for="post-title" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+          <%= form.text_area :image_description, 
+          placeholder: "Enter a description for your post",
+          class: "w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-150 ease-in-out" %>
+        </div>
+      </div>
+      <div x-show="postType === 'video'" x-transition>
+        <label for="video-upload" class="block text-sm font-medium text-gray-700 mb-1">Upload Video</label>
+        <input
           type="file"
           name="video-upload"
           id="video-upload"
           accept="video/mp4, video/webm, video/ogg"
-          @change="videoFile = $event.target.files[0]; $event.target.value = null;" x-ref="videoUploadInputRef" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer">
-            <div x-show="videoFile" class="mt-2">
-              <video :src="videoFile ? URL.createObjectURL(videoFile) : ''" controls class="w-full max-h-96 rounded-md border border-gray-300"></video>
-              <p class="text-xs text-gray-500 mt-1" x-text="videoFile ? videoFile.name : ''"></p>
-              <button @click="videoFile = null; $refs.videoUploadInputRef.value = null;" type="button" class="mt-1 text-xs text-red-600 hover:underline">Remove video</button>
-            </div>
-            <p class="mt-2 text-xs text-gray-500">Upload a single video file (MP4, WebM, Ogg).</p>
+          @change="videoFile += $event.target.files[0]; $event.target.value += videoFile;" x-ref="videoUploadInputRef" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer">
+          <div x-show="videoFile" class="mt-2">
+            <video :src="videoFile ? URL.createObjectURL(videoFile) : ''" controls class="w-full max-h-96 rounded-md border border-gray-300"></video>
+            <p class="text-xs text-gray-500 mt-1" x-text="videoFile ? videoFile.name : ''"></p>
+            <button @click="videoFile = null; $refs.videoUploadInputRef.value = null;" type="button" class="mt-1 text-xs text-red-600 hover:underline">Remove video</button>
           </div>
-          <!-- TODO: currently we are not having tags, it can be used on later stages-->
-          <div>
-            <label for="post-tags" class="block text-sm font-medium text-gray-700 mb-1">Tags (Optional)</label>
-            <input
+          <p class="mt-2 text-xs text-gray-500">Upload a single video file (MP4, WebM, Ogg).</p>
+        </div>
+        <!-- TODO: currently we are not having tags, it can be used on later stages-->
+        <div>
+          <label for="post-tags" class="block text-sm font-medium text-gray-700 mb-1">Tags (Optional)</label>
+          <input
           type="text"
           name="post-tags"
           id="post-tags"
           placeholder="e.g., tech, programming, travel (comma-separated)"
           class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-150 ease-in-out">
-            </div>
-            <div class="flex flex-col sm:flex-row sm:justify-end sm:space-x-3 space-y-3 sm:space-y-0 pt-4">
-              <button
+          </div>
+          <div class="flex flex-col sm:flex-row sm:justify-end sm:space-x-3 space-y-3 sm:space-y-0 pt-4">
+            <button
             type="button"
             class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out">
-                <i class="fa-solid fa-floppy-disk mr-2"></i>Save Draft
-              </button>
-              <%= button_tag type: :submit,
+              <i class="fa-solid fa-floppy-disk mr-2"></i>Save Draft
+            </button>
+            <%= button_tag type: :submit,
               name: "status", 
               value: "published",
+              "@click"=>"submit_post()",
               class: "w-full sm:w-auto inline-flex items-center justify-center px-6 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out" do %>
-                <%= icon(icon: :paper_plane_icon, options:{class: "mr-2"}) %>
-                <%= "Publish Post" %>
-              <% end %>
-            </div>
-          <% end %>
-        </div>
+              <%= icon(icon: :paper_plane_icon, options:{class: "mr-2"}) %>
+              <%= "Publish Post" %>
+            <% end %>
+          </div>
+        <% end %>
       </div>
+    </div>

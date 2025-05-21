@@ -5,9 +5,9 @@ post: Model
 <% case post.content_type%>
 <% when 'blog'%>
   <%= render "shared/blog_post_min", post: post %>
-<% when 'image'%>
+<% when 'images'%>
   <!-- TODO: Need to remove multiple images once done -->
-  <%= render "shared/image_post_min", multiple_images: false, post: post %>
+  <%= render "shared/image_post_min", post: post %>
 <% when 'video'%>
   <!-- TODO: Yet to develop -->
 <% end %>
