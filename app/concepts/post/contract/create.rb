@@ -10,5 +10,5 @@ class Post::Contract::Create < ApplicationContract
   validates :content_category_id, presence: true
   validates :content_type, presence: true, inclusion: { in: %w[blog images video] }
   validates :scope, presence: true, inclusion: { in: %w[public private] }
-  validates :status, presence: true, inclusion: { in: %w[published drafted] }
+  validates :status, presence: true, inclusion: { in: %w[published drafted video_process] }
 end

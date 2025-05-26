@@ -10,3 +10,5 @@ pin "trix"
 pin "@rails/actiontext", to: "actiontext.esm.js"
 pin "alpinejs" # @3.14.9
 pin "alpine-turbo-drive-adapter" # @2.2.0
+pin "@rails/activestorage", to: "@rails--activestorage.js" # @8.0.200
+pin "shaka-player", to: "shaka-player.ui.js"

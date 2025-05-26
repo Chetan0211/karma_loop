@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_12_125751) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_25_120433) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -85,14 +85,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_12_125751) do
     t.string "title", null: false
     t.uuid "user_id", null: false
     t.uuid "content_category_id", null: false
-    t.integer "likes", default: 0, null: false
-    t.integer "dislikes", default: 0, null: false
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "content_type", default: "post", null: false
     t.text "status", null: false
     t.text "scope", default: "public", null: false
+    t.string "processed_video_url"
     t.index ["content_category_id"], name: "index_posts_on_content_category_id"
     t.index ["content_type"], name: "index_posts_on_content_type"
     t.index ["scope"], name: "index_posts_on_scope"

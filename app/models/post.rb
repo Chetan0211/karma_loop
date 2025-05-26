@@ -3,10 +3,9 @@
 # Table name: posts
 #
 #  id                  :uuid             not null, primary key
-#  content_type        :text             default("blog"), not null
+#  content_type        :text             default("post"), not null
 #  deleted_at          :datetime
-#  dislikes            :integer          default(0), not null
-#  likes               :integer          default(0), not null
+#  processed_video_url :string
 #  scope               :text             default("public"), not null
 #  status              :text             not null
 #  title               :string           not null
@@ -31,13 +30,14 @@
 class Post < ApplicationRecord
   has_rich_text :description
   has_many_attached :images
+  has_one_attached :video
   belongs_to :user
   belongs_to :content_category, inverse_of: :posts
   has_many :comments, dependent: :destroy
   has_many :posts_reactions, dependent: :destroy
 
   validates :content_type, inclusion: { in: %w[blog images video].freeze }
-  validates :status, inclusion: { in: %w[published drafted archived deleted].freeze }
+  validates :status, inclusion: { in: %w[published video_process failed drafted archived deleted].freeze }
   validates :scope, inclusion: { in: %w[public private].freeze }
 
   scope :with_description, ->{
@@ -46,5 +46,13 @@ class Post < ApplicationRecord
 
   def current_user_reaction(user_id)
     posts_reactions.where(user_id: user_id).first&.reaction
+  end
+
+  def likes
+    PostsReaction.where(post_id: id, reaction: 'like').count
+  end
+
+  def dislikes
+    PostsReaction.where(post_id: id, reaction: 'dislike').count
   end
 end

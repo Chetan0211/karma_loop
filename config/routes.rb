@@ -15,6 +15,9 @@ Rails.application.routes.draw do
   patch "update_profile/:id" => "user#update_profile", as: :update_profile
   delete "remove_profile_picture/:id" => "user#remove_profile_picture", as: :remove_profile_picture
   patch "update_password/:id" => "user#update_password", as: :update_password
+  get "video_transcode" => "background#video_transcode", as: :video_transcode
+  
+  resources :admin, only: [:index]
 
   resources :post, only: [:new, :create, :show] do
     post "comment" => "post#comment", as: :add_comment

@@ -34,7 +34,9 @@ Rails.application.configure do
   end
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # config.active_storage.service = :local
+  config.active_storage.service = :cloudflare_r2
+
   config.active_storage.variant_processor = :vips
 
   # Don't care if the mailer can't send.
@@ -76,6 +78,7 @@ Rails.application.configure do
 
   # Highlight code that enqueued background job in logs.
   config.active_job.verbose_enqueue_logs = true
+  config.active_job.queue_adapter = :sidekiq
 
   # Suppress logger output for asset requests.
   config.assets.quiet = true

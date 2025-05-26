@@ -5,8 +5,7 @@
 #  id                  :uuid             not null, primary key
 #  content_type        :text             default("post"), not null
 #  deleted_at          :datetime
-#  dislikes            :integer          default(0), not null
-#  likes               :integer          default(0), not null
+#  processed_video_url :string
 #  scope               :text             default("public"), not null
 #  status              :text             not null
 #  title               :string           not null

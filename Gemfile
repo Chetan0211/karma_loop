@@ -87,3 +87,5 @@ gem "reform-rails"
 gem 'dry-types'
 gem "sidekiq", "~> 7.3"
 gem "redis", "~> 5.0.6"
+gem 'aws-sdk-s3', '~> 1'
+gem "dotenv-rails", "~> 3.1"

@@ -7,4 +7,6 @@ post: Model
   <%= render "shared/blog_post", post: post %>
 <% elsif post.content_type == 'images' %>
   <%= render "shared/image_post", post: post %>
+<% elsif post.content_type == 'video' %>
+  <%= render "shared/video_post", post: post %>
 <% end %>

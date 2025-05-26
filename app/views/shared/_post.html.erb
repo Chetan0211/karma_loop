@@ -6,8 +6,7 @@ post: Model
 <% when 'blog'%>
   <%= render "shared/blog_post_min", post: post %>
 <% when 'images'%>
-  <!-- TODO: Need to remove multiple images once done -->
   <%= render "shared/image_post_min", post: post %>
 <% when 'video'%>
-  <!-- TODO: Yet to develop -->
+  <%= render "shared/video_post_min", post: post %>
 <% end %>

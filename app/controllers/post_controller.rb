@@ -17,7 +17,8 @@ class PostController < ApplicationController
       post_params = image_post_params
       post_params[:description] = params[:post]["image_description"]
     elsif params[:post]["content_type"] == "video"
-      #TODO need to add video params logic
+      post_params = video_post_params
+      post_params[:description] = params[:post]["video_description"]
     else
       post_params = blog_post_params
     end
@@ -99,6 +100,10 @@ class PostController < ApplicationController
 
   def image_post_params
     params.require(:post).permit(:title, :content_category_id, :content_type, images:[])
+  end
+
+  def video_post_params
+    params.require(:post).permit(:title, :content_category_id, :content_type, :video)
   end
 
   def comment_params
