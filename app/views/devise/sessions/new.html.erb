@@ -1,45 +1,45 @@
-<div class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md mx-4 sm:mx-auto">
-    <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">Welcome Back!</h2>
+<div class="bg-[var(--background-clr-body)] flex items-center justify-center min-h-screen">
+  <div class="bg-[var(--background-clr-clear)] p-8 rounded-lg shadow-md w-full max-w-md mx-4 sm:mx-auto">
+    <h2 class="text-2xl font-bold text-center text-[var(--txt-clr-strong)] mb-8">Welcome Back!</h2>
     <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
       <div class="mb-4">
         <%= f.label :email, 
-          class:"block text-sm font-medium text-gray-700 mb-1" %>
+          class:"block text-sm font-medium text-[var(--txt-clr-default)] mb-1" %>
         <%= f.email_field :email, 
           autofocus: true, 
           autocomplete: "email",
           placeholder:"you@example.com",
           required: true,
-          class:"w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-150 ease-in-out" %>
+          class:"w-full px-4 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent transition duration-150 ease-in-out" %>
       </div>
       <div class="mb-6">
         <div class="flex justify-between items-center mb-1">
-          <%= f.label :password, class:"block text-sm font-medium text-gray-700" %>
-          <%= link_to "Forgot password?", new_password_path(resource_name), class:"text-sm text-purple-600 hover:underline" %>
+          <%= f.label :password, class:"block text-sm font-medium text-[var(--txt-clr-default)]" %>
+          <%= link_to "Forgot password?", new_password_path(resource_name), class:"text-sm text-[var(--primary-600)] hover:underline" %>
         </div>
         <%= f.password_field :password, 
           autocomplete: "current-password", 
           required: true,
           placeholder: "Enter your password",
-          class:"w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-150 ease-in-out" %>
+          class:"w-full px-4 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent transition duration-150 ease-in-out" %>
       </div>
       <% if devise_mapping.rememberable? %>
         <div class="flex items-center mb-6">
-          <%= f.check_box :remember_me, class:"h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded" %>
-          <%= f.label :remember_me, class:"ml-2 block text-sm text-gray-900" %>
+          <%= f.check_box :remember_me, class:"h-4 w-4 text-[var(--primary-600)] bg-[var(--background-clr-thick)] focus:ring-[var(--primary-500)] border-[var(--border-clr-default)] rounded" %>
+          <%= f.label :remember_me, class:"ml-2 block text-sm text-[var(--txt-clr-strong)]" %>
         </div>
       <% end %>
       <div class="actions">
-        <%= f.submit "Sign In", class:"w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-150 ease-in-out" %>
+        <%= f.submit "Sign In", class:"w-full bg-[var(--primary-600)] hover:bg-[var(--primary-700)] text-[var(--primary-inverted)] font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-2 transition duration-150 ease-in-out" %>
       </div>
     <% end %>
-    <p class="mt-6 text-center text-sm text-gray-600">
+    <p class="mt-6 text-center text-sm text-[var(--txt-clr-muted)]">
       Don't have an account?
-      <%= link_to "Sign up", new_registration_path(resource_name), class:"font-medium text-purple-600 hover:underline" %>
+      <%= link_to "Sign up", new_registration_path(resource_name), class:"font-medium text-[var(--primary-600)] hover:underline" %>
     </p>
-    <p class="mt-6 text-center text-sm text-gray-600">
+    <p class="mt-6 text-center text-sm text-[var(--txt-clr-muted)]">
       Didn't receive confirmation instructions?
-      <%= link_to "Click here.", new_confirmation_path(resource_name), class:"font-medium text-purple-600 hover:underline" %>
+      <%= link_to "Click here.", new_confirmation_path(resource_name), class:"font-medium text-[var(--primary-600)] hover:underline" %>
     </p>
   </div>
 </div>

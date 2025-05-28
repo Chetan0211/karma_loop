@@ -1,0 +1,21 @@
+@layer base{
+  :root{
+    --primary-50: theme('colors.purple.50');
+    --primary-100: theme('colors.purple.100');
+    --primary-200: theme('colors.purple.200');
+    --primary-300: theme('colors.purple.300');
+    --primary-400: theme('colors.purple.400');
+    --primary-500: theme('colors.purple.500');
+    --primary-600: theme('colors.purple.600');
+    --primary-700: theme('colors.purple.700');
+    --primary-800: theme('colors.purple.800');
+    --primary-900: theme('colors.purple.900');
+    --primary-950: theme('colors.purple.950');
+
+    --text-on-primary: theme('colors.white');
+
+    --background-body: theme('colors.slate.50');
+    --text-body: theme('colors.slate.900');
+    --border-default: theme('colors.slate.300');
+  }
+}

@@ -28,18 +28,18 @@ aria-modal="true">
     x-transition:leave="ease-in duration-200"
     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+    class="inline-block align-bottom bg-[var(--background-clr-clear)] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div class="bg-[var(--background-clr-clear)] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
         <div class="sm:flex sm:items-start">
           <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
+            <h3 class="text-lg leading-6 font-medium text-[var(--txt-clr-strong)] mb-4" id="modal-title">
               Edit Profile
             </h3>
             <%= form_with url: update_profile_path(id: @user), scope: :edit_profile, id: "edit_user_form", method: :patch, class:"space-y-4", multipart: true do |form| %>
               <div>
                 <div class="flex justify-between items-center">
-                  <label for="displayNameInput" class="block text-sm font-medium text-gray-700">Display Name</label>
-                  <span class="text-xs text-gray-500" x-text="`${displayName.length}/30`"></span>
+                  <label for="displayNameInput" class="block text-sm font-medium text-[var(--txt-clr-default)]">Display Name</label>
+                  <span class="text-xs text-[var(--txt-clr-subtle)]" x-text="`${displayName.length}/30`"></span>
                 </div>
                 <%= form.text_field :display_name, 
                 type: :text, 
@@ -47,13 +47,13 @@ aria-modal="true">
                 maxlength: 30, 
                 "x-model" => "displayName", 
                 "@blur" => "displayNameError = $el.value.trim().length == 0 ? true : false",
-                class: "mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" %>
+                class: "mt-1 block w-full px-3 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] rounded-md shadow-sm focus:outline-none focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] sm:text-sm" %>
                 <p x-show="displayNameError" class="mt-1 text-xs text-red-600" id="displayNameErrorText">Display name cannot be empty.</p>
               </div>
               <div>
                 <div class="flex justify-between items-center">
-                  <label for="bio" class="block text-sm font-medium text-gray-700">About (Bio)</label>
-                  <span class="text-xs text-gray-500" x-text="`${bio.length}/200`"></span>
+                  <label for="bio" class="block text-sm font-medium text-[var(--txt-clr-default)]">About (Bio)</label>
+                  <span class="text-xs text-[var(--txt-clr-subtle)]" x-text="`${bio.length}/200`"></span>
                 </div>
                 <%= form.text_area :bio, 
                 rows: 3, 
@@ -61,21 +61,21 @@ aria-modal="true">
                 "x-model"=>"bio",
                 placeholder:"Tell us about yourself...", 
                 value: @user.bio, 
-                class: "mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" %>
+                class: "mt-1 block w-full px-3 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] rounded-md shadow-sm focus:outline-none focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] sm:text-sm" %>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Profile Avatar</label>
+                <label class="block text-sm font-medium text-[var(--txt-clr-default)]">Profile Avatar</label>
                 <%= form.hidden_field :prev_profile_picture, value: @user.profile_picture.signed_id if @user.profile_picture.attached? %>
                 <%= form.file_field :profile_picture, accept: 'image/*', class:"hidden", "@change" => "isCropperModalOpen = true; profilePresent = $el.files[0] ? true : false"  %>
                 <div class="mt-1 flex items-center space-x-3">
-                  <span class="h-12 w-12 overflow-hidden rounded-full bg-gray-100 flex items-center justify-center">
+                  <span class="h-12 w-12 overflow-hidden rounded-full bg-[var(--background-clr-thick)] flex items-center justify-center">
                     <%= image_tag @user.profile_picture.attached? ? url_for(@user.profile_picture) : "", id: "profile_image_preview", "x-show" => "profilePresent" %>
-                    <%= icon(icon: :user_icon, options:{class:"text-gray-400 text-2xl", "x-show": "!profilePresent"}) %>
+                    <%= icon(icon: :user_icon, options:{class:"text-[var(--txt-clr-lite)] text-2xl", "x-show": "!profilePresent"}) %>
                   </span>
-                  <button id="update_picture" type="button" class="bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                  <button id="update_picture" type="button" class="bg-[var(--background-clr-clear)] py-2 px-3 border border-[var(--border-clr-default)] rounded-md shadow-sm text-sm leading-4 font-medium text-[var(--txt-clr-default)] hover:bg-[var(--background-clr-body)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-500)]">
                     Change
                   </button>
-                  <button id="remove_picture" x-show="profilePresent" @click="profilePresent = false; " type="button" class="text-sm leading-4 font-medium text-gray-700 hover:text-purple-600">
+                  <button id="remove_picture" x-show="profilePresent" @click="profilePresent = false; " type="button" class="text-sm leading-4 font-medium text-[var(--txt-clr-default)] hover:text-[var(--primary-600)]">
                     Remove
                   </button>
                 </div>
@@ -87,18 +87,18 @@ aria-modal="true">
               </div>
               <!-- TODO: In future if we add banner to the UI -->
               <%# <div>
-                <label class="block text-sm font-medium text-gray-700">Profile Banner</label>
-                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                <label class="block text-sm font-medium text-[var(--txt-clr-default)]">Profile Banner</label>
+                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-[var(--border-clr-default)] border-dashed rounded-md">
                   <div class="space-y-1 text-center">
-                    <i class="fa-regular fa-image text-4xl text-gray-400 mx-auto"></i>
-                    <div class="flex text-sm text-gray-600">
-                      <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-purple-500">
+                    <i class="fa-regular fa-image text-4xl text-[var(--txt-clr-lite)] mx-auto"></i>
+                    <div class="flex text-sm text-[var(--txt-clr-muted)]">
+                      <label for="file-upload" class="relative cursor-pointer bg-[var(--background-clr-clear)] rounded-md font-medium text-[var(--primary-600)] hover:text-[var(--primary-500)] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[var(--primary-500)]">
                         <span>Upload a file</span>
                         <input id="file-upload" name="file-upload" type="file" class="sr-only">
                       </label>
                       <p class="pl-1">or drag and drop</p>
                     </div>
-                    <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                    <p class="text-xs text-[var(--txt-clr-subtle)]">PNG, JPG, GIF up to 10MB</p>
                   </div>
                 </div>
               </div> %>
@@ -106,18 +106,18 @@ aria-modal="true">
           </div>
         </div>
       </div>
-      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+      <div class="bg-[var(--background-clr-body)] px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
         <button type="submit"
         id="submit_edit_profile_button" 
         form="edit_user_form" 
         @click="isEditModalOpen = false"
-        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm">
+        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[var(--primary-600)] text-base font-medium text-[var(--txt-clr-inverted)] hover:bg-[var(--primary-700)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-500)] sm:ml-3 sm:w-auto sm:text-sm">
           Save Changes
         </button>
         <button
           @click="isEditModalOpen = false"
           type="button"
-          class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+          class="mt-3 w-full inline-flex justify-center rounded-md border border-[var(--border-clr-default)] shadow-sm px-4 py-2 bg-[var(--background-clr-clear)] text-base font-medium text-[var(--txt-clr-default)] hover:bg-[var(--background-clr-body)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--secondary-500)] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
           Cancel
         </button>
       </div>

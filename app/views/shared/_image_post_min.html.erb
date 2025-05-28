@@ -4,25 +4,25 @@ TODO: Yet work on it
 <% content_for :page_javascript do %>
   <%= javascript_include_tag "post/image_post", "data-turbo-track": "reload" %>
 <% end %>
-<div class="bg-white rounded-md shadow overflow-hidden flex hover:shadow-lg transition-shadow duration-150" x-data="carousel(<%= post.images.count %>)">
+<div class="bg-[var(--background-clr-clear)] rounded-md shadow overflow-hidden flex hover:shadow-lg transition-shadow duration-150" x-data="carousel(<%= post.images.count %>)">
   <%= render "shared/posts_like_unlike", post: post %>
 
-  <div class="p-3 sm:p-4 relative flex-grow min-w-0 hover:bg-gray-50">
+  <div class="p-3 sm:p-4 relative flex-grow min-w-0 hover:bg-[var(--background-clr-thick)]">
     <%= link_to post_path(id: post.id), class: "absolute top-0 left-0 w-full h-full z-100" do %>
-      <div class="text-xs text-gray-500 mb-1 truncate">
-        <a href="#" class="font-semibold text-gray-800 hover:underline">k/communityName</a>
+      <div class="text-xs text-[var(--txt-clr-subtle)] mb-1 truncate">
+        <a href="#" class="font-semibold text-[var(--txt-clr-thick)] hover:underline">k/communityName</a>
         <span class="mx-1">•</span>
         <span>Posted by <a href="#" class="hover:underline"><%= post.user.username %></a></span>
         <span class="hidden sm:inline"><%= PostHelper.calculate_created_date(post.created_at) %></span>
         <% if (post.created_at - post.updated_at).abs > 1 %><span class="ml-1">Edited</span><% end %>
       </div>
 
-      <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">
-        <p class="hover:text-purple-700"><%= post.title %></p>
+      <h3 class="text-base sm:text-lg font-semibold text-[var(--txt-clr-strong)] mb-2">
+        <p class="hover:text-[var(--primary-700)]"><%= post.title %></p>
       </h3>
 
-      <div class="my-3 bg-gray-100 rounded-md overflow-hidden relative group h-64 sm:h-80 md:h-96 w-full">
-        <div x-ref="carouselTrack" class=" bg-gray-200 w-full h-full flex transition-transform duration-500 ease-in-out">
+      <div class="my-3 bg-[var(--background-clr-thick)] rounded-md overflow-hidden relative group h-64 sm:h-80 md:h-96 w-full">
+        <div x-ref="carouselTrack" class=" bg-[var(--background-clr-strong)] w-full h-full flex transition-transform duration-500 ease-in-out">
           <% post.images.each_with_index do |image, index| %>
             <div class="flex-shrink-0 w-full h-full flex items-center justify-center bg-black" 
             key="<%=index%>" >
@@ -31,14 +31,14 @@ TODO: Yet work on it
           <% end %>
         </div>
         <div class="absolute top-0 right-0 px-2 py-1 mx-4 my-2 rounded-xl bg-black/60" x-show="imageCount>1">
-          <p x-text="currentImageIndex+1 + '/' + imageCount" class="text-white text-xs font-semibold" ></p>
+          <p x-text="currentImageIndex+1 + '/' + imageCount" class="text-[var(--txt-clr-inverted)] text-xs font-semibold" ></p>
         </div>
-        <button class="absolute top-1/2 -translate-y-1/2 left-2 bg-black/30 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out z-10"
+        <button class="absolute top-1/2 -translate-y-1/2 left-2 bg-black/30 text-[var(--txt-clr-inverted)] p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out z-10"
         x-show="imageCount>1"
         @click="prevPost()">
           <i class="fa-solid fa-chevron-left"></i>
         </button>
-        <button class="absolute top-1/2 -translate-y-1/2 right-2 bg-black/30 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out z-10"
+        <button class="absolute top-1/2 -translate-y-1/2 right-2 bg-black/30 text-[var(--txt-clr-inverted)] p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out z-10"
         x-show="imageCount>1"
         @click="nextPost()">
           <i class="fa-solid fa-chevron-right"></i>
@@ -48,7 +48,7 @@ TODO: Yet work on it
             <template x-for="dotIndex in imageCount" :key="dotIndex-1">
               <button
               @click="dotClick(dotIndex-1)"
-              :class="{ 'bg-purple-500': currentImageIndex === (dotIndex-1), 'bg-white/50 hover:bg-white/80 border-black/20': currentImageIndex !== (dotIndex-1) }"
+              :class="{ 'bg-[var(--primary-500)]': currentImageIndex === (dotIndex-1), 'bg-[rgb(var(--background-clr-clear-rgb))]/50 hover:bg-[rgb(var(--background-clr-clear-rgb))]/80 border-black/20': currentImageIndex !== (dotIndex-1) }"
               class="w-2 h-2 rounded-full ml-1 mr-1 cursor-pointer transition-colors duration-150 ease-in-out border"
               type="button">
               </button>
@@ -57,24 +57,24 @@ TODO: Yet work on it
         </div>
       </div>
 
-      <div class="text-sm text-gray-700 mb-3 max-h-24 line-clamp-3">
+      <div class="text-sm text-[var(--txt-clr-default)] mb-3 max-h-24 line-clamp-3">
         <%= post.description %>
       </div>
     
-      <div class="flex items-center space-x-2 sm:space-x-4 text-xs font-medium text-gray-500">
-        <a href="#" class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded relative z-3">
+      <div class="flex items-center space-x-2 sm:space-x-4 text-xs font-medium text-[var(--txt-clr-subtle)]">
+        <a href="#" class="flex items-center space-x-1 hover:bg-[var(--background-clr-thick))] p-1 rounded relative z-3">
           <%= icon(icon: :comment_icon, options: {class: "fa-fw text-base" }) %>
           <span class="hidden sm:inline"><%= post.comments.count %> Comments</span>
         </a>
-        <button class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded relative z-3">
+        <button class="flex items-center space-x-1 hover:bg-[var(--background-clr-thick)] p-1 rounded relative z-3">
           <%= icon(icon: :share_icon, options: {class: "fa-fw text-base" }) %>
           <span class="hidden sm:inline">Share</span>
         </button>
-        <button class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded relative z-3">
+        <button class="flex items-center space-x-1 hover:bg-[var(--background-clr-thick)] p-1 rounded relative z-3">
           <%= icon(icon: :save_icon, options: {class: "fa-fw text-base" }) %>
           <span class="hidden sm:inline">Save</span>
         </button>
-        <button class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded ml-auto relative z-3">
+        <button class="flex items-center space-x-1 hover:bg-[var(--background-clr-thick)] p-1 rounded ml-auto relative z-3">
           <%= icon(icon: :ellipsis_icon, options: {class: "fa-fw text-base" }) %>
         </button>
       </div>

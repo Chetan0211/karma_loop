@@ -5,48 +5,48 @@ comment: Model
 
 <div id="<%= comment.id %>" class="flex space-x-3">
   <div class="flex-shrink-0">
-    <span class="inline-block h-8 w-8 overflow-hidden rounded-full bg-gray-100">
-      <svg class="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24"><path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+    <span class="inline-block h-8 w-8 overflow-hidden rounded-full bg-[var(--background-clr-thick)]">
+      <svg class="h-full w-full text-[var(--txt-clr-lite)]" fill="currentColor" viewBox="0 0 24 24"><path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
     </span>
   </div>
   <div class="flex-grow">
     <div class="text-xs mb-1">
-      <a href="#" class="font-semibold text-gray-800 hover:underline"><%= comment.commenter.username %></a>
-      <span class="text-gray-500 mx-1">•</span>
-      <span class="text-gray-500"><%= comment.created_at %></span>
+      <a href="#" class="font-semibold text-[var(--txt-clr-thick)] hover:underline"><%= comment.commenter.username %></a>
+      <span class="text-[var(--txt-clr-subtle)] mx-1">•</span>
+      <span class="text-[var(--txt-clr-subtle)]"><%= comment.created_at %></span>
     </div>
-    <div class="text-sm text-gray-800 mb-2 mx">
+    <div class="text-sm text-[var(--txt-clr-thick)] mb-2 mx">
       <%= comment.comment %>
     </div>
-    <div id="comment_reaction_<%=comment.id%>" class="flex items-center space-x-3 text-xs text-gray-500 font-medium <%=comment.current_user_reaction(current_user.id)%>">
+    <div id="comment_reaction_<%=comment.id%>" class="flex items-center space-x-3 text-xs text-[var(--txt-clr-subtle)] font-medium <%=comment.current_user_reaction(current_user.id)%>">
       <div>
         <%= link_to post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction: "like"), 
           id:"comment_like_button_#{comment.id}", 
-          class: "flex items-center space-x-1 hover:text-purple-600 #{comment.current_user_reaction(current_user.id) == "like" ? "hidden" : ""}",
+          class: "flex items-center space-x-1 hover:text-[var(--primary-600)] #{comment.current_user_reaction(current_user.id) == "like" ? "hidden" : ""}",
           remote: true, 
           data: { turbo_method: "get" }  do %>
           <%= icon(icon: :like_icon, options:{class:"fa-fw text-base w-4 h-4"}) %>
         <% end %>
         <%= link_to post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction: nil), 
           id:"comment_like_button_liked_#{comment.id}", 
-          class: "flex items-center space-x-1 text-purple-600 #{comment.current_user_reaction(current_user.id) == "like" ? "" : "hidden"}",
+          class: "flex items-center space-x-1 text-[var(--primary-600)] #{comment.current_user_reaction(current_user.id) == "like" ? "" : "hidden"}",
           remote: true, 
           data: { turbo_method: "get" }  do %>
           <%= icon(icon: :like_icon, options:{class:"fa-fw text-base w-4 h-4"}) %>
         <% end %>
       </div>
-      <span class="font-semibold text-gray-700 w-6 text-center"><%= (comment.likes - comment.dislikes) %></span>
+      <span class="font-semibold text-[var(--txt-clr-default)] w-6 text-center"><%= (comment.likes - comment.dislikes) %></span>
       <div>
         <%= link_to post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction: "dislike"), 
           id:"comment_dislike_button_#{comment.id}", 
-          class: "flex items-center space-x-1 hover:text-blue-600 #{comment.current_user_reaction(current_user.id) == "dislike" ? "hidden" : ""}",
+          class: "flex items-center space-x-1 hover:text-[var(--secondary-600)] #{comment.current_user_reaction(current_user.id) == "dislike" ? "hidden" : ""}",
           remote: true, 
           data: { turbo_method: "get" } do %>
           <%= icon(icon: :dislike_icon, options:{class:"fa-fw text-base w-4 h-4"}) %>
         <% end %>
         <%= link_to post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction: nil), 
           id:"comment_dislike_button_disliked_#{comment.id}", 
-          class: "flex items-center space-x-1 text-blue-600 #{comment.current_user_reaction(current_user.id) == "dislike" ? "" : "hidden"}",
+          class: "flex items-center space-x-1 text-[var(--secondary-600)] #{comment.current_user_reaction(current_user.id) == "dislike" ? "" : "hidden"}",
           remote: true, 
           data: { turbo_method: "get" } do %>
           <%= icon(icon: :dislike_icon, options:{class:"fa-fw text-base w-4 h-4"}) %>
@@ -54,13 +54,13 @@ comment: Model
       </div>
       <button id="reply_comment_button_<%= comment.id %>" class="hover:underline">Reply</button>
     </div>
-    <div class="flex items-center space-x-3 text-xs text-gray-500 font-medium">
+    <div class="flex items-center space-x-3 text-xs text-[var(--txt-clr-subtle)] font-medium">
         <%= form_with url: post_add_comment_path(post_id: params[:id]), model: Comment.new, remote: true, id: "reply_comment_form_#{comment.id}", html: { style: "display: none;" } do |form| %>
           <%= form.hidden_field :parent_id, value: comment.id %>
-          <%= form.rich_text_area :comment, id:"id:comment_comment_#{comment.id}", class: "w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition duration-150 ease-in-out text-sm" %>
+          <%= form.rich_text_area :comment, id:"id:comment_comment_#{comment.id}", class: "w-full p-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] transition duration-150 ease-in-out text-sm" %>
           <div class="flex justify-end mt-2">
-            <button id="cancel_reply_comment_form_<%= comment.id %>", class="bg-white hover:bg-grey-100 text-purple-600 hover:text-purple-700 py-2 px-4 transition duration-150 ease-in-out", type="button">Cancel</button>
-            <%= form.submit "Post Comment", class: "bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold py-2 px-4 rounded-full transition duration-150 ease-in-out" %>
+            <button id="cancel_reply_comment_form_<%= comment.id %>", class="bg-[var(--background-clr-clear)] hover:bg-grey-100 text-[var(--primary-600)] hover:text-[var(--primary-700)] py-2 px-4 transition duration-150 ease-in-out", type="button">Cancel</button>
+            <%= form.submit "Post Comment", class: "bg-[var(--primary-600)] hover:bg-[var(--primary-700)] text-[var(--txt-clr-inverted)] text-sm font-semibold py-2 px-4 rounded-full transition duration-150 ease-in-out" %>
           </div>
         <% end %>
       </div>

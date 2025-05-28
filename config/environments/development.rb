@@ -34,8 +34,8 @@ Rails.application.configure do
   end
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
-  # config.active_storage.service = :local
-  config.active_storage.service = :cloudflare_r2
+  config.active_storage.service = :local
+  # config.active_storage.service = :cloudflare_r2
 
   config.active_storage.variant_processor = :vips
 

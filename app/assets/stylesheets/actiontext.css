@@ -39,3 +39,56 @@
   list-style-type: decimal !important;
   padding-left: 1rem !important; /* Adjust as needed */
 }
+
+.trix-button--icon-bold::before {
+  background-image: var(--trix-icon-bold-url) !important;
+}
+
+.trix-button--icon-italic::before{
+  background-image: var(--trix-icon-italic-url) !important;
+}
+
+.trix-button--icon-strike::before{
+  background-image: var(--trix-icon-strike-url) !important;
+}
+
+.trix-button--icon-link::before{
+  background-image: var(--trix-icon-link-url) !important;
+}
+
+.trix-button--icon-heading-1::before{
+  background-image: var(--trix-icon-heading-1-url) !important;
+}
+
+.trix-button--icon-quote::before{
+  background-image: var(--trix-icon-quote-url) !important;
+}
+.trix-button--icon-code::before{
+  background-image: var(--trix-icon-code-url) !important;
+}
+.trix-button--icon-bullet-list::before{
+  background-image: var(--trix-icon-bullet-url) !important;
+}
+
+.trix-button--icon-number-list::before{
+  background-image: var(--trix-icon-number-url) !important;
+}
+
+.trix-button--icon-increase-nesting-level::before{
+  background-image: var(--trix-icon-increase-nesting-level-url) !important;
+}
+
+.trix-button--icon-decrease-nesting-level::before{
+  background-image: var(--trix-icon-decrease-nesting-level-url) !important;
+}
+
+.trix-button--icon-attach::before{
+  background-image: var(--trix-icon-attach-url) !important;
+}
+
+.trix-button--icon-undo::before{
+  background-image: var(--trix-icon-undo-url) !important;
+}
+.trix-button--icon-redo::before{
+  background-image: var(--trix-icon-redo-url) !important;
+}

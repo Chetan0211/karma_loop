@@ -1,10 +1,10 @@
-<div class="bg-gray-100 flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-  <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md space-y-8">
+<div class="bg-[var(--background-clr-body)] flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+  <div class="bg-[var(--background-clr-clear)] p-8 rounded-lg shadow-md w-full max-w-md space-y-8">
     <div>
-      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-[var(--txt-clr-strong)]">
         Forgot Your Password?
       </h2>
-      <p class="mt-2 text-center text-sm text-gray-700">
+      <p class="mt-2 text-center text-sm text-[var(--txt-clr-default)]">
         No problem! Enter your email address below and we'll send you a link to reset it.
       </p>
     </div>
@@ -23,16 +23,16 @@
         autocomplete: "email",
         placeholder:"Enter your email address",
         value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email),
-        class: "appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm transition duration-150 ease-in-out" %>
+        class: "appearance-none rounded-md relative block w-full px-3 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] placeholder-[var(--txt-clr-subtle)] text-[var(--txt-clr-strong)] focus:outline-none focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] focus:z-10 sm:text-sm transition duration-150 ease-in-out" %>
         </div>
       </div>
       <div class="actions">
-        <%= f.submit "Resend confirmation instructions", class: "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out" %>
+        <%= f.submit "Resend confirmation instructions", class: "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-[var(--txt-clr-inverted)] bg-[var(--primary-600)] hover:bg-[var(--primary-700)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-500)] transition duration-150 ease-in-out" %>
       </div>
     <% end %>
-    <p class="mt-6 text-center text-sm text-gray-700">
+    <p class="mt-6 text-center text-sm text-[var(--txt-clr-default)]">
       Don't have an account?
-      <%= link_to "Sign up", new_registration_path(resource_name), class: "font-medium text-purple-600 hover:text-purple-500 hover:underline" %>
+      <%= link_to "Sign up", new_registration_path(resource_name), class: "font-medium text-[var(--primary-600)] hover:text-[var(--primary-500)] hover:underline" %>
     </p>
   </div>
 </div>

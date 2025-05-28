@@ -8,21 +8,21 @@ post: Model
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6" x-data="carousel(<%= post.images.count %>)">
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     <div class="md:col-span-2 space-y-4">
-      <div class="bg-white rounded-md shadow overflow-hidden">
+      <div class="bg-[var(--background-clr-clear)] rounded-md shadow overflow-hidden">
         <div class="p-3 sm:p-4 flex-grow min-w-0">
-          <div class="text-xs text-gray-500 mb-1">
+          <div class="text-xs text-[var(--txt-clr-subtle)] mb-1">
             <!-- We need to add community if we have community else we should not show it-->
-            <a href="#" class="font-semibold text-gray-800 hover:underline">k/pics</a>
+            <a href="#" class="font-semibold text-[var(--txt-clr-thick)] hover:underline">k/pics</a>
             <span class="mx-1">•</span>
             <span>Posted by <a href="#" class="hover:underline"><%= post.user.username %></a></span>
             <span class="hidden sm:inline"><%= PostHelper.calculate_created_date(post.created_at) %></span>
             <% if (post.created_at - post.updated_at).abs > 1 %><span class="ml-1">edited</span><% end %>
           </div>
-          <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 mb-3">
+          <h1 class="text-xl sm:text-2xl font-semibold text-[var(--txt-clr-strong)] mb-3">
               <%= post.title %>
           </h1>
-          <div class="my-3 bg-gray-100 rounded-md overflow-hidden relative group h-64 sm:h-80 md:h-96 w-full">
-            <div x-ref="carouselTrack" class=" bg-gray-200 w-full h-full flex transition-transform duration-500 ease-in-out">
+          <div class="my-3 bg-[var(--background-clr-thick)] rounded-md overflow-hidden relative group h-64 sm:h-80 md:h-96 w-full">
+            <div x-ref="carouselTrack" class=" bg-[var(--background-clr-strong)] w-full h-full flex transition-transform duration-500 ease-in-out">
               <% post.images.each_with_index do |image, index| %>
                 <div class="flex-shrink-0 w-full h-full flex items-center justify-center bg-black" 
                 key="<%=index%>" >
@@ -31,14 +31,14 @@ post: Model
               <% end %>
             </div>
             <div class="absolute top-0 right-0 px-2 py-1 mx-4 my-2 rounded-xl bg-black/60" x-show="imageCount>1">
-              <p x-text="currentImageIndex+1 + '/' + imageCount" class="text-white text-xs font-semibold" ></p>
+              <p x-text="currentImageIndex+1 + '/' + imageCount" class="text-[var(--txt-clr-inverted)] text-xs font-semibold" ></p>
             </div>
-            <button class="absolute top-1/2 -translate-y-1/2 left-2 bg-black/30 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out z-10"
+            <button class="absolute top-1/2 -translate-y-1/2 left-2 bg-black/30 text-[var(--txt-clr-inverted)] p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out z-10"
             x-show="imageCount>1"
             @click="prevPost()">
               <i class="fa-solid fa-chevron-left"></i>
             </button>
-            <button class="absolute top-1/2 -translate-y-1/2 right-2 bg-black/30 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out z-10"
+            <button class="absolute top-1/2 -translate-y-1/2 right-2 bg-black/30 text-[var(--txt-clr-inverted)] p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out z-10"
             x-show="imageCount>1"
             @click="nextPost()">
               <i class="fa-solid fa-chevron-right"></i>
@@ -48,7 +48,7 @@ post: Model
                 <template x-for="dotIndex in imageCount" :key="dotIndex-1">
                   <button
                   @click="dotClick(dotIndex-1)"
-                  :class="{ 'bg-purple-500': currentImageIndex === (dotIndex-1), 'bg-white/50 hover:bg-white/80 border-black/20': currentImageIndex !== (dotIndex-1) }"
+                  :class="{ 'bg-[var(--primary-500)]': currentImageIndex === (dotIndex-1), 'bg-[rgb(var(--background-clr-clear-rgb))]/50 hover:bg-[rgb(var(--background-clr-clear-rgb))]/80 border-black/20': currentImageIndex !== (dotIndex-1) }"
                   class="w-2 h-2 rounded-full ml-1 mr-1 cursor-pointer transition-colors duration-150 ease-in-out border"
                   type="button">
                   </button>
@@ -57,72 +57,73 @@ post: Model
             </div>
           </div>
 
-          <div class="text-sm text-gray-800 max-w-none mb-4">
+          <div class="text-sm text-[var(--txt-clr-thick)] max-w-none mb-4">
               <%= post.description %>
           </div>
 
-          <div class="flex items-center space-x-2 sm:space-x-4 text-xs font-medium text-gray-500 border-t border-b py-2 my-4">
+          <div class="flex items-center space-x-2 sm:space-x-4 text-xs font-medium text-[var(--txt-clr-subtle)]">
+            <div] border-t border-b py-2 my-4">
             <div id="reaction_div_parent_<%= post.id %>" class="flex items-center space-x-1 p-1 rounded <%= post.current_user_reaction(current_user.id) %>">
               <div>
                 <%= link_to post_post_reaction_path(post_id: post.id, reaction:"like"), 
                   id:"like_button_parent_#{post.id}",
                   remote: true,
-                  class: "p-1 rounded hover:bg-gray-200 text-gray-500 hover:text-purple-600 #{post.current_user_reaction(current_user.id) == 'like' ? "hidden" : ""}",
+                  class: "p-1 rounded hover:bg-[var(--background-clr-strong)] text-[var(--txt-clr-subtle)] hover:text-[var(--primary-600)] #{post.current_user_reaction(current_user.id) == 'like' ? "hidden" : ""}",
                   data: { turbo_method: "get" } do %>
                   <%= icon(icon: :like_icon, options: {class:"fa-fw text-base w-5 h-5"}) %>
                 <% end %>
                 <%= link_to post_post_reaction_path(post_id: post.id, reaction: nil), 
                   id:"like_button_parent_liked_#{post.id}",
                   remote: true,
-                  class: "p-1 rounded hover:bg-gray-200 text-purple-600 #{post.current_user_reaction(current_user.id) == 'like' ? "" : "hidden"}",
+                  class: "p-1 rounded hover:bg-[var(--background-clr-strong)] text-[var(--primary-600)] #{post.current_user_reaction(current_user.id) == 'like' ? "" : "hidden"}",
                   data: { turbo_method: "get" } do %>
                   <%= icon(icon: :like_icon, options: {class:"fa-fw text-base w-5 h-5"}) %>
                 <% end %>
               </div>
-              <span class="font-semibold text-gray-700 w-6 text-center"><%= post.likes - post.dislikes %></span>
+              <span class="font-semibold text-[var(--txt-clr-default)] w-6 text-center"><%= post.likes - post.dislikes %></span>
               <div>
                 <%= link_to post_post_reaction_path(post_id: post.id, reaction:"dislike"), 
                   id:"dislike_button_parent_#{post.id}",
                   remote: true, 
-                  class: "p-1 rounded hover:bg-gray-200 text-gray-500 hover:text-blue-600 #{post.current_user_reaction(current_user.id) == 'dislike' ? "hidden" : ""}",
+                  class: "p-1 rounded hover:bg-[var(--background-clr-strong)] text-[var(--txt-clr-subtle)] hover:text-[var(--secondary-600)] #{post.current_user_reaction(current_user.id) == 'dislike' ? "hidden" : ""}",
                   data: { turbo_method: "get" } do %>
                   <%= icon(icon: :dislike_icon, options: {class:"fa-fw text-base w-5 h-5"}) %>
                 <% end %>
                 <%= link_to post_post_reaction_path(post_id: post.id, reaction: nil), 
                   id:"dislike_button_parent_disliked_#{post.id}",
                   remote: true, 
-                  class: "p-1 rounded hover:bg-gray-200 text-blue-600 #{post.current_user_reaction(current_user.id) == 'dislike' ? "" : "hidden"}",
+                  class: "p-1 rounded hover:bg-[var(--background-clr-strong)] text-[var(--secondary-600)] #{post.current_user_reaction(current_user.id) == 'dislike' ? "" : "hidden"}",
                   data: { turbo_method: "get" } do %>
                   <%= icon(icon: :dislike_icon, options: {class:"fa-fw text-base w-5 h-5"}) %>
                 <% end %>
               </div>
             </div>
-            <a href="#comments_head" class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded">
+            <a href="#comments_head" class="flex items-center space-x-1 hover:bg-[var(--background-clr-thick)] p-1 rounded">
                 <%= icon(icon: :comment_icon, options: {class: "fa-fw text-base" }) %>
                 <%= post.comments.count %> Comments</span>
             </a>
-            <button class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded">
+            <button class="flex items-center space-x-1 hover:bg-[var(--background-clr-thick)] p-1 rounded">
                 <%= icon(icon: :share_icon, options: {class: "fa-fw text-base" }) %>
                 <span class="hidden sm:inline">Share</span>
             </button>
-            <button class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded">
+            <button class="flex items-center space-x-1 hover:bg-[var(--background-clr-thick)] p-1 rounded">
                 <%= icon(icon: :save_icon, options: {class: "fa-fw text-base" }) %>
                 <span class="hidden sm:inline">Save</span>
             </button>
-            <button class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded ml-auto">
+            <button class="flex items-center space-x-1 hover:bg-[var(--background-clr-thick)] p-1 rounded ml-auto">
                 <%= icon(icon: :ellipsis_icon, options: {class: "fa-fw text-base" }) %>
             </button>
           </div>
 
-          <button id="parent_comment_button", class="bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold py-2 px-4 rounded-full transition duration-150 ease-in-out mb-2">Add a Comment</button>
+          <button id="parent_comment_button", class="bg-[var(--primary-600)] hover:bg-[var(--primary-700)] text-[var(--txt-clr-inverted)] text-sm font-semibold py-2 px-4 rounded-full transition duration-150 ease-in-out mb-2">Add a Comment</button>
           <div id="parent_comment_form" class="mb-6 hidden">
-            <p class="text-xs mb-1">Comment as <a href="#" class="text-purple-600 hover:underline">YourUsername</a></p>
+            <p class="text-xs mb-1">Comment as <a href="#" class="text-[var(--primary-600)] hover:underline">YourUsername</a></p>
             <%= form_with url: post_add_comment_path(post_id: params[:id]), model: [ post, Comment.new ], remote: true do |form| %>
               <%= form.hidden_field :parent_id, value: nil %>
-              <%= form.rich_text_area :comment, id:"comment_comment_parent", class: "w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition duration-150 ease-in-out text-sm" %>
+              <%= form.rich_text_area :comment, id:"comment_comment_parent", class: "w-full p-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] transition duration-150 ease-in-out text-sm" %>
               <div class="flex justify-end mt-2">
-                <button id="cancel_parent_comment_form", class="bg-white hover:bg-grey-100 text-purple-600 hover:text-purple-700 py-2 px-4 transition duration-150 ease-in-out", type="button">Cancel</button>
-                <%= form.submit "Post Comment", class: "bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold py-2 px-4 rounded-full transition duration-150 ease-in-out" %>
+                <button id="cancel_parent_comment_form", class="bg-[var(--background-clr-clear)] hover:bg-[var(--background-clr-thick)] text-[var(--primary-600)] hover:text-[var(--primary-700)] py-2 px-4 transition duration-150 ease-in-out", type="button">Cancel</button>
+                <%= form.submit "Post Comment", class: "bg-[var(--primary-600)] hover:bg-[var(--primary-700)] text-[var(--txt-clr-inverted)] text-sm font-semibold py-2 px-4 rounded-full transition duration-150 ease-in-out" %>
               </div>
             <% end %>
           </div>
@@ -139,21 +140,21 @@ post: Model
     </div>
 
     <div class="hidden md:block space-y-4">
-      <div class="bg-white p-4 rounded-md shadow">
+      <div class="bg-[var(--background-clr-clear)] p-4 rounded-md shadow">
         <h4 class="font-semibold mb-3 border-b pb-2">About k/pics</h4>
-        <p class="text-sm text-gray-600 mb-2">A community for sharing great pictures.</p>
-        <div class="flex items-center space-x-4 text-sm text-gray-500 mb-3">
-          <span><strong class="text-gray-800">1.2M</strong> Members</span>
-          <span><strong class="text-gray-800">5.6k</strong> Online</span>
+        <p class="text-sm text-[var(--txt-clr-muted)] mb-2">A community for sharing great pictures.</p>
+        <div class="flex items-center space-x-4 text-sm text-[var(--txt-clr-subtle)] mb-3">
+          <span><strong class="text-[var(--txt-clr-thick)]">1.2M</strong> Members</span>
+          <span><strong class="text-[var(--txt-clr-thick)]">5.6k</strong> Online</span>
         </div>
-        <p class="text-xs text-gray-500 mb-3">Created Jan 1, 2020</p>
-        <button class="w-full bg-purple-100 text-purple-700 border border-purple-300 hover:bg-purple-200 text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out mb-2">Joined</button>
-        <button class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out">Create Post</button>
+        <p class="text-xs text-[var(--txt-clr-subtle)] mb-3">Created Jan 1, 2020</p>
+        <button class="w-full bg-[var(--primary-100)] text-[var(--primary-700)] border border-[var(--primary-300)] hover:bg-[var(--primary-200)] text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out mb-2">Joined</button>
+        <button class="w-full bg-[var(--background-clr-thick)] hover:bg-[var(--background-clr-strong)] text-[var(--txt-clr-default)] text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out">Create Post</button>
       </div>
 
-      <div class="bg-white p-4 rounded-md shadow top-20">
+      <div class="bg-[var(--background-clr-clear)] p-4 rounded-md shadow top-20">
         <h4 class="font-semibold mb-3 border-b pb-2">k/pics Rules</h4>
-          <ol class="list-decimal list-inside space-y-2 text-xs text-gray-600">
+          <ol class="list-decimal list-inside space-y-2 text-xs text-[var(--txt-clr-muted)]">
             <li>High-quality images only.</li>
             <li>Be respectful in comments.</li>
             <li>No NSFW content.</li>
@@ -161,12 +162,12 @@ post: Model
         </ol>
       </div>
 
-      <div class="bg-white p-4 rounded-md shadow">
+      <div class="bg-[var(--background-clr-clear)] p-4 rounded-md shadow">
         <h4 class="font-semibold mb-3 border-b pb-2">Trending Topics</h4>
         <ul class="space-y-2 text-sm">
-          <li><a href="#" class="text-purple-600 hover:underline">#landscape</a></li>
-          <li><a href="#" class="text-purple-600 hover:underline">#photography</a></li>
-          <li><a href="#" class="text-purple-600 hover:underline">#nature</a></li>
+          <li><a href="#" class="text-[var(--primary-600)] hover:underline">#landscape</a></li>
+          <li><a href="#" class="text-[var(--primary-600)] hover:underline">#photography</a></li>
+          <li><a href="#" class="text-[var(--primary-900)] hover:underline">#nature</a></li>
         </ul>
       </div>
     </div>

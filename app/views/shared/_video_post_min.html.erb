@@ -1,21 +1,21 @@
 <!--
 TODO: Yet work on it
 -->
-<div class="bg-white rounded-md shadow overflow-hidden flex hover:shadow-lg transition-shadow duration-150" x-data="carousel(<%= post.images.count %>)">
+<div class="bg-[var(--background-clr-clear)] rounded-md shadow overflow-hidden flex hover:shadow-lg transition-shadow duration-150" x-data="carousel(<%= post.images.count %>)">
   <%= render "shared/posts_like_unlike", post: post %>
 
-  <div class="p-3 sm:p-4 relative flex-grow min-w-0 hover:bg-gray-50">
+  <div class="p-3 sm:p-4 relative flex-grow min-w-0 hover:bg-[var(--background-clr-thick)]">
     <%= link_to post_path(id: post.id), class: "absolute top-0 left-0 w-full h-full z-100" do %>
-      <div class="text-xs text-gray-500 mb-1 truncate">
-        <a href="#" class="font-semibold text-gray-800 hover:underline">k/communityName</a>
+      <div class="text-xs text-[var(--txt-clr-subtle)] mb-1 truncate">
+        <a href="#" class="font-semibold text-[var(--txt-clr-thick)] hover:underline">k/communityName</a>
         <span class="mx-1">•</span>
         <span>Posted by <a href="#" class="hover:underline"><%= post.user.username %></a></span>
         <span class="hidden sm:inline"><%= PostHelper.calculate_created_date(post.created_at) %></span>
         <% if (post.created_at - post.updated_at).abs > 1 %><span class="ml-1">Edited</span><% end %>
       </div>
 
-      <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">
-        <p class="hover:text-purple-700"><%= post.title %></p>
+      <h3 class="text-base sm:text-lg font-semibold text-[var(--txt-clr-strong)] mb-2">
+        <p class="hover:text-[var(--primary-700)]"><%= post.title %></p>
       </h3>
 
       <div class="my-3 bg-black rounded-md overflow-hidden relative group aspect-video">
@@ -30,24 +30,24 @@ TODO: Yet work on it
             Your browser does not support the video tag.
         </video> %>
       </div>
-      <div class="text-sm text-gray-700 mb-3 max-h-24 line-clamp-3">
+      <div class="text-sm text-[var(--txt-clr-default)] mb-3 max-h-24 line-clamp-3">
         <%= post.description %>
       </div>
     
-      <div class="flex items-center space-x-2 sm:space-x-4 text-xs font-medium text-gray-500">
-        <a href="#" class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded relative z-3">
+      <div class="flex items-center space-x-2 sm:space-x-4 text-xs font-medium text-[var(--txt-clr-subtle)]">
+        <a href="#" class="flex items-center space-x-1 hover:bg-[var(--background-clr-thick)] p-1 rounded relative z-3">
           <%= icon(icon: :comment_icon, options: {class: "fa-fw text-base" }) %>
           <span class="hidden sm:inline"><%= post.comments.count %> Comments</span>
         </a>
-        <button class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded relative z-3">
+        <button class="flex items-center space-x-1 hover:bg-[var(--background-clr-thick)] p-1 rounded relative z-3">
           <%= icon(icon: :share_icon, options: {class: "fa-fw text-base" }) %>
           <span class="hidden sm:inline">Share</span>
         </button>
-        <button class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded relative z-3">
+        <button class="flex items-center space-x-1 hover:bg-[var(--background-clr-thick)] p-1 rounded relative z-3">
           <%= icon(icon: :save_icon, options: {class: "fa-fw text-base" }) %>
           <span class="hidden sm:inline">Save</span>
         </button>
-        <button class="flex items-center space-x-1 hover:bg-gray-100 p-1 rounded ml-auto relative z-3">
+        <button class="flex items-center space-x-1 hover:bg-[var(--background-clr-thick)] p-1 rounded ml-auto relative z-3">
           <%= icon(icon: :ellipsis_icon, options: {class: "fa-fw text-base" }) %>
         </button>
       </div>
