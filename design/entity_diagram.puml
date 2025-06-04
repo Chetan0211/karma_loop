@@ -1,0 +1,139 @@
+@startuml entity
+
+entity users{
+  **id**: uuid [**PK**] **<<generated>>**
+  **email**: character varying
+  **username**: character varying
+  **dob**: timestamp without timezone
+  **description**: text
+  **encrypted_password**: character varying
+  **reset_password_token**: character varying
+  **reset_password_sent_at**: timestamp without timezone
+  **remember_created_at**: timestamp without timezone
+  **created_at**: timestamp without timezone
+  **updated_at**: timestamp without timezone
+  **confirmation_token**: character varying
+  **confirmed_at**: timestamp without timezone
+  **confirmation_sent_at**: timestamp without timezone
+  **unconfirmed_email**: character varying
+  **is_admin**: boolean
+  **deleted_at**: timestamp without timezone
+  **display_name**: character varying[30]
+  **bio**: character varying[200]
+}
+
+entity content_categories{
+  **id**: uuid [**PK**] **<<generated>>**
+  **category**: character varying
+  **created_at**: timestamp without timezone
+  **updated_at**: timestamp without timezone
+}
+
+entity posts{
+  **id**: uuid [**PK**] **<<generated>>**
+  **user_id**: uuid [**FK**]
+  **content_category_id**: uuid [**FK**]
+  **title**: character varying
+  **content_type**: text
+  **status**: text
+  **scope**: text
+  **processed_video_url**: character varying
+  **deleted_at**: timestamp without timezone
+  **created_at**: timestamp without timezone
+  **updated_at**: timestamp without timezone
+}
+
+entity posts_reactions{
+  **id**: uuid [**PK**] **<<generated>>**
+  **post_id**: uuid [**FK**]
+  **user_id**: uuid [**FK**]
+  **reaction**: character varying
+  **created_at**: timestamp without timezone
+  **updated_at**: timestamp without timezone
+}
+
+entity comments{
+  **id**: uuid [**PK**] **<<generated>>**
+  **commenter_id**: uuid [**FK**]
+  **post_id**: uuid [**FK**]
+  **parent_id**: uuid [**FK**]
+  **created_at**: timestamp without timezone
+  **updated_at**: timestamp without timezone
+}
+
+entity comments_reactions{
+  **id**: uuid [**PK**] **<<generated>>**
+  **comment_id**: uuid [**FK**]
+  **user_id**: uuid [**FK**]
+  **post_id**: uuid [**FK**]
+  **reaction**: character varying
+  **created_at**: timestamp without timezone
+  **updated_at**: timestamp without timezone
+}
+
+entity action_text_rich_texts{
+  **id**: uuid [**PK**] **<<generated>>**
+  **record_id**: uuid
+  **name**: character varying
+  **body**: text
+  **record_type**: character varying
+  **created_at**: timestamp without timezone
+  **updated_at**: timestamp without timezone
+}
+
+entity active_storage_attachments{
+  **id**: uuid [**PK**] **<<generated>>**
+  **blob_id**: uuid [**FK**]
+  **record_id**: uuid
+  **name**: character varying
+  **record_type**: character varying
+  **created_at**: timestamp without timezone
+}
+
+entity active_storage_blobs{
+  **id**: uuid [**PK**] **<<generated>>**
+  **key**: character varying
+  **filename**: character varying
+  **content_type**: character varying
+  **metadata**: text
+  **byte_size**: bigint
+  **service_name**: character varying
+  **checksum**: character varying
+  **created_at**: timestamp without timezone
+}
+
+entity active_storage_varient_records{
+  **id**: uuid [**PK**] **<<generated>>**
+  **blob_id**: uuid [**FK**]
+  **variation_digest**: character varying
+}
+
+posts ||--{ action_text_rich_texts : "using record_id"
+comments ||--{ action_text_rich_texts : "using record_id"
+
+users ||--{ active_storage_attachments : "using record_id"
+posts ||--{ active_storage_attachments : "using record_id"
+
+
+active_storage_varient_records ||--{ active_storage_blobs
+active_storage_attachments ||--{ active_storage_blobs
+
+
+users ||--{ posts
+content_categories ||--{ posts
+
+posts ||--{ posts_reactions
+users ||--{ posts_reactions
+
+posts ||--{ comments
+comments ||--{ comments
+users ||--{ comments
+
+comments ||--{ comments_reactions
+users ||--{ comments_reactions
+posts ||--{ comments_reactions
+}
+
+
+
+@enduml

@@ -3,8 +3,6 @@
 # Table name: comments
 #
 #  id           :uuid             not null, primary key
-#  dislikes     :integer          default(0), not null
-#  likes        :integer          default(0), not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  commenter_id :uuid             not null
@@ -32,5 +30,13 @@ class Comment < ApplicationRecord
 
   def current_user_reaction(user_id)
     comments_reactions.where(user_id: user_id).first&.reaction
+  end
+
+  def likes
+    CommentsReaction.where(comment_id: id, post_id: post_id, reaction: 'like').count
+  end
+
+  def dislikes
+    CommentsReaction.where(comment_id: id, post_id: post_id, reaction: 'dislike').count
   end
 end

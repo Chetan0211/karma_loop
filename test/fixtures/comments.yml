@@ -3,8 +3,6 @@
 # Table name: comments
 #
 #  id           :uuid             not null, primary key
-#  dislikes     :integer          default(0), not null
-#  likes        :integer          default(0), not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  commenter_id :uuid             not null
