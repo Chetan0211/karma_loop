@@ -8,7 +8,6 @@
 #  confirmation_token     :string
 #  confirmed_at           :datetime
 #  deleted_at             :datetime
-#  description            :text
 #  display_name           :string(30)       not null
 #  dob                    :datetime         not null
 #  email                  :string           default(""), not null
@@ -34,6 +33,8 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   has_one_attached :profile_picture
+  has_many :groups, class_name: "Group", foreign_key: "admin_id"
+  has_many :group_users
   validates :username, 
     presence: true,
     uniqueness: { case_sensitive: true }
@@ -43,4 +44,28 @@ class User < ApplicationRecord
 
   has_many :posts, dependent: :destroy
   has_many :comments, dependent: :destroy, inverse_of: :commenter
+
+  def following
+    group = Group.includes(:group_users).where(type:"friend", group_users:{user_id: self.id, status: "follower"}).pluck(:group_id);
+    User.includes(:group_users).where(group_users:{group_id: group}).where.not(id: self.id);
+  end
+  def followers
+    User.includes(:group_users).where(group_users:{group_id: friend_groups, status:"follower"}).where.not(id: self.id);
+  end
+  def blocked_users
+    group = Group.includes(:group_users).where(type:"friend", group_users:{user_id: self.id, status: "blocked"}).pluck(:group_id);
+    User.includes(:group_users).where(group_users:{group_id: group}).where.not(id: self.id);
+  end
+  
+  private
+
+  def friend_groups
+    Group.includes(:group_users).where(type:"friend",group_users:{user_id: self.id}).pluck(:group_id);
+  end
+  def chat_groups
+    Group.includes(:group_users).where(type:"group",group_users:{user_id: self.id}).pluck(:group_id);
+  end
+  def community_groups
+    Group.includes(:group_users).where(type:"community",group_users:{user_id: self.id}).pluck(:group_id);
+  end
 end

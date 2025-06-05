@@ -4,16 +4,12 @@ class User::Contract::Create < ApplicationContract
   property :password_confirmation, virtual: true
   property :email
   property :dob
-  property :display_name
 
   validates :username, presence:{message: "Username can't be blank."}, format:{
     with: /\A\w+\z/,
     message: "Username is not in the given format."
   }
   validate :username_uniqueness
-
-  validates :display_name, presence:{message: "Display name can't be blank."}, 
-  maximum: {maximum: 30, message: "Display name can't be more than 30 characters."}
 
   validates :email, presence:{message: "Email can't be blank."}, format:{
     with: /\A[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\z/,

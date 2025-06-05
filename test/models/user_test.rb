@@ -8,7 +8,6 @@
 #  confirmation_token     :string
 #  confirmed_at           :datetime
 #  deleted_at             :datetime
-#  description            :text
 #  display_name           :string(30)       not null
 #  dob                    :datetime         not null
 #  email                  :string           default(""), not null

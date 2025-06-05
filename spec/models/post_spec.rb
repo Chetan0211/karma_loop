@@ -32,21 +32,23 @@ require 'rails_helper'
 RSpec.describe Post, type: :model do
   describe "Post Table" do
     it{ should have_db_column(:title).of_type(:string).with_options(null: false) }
-    it{ should have_db_column(:likes).of_type(:integer).with_options(null: false, default: 0) }
-    it{ should have_db_column(:dislikes).of_type(:integer).with_options(null: false, default: 0) }
     it{ should have_db_column(:user_id).of_type(:uuid).with_options(null: false) }
+    it{ should have_db_column(:scope).of_type(:text).with_options(null: false)}
+    it{ should validate_inclusion_of(:scope).in_array(%w(public private)) }
+    it{ should have_db_column(:status).of_type(:text).with_options(null: false) }
+    it{ should validate_inclusion_of(:status).in_array(%w[published video_process failed drafted archived deleted]) }
     it{ should have_db_column(:content_category_id).of_type(:uuid).with_options(null: false) }
     it{ should have_rich_text(:description) }
   end
 
   it "is valid with valid data" do
-    post = build(:post)
+    post = build(:post, :blog, :scope_public, :status_published)
 
     expect(post).to be_valid
   end
 
   it "is valid with correct description" do
-    post = create(:post)
+    post = create(:post, :blog, :scope_public, :status_published)
     post.description = "<p>Testing description</p>"
     post.save!
 
@@ -54,9 +56,11 @@ RSpec.describe Post, type: :model do
   end
 
   it "is valid to fetch with_description" do
-    create(:post)
+    create(:post, :blog, :scope_public, :status_published)
     fetched_post = Post.with_description.first
 
     expect(fetched_post.body).to eq("<p>This is a temp description</p>")
   end  
+
+  # TODO: Specs for image and video posts - Need to think should we need to do it or not.
 end

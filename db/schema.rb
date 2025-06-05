@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_06_04_052503) do
+ActiveRecord::Schema[7.1].define(version: 2025_06_05_044008) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -79,6 +79,27 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_04_052503) do
     t.index ["category"], name: "index_content_categories_on_category", unique: true
   end
 
+  create_table "group_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "group_id", null: false
+    t.uuid "user_id", null: false
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_id"], name: "index_group_users_on_group_id"
+    t.index ["user_id"], name: "index_group_users_on_user_id"
+  end
+
+  create_table "groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "type"
+    t.string "name"
+    t.uuid "admin_id"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_groups_on_admin_id"
+    t.index ["type"], name: "index_groups_on_type"
+  end
+
   create_table "posts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "title", null: false
     t.uuid "user_id", null: false
@@ -86,7 +107,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_04_052503) do
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "content_type", default: "post", null: false
+    t.text "content_type", default: "blog", null: false
     t.text "status", null: false
     t.text "scope", default: "public", null: false
     t.string "processed_video_url"
@@ -111,7 +132,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_04_052503) do
     t.string "email", default: "", null: false
     t.string "username", null: false
     t.datetime "dob", null: false
-    t.text "description"
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
@@ -141,6 +161,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_04_052503) do
   add_foreign_key "comments_reactions", "comments", on_delete: :cascade
   add_foreign_key "comments_reactions", "posts"
   add_foreign_key "comments_reactions", "users"
+  add_foreign_key "group_users", "groups"
+  add_foreign_key "group_users", "users"
+  add_foreign_key "groups", "users", column: "admin_id"
   add_foreign_key "posts", "content_categories"
   add_foreign_key "posts", "users"
   add_foreign_key "posts_reactions", "posts", on_delete: :cascade

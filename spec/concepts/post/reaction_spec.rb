@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Post::Reaction do
   it "is valid with valid data" do
-    post = create(:post)
+    post = create(:post, :blog, :scope_public, :status_published)
     user = create(:user)
     posts_reaction = {
       post_id: post.id,
@@ -10,7 +10,7 @@ RSpec.describe Post::Reaction do
       reaction: "like"
     }
 
-    result = Post::Reaction.call(posts_reaction: posts_reaction)
+    result = Post::Reaction.call(post_reaction: posts_reaction)
     expect(result).to be_success
     expect(PostsReaction.count).to eq(1)
   end
@@ -24,26 +24,26 @@ RSpec.describe Post::Reaction do
         reaction: "like"
       }
 
-      result = Post::Reaction.call(posts_reaction: posts_reaction)
+      result = Post::Reaction.call(post_reaction: posts_reaction)
       expect(result).to be_failure
       expect(PostsReaction.count).to eq(0)
     end
 
     it "is invalid with empty user id" do
-      post = create(:post)
+      post = create(:post, :blog, :scope_public, :status_published)
       posts_reaction = {
         post_id: post.id,
         user_id: "",
         reaction: "like"
       }
 
-      result = Post::Reaction.call(posts_reaction: posts_reaction)
+      result = Post::Reaction.call(post_reaction: posts_reaction)
       expect(result).to be_failure
       expect(PostsReaction.count).to eq(0)
     end
 
     it "is invalid with empty reaction" do
-      post = create(:post)
+      post = create(:post, :blog, :scope_public, :status_published)
       user = create(:user)
       posts_reaction = {
         post_id: post.id,
@@ -51,13 +51,13 @@ RSpec.describe Post::Reaction do
         reaction: ""
       }
 
-      result = Post::Reaction.call(posts_reaction: posts_reaction)
+      result = Post::Reaction.call(post_reaction: posts_reaction)
       expect(result).to be_failure
       expect(PostsReaction.count).to eq(0)
     end
 
     it "is invalid with some other reaction" do
-      post = create(:post)
+      post = create(:post, :blog, :scope_public, :status_published)
       user = create(:user)
       posts_reaction = {
         post_id: post.id,
@@ -65,7 +65,7 @@ RSpec.describe Post::Reaction do
         reaction: "something"
       }
 
-      result = Post::Reaction.call(posts_reaction: posts_reaction)
+      result = Post::Reaction.call(post_reaction: posts_reaction)
       expect(result).to be_failure
       expect(PostsReaction.count).to eq(0)
     end

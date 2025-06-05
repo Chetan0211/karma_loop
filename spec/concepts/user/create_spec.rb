@@ -2,13 +2,7 @@ require 'rails_helper'
 
 RSpec.describe User::Create do
   it "is valid with valid data" do
-    user_params = {
-      username: "username_01",
-      email: "testuser@gmail.com",
-      password: "Chtingiagem@0132!32",
-      password_confirmation: "Chtingiagem@0132!32",
-      dob: "2000-02-10"
-    }
+    user_params = build(:create_user_params)
     result = User::Create.call(params: user_params)
     expect(result).to be_success
   end
@@ -17,13 +11,7 @@ RSpec.describe User::Create do
     context "invalid username" do
       it "is already present" do
         create(:user, username: "username_01")
-        user_params = {
-          username: "username_01",
-          email: "testuser@gmail.com",
-          password: "Chtingiagem@0132!32",
-          password_confirmation: "Chtingiagem@0132!32",
-          dob: "2000-02-10"
-        }
+        user_params = build(:create_user_params, username: "username_01")
     
         result = User::Create.call(params: user_params)
         expect(result).to be_failure
@@ -31,13 +19,7 @@ RSpec.describe User::Create do
       end
 
       it "is empty" do
-        user_params = {
-          username: "",
-          email: "testuser@gmail.com",
-          password: "Chtingiagem@0132!32",
-          password_confirmation: "Chtingiagem@0132!32",
-          dob: "2000-02-10"
-        }
+        user_params = build(:create_user_params, username: "")
 
         result = User::Create.call(params: user_params)
         expect(result).to be_failure
@@ -45,13 +27,7 @@ RSpec.describe User::Create do
       end
 
       it "is not in correct format" do
-        user_params = {
-          username: "username!@$",
-          email: "testuser@gmail.com",
-          password: "Chtingiagem@0132!32",
-          password_confirmation: "Chtingiagem@0132!32",
-          dob: "2000-02-10"
-        }
+        user_params = build(:create_user_params, :invalid_username)
 
         result = User::Create.call(params: user_params)
         expect(result).to be_failure
@@ -61,13 +37,7 @@ RSpec.describe User::Create do
 
     context "invalid email" do
       it "is empty" do
-        user_params = {
-          username: "username_01",
-          email: "",
-          password: "Chtingiagem@0132!32",
-          password_confirmation: "Chtingiagem@0132!32",
-          dob: "2000-02-10"
-        }
+        user_params = build(:create_user_params, email:"")
         result = User::Create.call(params: user_params)
         expect(result).to be_failure
         expect(result['contract.default'].errors[:email]).to include("Email can't be blank.")
@@ -75,26 +45,14 @@ RSpec.describe User::Create do
 
       it "is already present" do
         create(:user, email: "testuser@gmail.com")
-        user_params = {
-          username: "username_01",
-          email: "testuser@gmail.com",
-          password: "Chtingiagem@0132!32",
-          password_confirmation: "Chtingiagem@0132!32",
-          dob: "2000-02-10"
-        }
+        user_params = build(:create_user_params, email: "testuser@gmail.com")
         result = User::Create.call(params: user_params)
         expect(result).to be_failure
         expect(result['contract.default'].errors[:email]).to include("We already have an account with this email.")
       end
 
       it "is not valid" do
-        user_params = {
-          username: "username_01",
-          email: "testuser1212dds",
-          password: "Chtingiagem@0132!32",
-          password_confirmation: "Chtingiagem@0132!32",
-          dob: "2000-02-10"
-        }
+        user_params = build(:create_user_params, :invalid_email)
         result = User::Create.call(params: user_params)
         expect(result).to be_failure
         expect(result['contract.default'].errors[:email]).to include("Email is not in a valid format.")
@@ -103,13 +61,7 @@ RSpec.describe User::Create do
 
     context "invalid password" do
       it "is empty" do
-        user_params = {
-          username: "username_01",
-          email: "testuser@gmail.com",
-          password: "",
-          password_confirmation: "Chtingiagem@0132!32",
-          dob: "2000-02-10"
-        }
+        user_params = build(:create_user_params, password: "")
 
         result = User::Create.call(params: user_params)
         expect(result).to be_failure
@@ -117,26 +69,14 @@ RSpec.describe User::Create do
       end
 
       it "is not valid" do
-        user_params = {
-          username: "username_01",
-          email: "testuser1212dds",
-          password: "123456",
-          password_confirmation: "123456",
-          dob: "2000-02-10"
-        }
+        user_params = build(:create_user_params, :invalid_password)
         result = User::Create.call(params: user_params)
         expect(result).to be_failure
         expect(result['contract.default'].errors[:password]).to include("Password is not in a valid format.")
       end
 
       it "and confirm password dosen't match" do
-        user_params = {
-          username: "username_01",
-          email: "testuser1212dds",
-          password: "Cagsheuemn32!234",
-          password_confirmation: "Cagsscheuemn32!234",
-          dob: "2000-02-10"
-        }
+        user_params = build(:create_user_params, password_confirmation: "Cagsscheuemn32!234")
         result = User::Create.call(params: user_params)
         expect(result).to be_failure
         expect(result['contract.default'].errors[:password_confirmation]).to include("Your password and confirm password should match.")
@@ -144,13 +84,7 @@ RSpec.describe User::Create do
     end
 
     it "has empty DOB" do
-      user_params = {
-        username: "username_01",
-        email: "testuser@gmail.com",
-        password: "Chtingiagem@0132!32",
-        password_confirmation: "Chtingiagem@0132!32",
-        dob: ""
-      }
+      user_params = build(:create_user_params, dob: "")
 
       result = User::Create.call(params: user_params)
       expect(result).to be_failure

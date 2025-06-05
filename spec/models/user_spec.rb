@@ -8,7 +8,6 @@
 #  confirmation_token     :string
 #  confirmed_at           :datetime
 #  deleted_at             :datetime
-#  description            :text
 #  display_name           :string(30)       not null
 #  dob                    :datetime         not null
 #  email                  :string           default(""), not null
@@ -72,5 +71,45 @@ RSpec.describe User, type: :model do
   it "is not valid with empty email" do
     user = build(:user, email:"")
     expect(user).not_to be_valid
+  end
+
+  describe "followers and following" do
+    let!(:create_user_list){create_list(:user, 10)}
+    let!(:create_group_list){create_list(:group, 9, :group_friend)}
+    let!(:following_count) { 7 }
+    let!(:block_count){2}
+    let!(:follower_count){5}
+    let!(:base_user){create_user_list[0]}
+    let!(:group_users_list){
+      group_users = []
+      (0..8).to_a.each do |i|
+        if i < following_count
+          group_users << create(:group_user, user_id: base_user.id, group_id: create_group_list[i].id, status: "follower")
+        elsif follower_count<= i && i < following_count+block_count
+          group_users << create(:group_user, user_id: base_user.id, group_id: create_group_list[i].id, status: "blocked")
+        else
+          group_users << create(:group_user, user_id: base_user.id, group_id: create_group_list[i].id, status: "non_follower")
+        end
+
+        if i < follower_count
+          group_users << create(:group_user, user_id: create_user_list[i+1].id, group_id: create_group_list[i].id, status: "follower")
+        else 
+          group_users << create(:group_user, user_id: create_user_list[i+1].id, group_id: create_group_list[i].id, status: "non_follower")
+        end
+      end
+      group_users
+    }
+
+    it "valid followers" do
+      expect(base_user.followers.count).to eq(follower_count)
+    end
+
+    it "valid following" do
+      expect(base_user.following.count).to eq(following_count)
+    end
+
+    it "valid blocked users" do
+      expect(base_user.blocked_users.count).to eq(block_count)
+    end
   end
 end

@@ -28,6 +28,10 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Post < ApplicationRecord
+  CONTENT_TYPE = %w[blog images video].freeze
+  STATUS = %w[published video_process failed drafted archived deleted].freeze
+  SCOPE = %w[public private].freeze
+
   has_rich_text :description
   has_many_attached :images
   has_one_attached :video
@@ -36,9 +40,9 @@ class Post < ApplicationRecord
   has_many :comments, dependent: :destroy
   has_many :posts_reactions, dependent: :destroy
 
-  validates :content_type, inclusion: { in: %w[blog images video].freeze }
-  validates :status, inclusion: { in: %w[published video_process failed drafted archived deleted].freeze }
-  validates :scope, inclusion: { in: %w[public private].freeze }
+  validates :content_type, inclusion: { in: CONTENT_TYPE }
+  validates :status, inclusion: { in: STATUS }
+  validates :scope, inclusion: { in: SCOPE }
 
   scope :with_description, ->{
     joins("INNER JOIN action_text_rich_texts on action_text_rich_texts.record_type = 'Post' AND action_text_rich_texts.record_id = posts.id AND action_text_rich_texts.name = 'description'").select("*")

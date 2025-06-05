@@ -29,11 +29,57 @@
 #
 FactoryBot.define do
   factory :post do
-    title{"Post title"}
+    title{Faker::Book.title}
     association :user, factory: :user
     association :content_category, factory: :content_category
     after(:build) do |post|
       post.description = "<p>This is a temp description</p>"
+    end
+
+    factory :published_public_blog_post, traits: [:blog, :scope_public, :status_published]
+
+    trait :blog do
+      content_type{"blog"}
+    end
+
+    trait :image do
+      content_type{"images"}
+    end
+
+    trait :video do
+      content_type{"video"}
+    end
+
+    trait :scope_public do
+      scope{"public"}
+    end
+
+    trait :scope_private do
+      scope{"private"}
+    end
+
+    trait :status_published do
+      status{"published"}
+    end
+
+    trait :status_video_process do
+      status{"video_process"}
+    end
+
+    trait :status_failed do
+      status{"failed"}
+    end
+
+    trait :status_drafted do
+      status{"drafted"}
+    end
+
+    trait :status_archived do
+      status{"archived"}
+    end
+
+    trait :status_deleted do
+      status{"deleted"}
     end
   end
 end
