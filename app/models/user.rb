@@ -16,6 +16,7 @@
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string
+#  scope                  :string           default("public"), not null
 #  unconfirmed_email      :string
 #  username               :string           not null
 #  created_at             :datetime         not null
@@ -30,6 +31,8 @@
 #  index_users_on_username              (username) UNIQUE
 #
 class User < ApplicationRecord
+  SCOPE = %w[public private].freeze
+
   searchkick word_start: [:username, :name]
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -39,6 +42,8 @@ class User < ApplicationRecord
   validates :username, 
     presence: true,
     uniqueness: { case_sensitive: true }
+  
+  validates :scope, inclusion: { in: SCOPE }
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :confirmable

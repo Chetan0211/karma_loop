@@ -16,6 +16,7 @@
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string
+#  scope                  :string           default("public"), not null
 #  unconfirmed_email      :string
 #  username               :string           not null
 #  created_at             :datetime         not null
