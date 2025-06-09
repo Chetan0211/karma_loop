@@ -30,6 +30,7 @@
 #  index_users_on_username              (username) UNIQUE
 #
 class User < ApplicationRecord
+  searchkick word_start: [:username, :name]
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   has_one_attached :profile_picture
@@ -44,6 +45,14 @@ class User < ApplicationRecord
 
   has_many :posts, dependent: :destroy
   has_many :comments, dependent: :destroy, inverse_of: :commenter
+
+  def search_data
+    {
+      username: username,
+      name: display_name,
+      user_deleted: deleted_at.present?
+    }
+  end
 
   def following
     group = Group.includes(:group_users).where(type:"friend", group_users:{user_id: self.id, status: "follower"}).pluck(:group_id);

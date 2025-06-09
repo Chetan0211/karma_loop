@@ -89,3 +89,5 @@ gem "sidekiq", "~> 7.3"
 gem "redis", "~> 5.0.6"
 gem 'aws-sdk-s3', '~> 1'
 gem "dotenv-rails", "~> 3.1"
+gem "searchkick", '~> 5.0'
+gem 'elasticsearch', '~> 8.0'

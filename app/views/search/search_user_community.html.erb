@@ -1,0 +1,156 @@
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Search Input Bar (Could be pre-filled from header search) -->
+  <div class="mb-8">
+    <form action="#" method="GET"> <!-- Update action to your search endpoint -->
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+        </div>
+        <input
+                        type="search"
+                        name="q"
+                        id="main-search"
+                        x-model="searchQuery"
+                        class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-lg"
+                        placeholder="Search k-loop..."
+                    >
+        </div>
+      </form>
+    </div>
+    <!-- Tabs for Filtering Results -->
+    <div class="mb-6">
+      <div class="border-b border-gray-200">
+        <nav class="-mb-px flex space-x-6 sm:space-x-8" aria-label="Tabs">
+          <button @click="activeSearchTab = 'all'"
+                            :class="{ 'border-purple-500 text-purple-600': activeSearchTab === 'all', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeSearchTab !== 'all' }"
+                            class="whitespace-nowrap pb-3 px-1 border-b-2 font-medium text-sm transition-colors duration-150 ease-in-out focus:outline-none">
+            All
+          </button>
+          <button @click="activeSearchTab = 'users'"
+                            :class="{ 'border-purple-500 text-purple-600': activeSearchTab === 'users', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeSearchTab !== 'users' }"
+                            class="whitespace-nowrap pb-3 px-1 border-b-2 font-medium text-sm transition-colors duration-150 ease-in-out focus:outline-none">
+            Users
+          </button>
+          <button @click="activeSearchTab = 'communities'"
+                            :class="{ 'border-purple-500 text-purple-600': activeSearchTab === 'communities', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeSearchTab !== 'communities' }"
+                            class="whitespace-nowrap pb-3 px-1 border-b-2 font-medium text-sm transition-colors duration-150 ease-in-out focus:outline-none">
+            Communities
+          </button>
+        </nav>
+      </div>
+    </div>
+    <!-- Search Results Area -->
+    <div class="space-y-6">
+      <!-- "All" Results Tab Content -->
+      <div x-show="activeSearchTab === 'all'" x-transition>
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Results for "<span x-text="searchQuery"></span>"</h2>
+        <!-- User Results (show a few if 'all' is selected) -->
+        <section class="mb-8" x-show="users.length > 0">
+          <h3 class="text-lg font-medium text-gray-700 mb-3">Users</h3>
+          <div class="bg-white shadow-lg rounded-lg overflow-hidden divide-y divide-gray-200">
+            <template x-for="user in users.slice(0, 3)" :key="'all-user-' + user.id">
+              <a href="#" class="block p-4 hover:bg-gray-50 transition-colors duration-150">
+                <div class="flex items-center space-x-4">
+                  <span class="inline-block h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                    <i :class="user.avatarIcon" class="fa-solid text-gray-500 text-lg"></i>
+                  </span>
+                  <div>
+                    <p class="text-sm font-semibold text-purple-600 truncate" x-text="user.username"></p>
+                    <p class="text-xs text-gray-500 line-clamp-1" x-text="user.bio"></p>
+                  </div>
+                  <div class="ml-auto text-xs text-gray-400 flex-shrink-0">
+                    <i class="fa-solid fa-star text-yellow-400"></i>
+                    <span x-text="user.karma + ' Karma'"></span>
+                  </div>
+                </div>
+              </a>
+            </template>
+            <button @click="activeSearchTab = 'users'" class="block w-full text-left p-4 text-sm font-medium text-purple-600 hover:bg-purple-50 transition-colors duration-150" x-show="users.length > 3">
+              View all user results &rarr;
+            </button>
+          </div>
+        </section>
+        <!-- Community Results (show a few if 'all' is selected) -->
+        <section x-show="communities.length > 0">
+          <h3 class="text-lg font-medium text-gray-700 mb-3">Communities</h3>
+          <div class="bg-white shadow-lg rounded-lg overflow-hidden divide-y divide-gray-200">
+            <template x-for="community in communities.slice(0, 3)" :key="'all-community-' + community.id">
+              <a href="#" class="block p-4 hover:bg-gray-50 transition-colors duration-150">
+                <div class="flex items-center space-x-4">
+                  <span class="inline-block h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
+                    <i :class="community.icon" class="fa-solid text-purple-600 text-lg"></i> <!-- Icon class is now dynamic but data is same -->
+                  </span>
+                  <div class="min-w-0 flex-1">
+                    <p class="text-sm font-semibold text-purple-600 truncate" x-text="community.name"></p>
+                    <p class="text-xs text-gray-500 line-clamp-1" x-text="community.description"></p>
+                  </div>
+                  <div class="ml-auto text-xs text-gray-500 flex-shrink-0">
+                    <span x-text="community.members.toLocaleString() + ' members'"></span>
+                  </div>
+                </div>
+              </a>
+            </template>
+            <button @click="activeSearchTab = 'communities'" class="block w-full text-left p-4 text-sm font-medium text-purple-600 hover:bg-purple-50 transition-colors duration-150" x-show="communities.length > 3">
+              View all community results &rarr;
+            </button>
+          </div>
+        </section>
+        <div x-show="users.length === 0 && communities.length === 0" class="text-center py-10">
+          <i class="fa-solid fa-search fa-3x text-gray-400 mb-3"></i>
+          <p class="text-gray-500">No results found for "<span x-text="searchQuery"></span>". Try a different search term.</p>
+        </div>
+      </div>
+      <!-- Users Results Tab Content -->
+      <div x-show="activeSearchTab === 'users'" x-transition>
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">User Results for "<span x-text="searchQuery"></span>"</h2>
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden divide-y divide-gray-200">
+          <template x-for="user in users" :key="'user-' + user.id">
+            <a href="#" class="block p-4 hover:bg-gray-50 transition-colors duration-150">
+              <div class="flex items-center space-x-4">
+                <span class="inline-block h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
+                  <i :class="user.avatarIcon" class="fa-solid text-gray-500 text-xl"></i>
+                </span>
+                <div class="min-w-0 flex-1">
+                  <p class="text-md font-semibold text-purple-600 truncate" x-text="user.username"></p>
+                  <p class="text-sm text-gray-500 line-clamp-2" x-text="user.bio"></p>
+                </div>
+                <div class="ml-auto text-sm text-gray-500 flex-shrink-0 flex flex-col items-end">
+                  <span><i class="fa-solid fa-star text-yellow-400 text-xs"></i> <span x-text="user.karma"></span> Karma</span>
+                  <button class="mt-1 text-xs px-3 py-1 bg-purple-500 text-white rounded-full hover:bg-purple-600 transition-colors">Follow</button>
+                </div>
+              </div>
+            </a>
+          </template>
+          <div x-show="users.length === 0" class="p-6 text-center text-gray-500">
+            No users found matching your search.
+          </div>
+        </div>
+      </div>
+      <!-- Communities Results Tab Content -->
+      <div x-show="activeSearchTab === 'communities'" x-transition>
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Community Results for "<span x-text="searchQuery"></span>"</h2>
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden divide-y divide-gray-200">
+          <template x-for="community in communities" :key="'community-' + community.id">
+            <a href="#" class="block p-4 hover:bg-gray-50 transition-colors duration-150">
+              <div class="flex items-center space-x-4">
+                <span class="inline-block h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center">
+                  <i :class="community.icon" class="fa-solid text-purple-600 text-xl"></i> <!-- Icon class is now dynamic but data is same -->
+                </span>
+                <div class="min-w-0 flex-1">
+                  <p class="text-md font-semibold text-purple-600 truncate" x-text="community.name"></p>
+                  <p class="text-sm text-gray-500 line-clamp-2" x-text="community.description"></p>
+                </div>
+                <div class="ml-auto text-sm text-gray-500 flex-shrink-0 flex flex-col items-end">
+                  <span x-text="community.members.toLocaleString() + ' members'"></span>
+                  <button class="mt-1 text-xs px-3 py-1 bg-purple-500 text-white rounded-full hover:bg-purple-600 transition-colors">Join</button>
+                </div>
+              </div>
+            </a>
+          </template>
+          <div x-show="communities.length === 0" class="p-6 text-center text-gray-500">
+            No communities found matching your search.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

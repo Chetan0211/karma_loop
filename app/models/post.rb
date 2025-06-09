@@ -28,6 +28,7 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Post < ApplicationRecord
+  searchkick word_start: [:post_title, :post_description]
   CONTENT_TYPE = %w[blog images video].freeze
   STATUS = %w[published video_process failed drafted archived deleted].freeze
   SCOPE = %w[public private].freeze
@@ -47,6 +48,17 @@ class Post < ApplicationRecord
   scope :with_description, ->{
     joins("INNER JOIN action_text_rich_texts on action_text_rich_texts.record_type = 'Post' AND action_text_rich_texts.record_id = posts.id AND action_text_rich_texts.name = 'description'").select("*")
   }
+
+  def search_data
+    {
+      post_id: id,
+      post_title: title,
+      post_description: description&.to_plain_text,
+      post_deleted: deleted_at.present?,
+      post_status: status,
+      post_scope: scope
+    }
+  end
 
   def current_user_reaction(user_id)
     posts_reactions.where(user_id: user_id).first&.reaction

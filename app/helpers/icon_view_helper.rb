@@ -114,6 +114,11 @@ module IconViewHelper
     tag.i(class: "fa-solid fa-circle-info #{classes.strip}",**options.except(:class))
   end
 
+  def file_lines_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-file-lines #{classes.strip}",**options.except(:class))
+  end
+
   def icon(icon:, options:{})
     result = nil
     begin

@@ -18,6 +18,10 @@ Rails.application.routes.draw do
 
   # background jobs
   get "video_transcode" => "background#video_transcode", as: :video_transcode
+
+  #search routes
+  get "autocomplete" => "search#autocomplete", as: :autocomplete
+  get "search_user_community" => "search#search_user_community", as: :search_user_community
   
   resources :admin, only: [:index]
 
@@ -30,6 +34,7 @@ Rails.application.routes.draw do
 
   #settings routes
   get "site_settings" => "settings#site_settings", as: :site_settings
+  resources :search, only: [:index]
 
   # Defines the root path route ("/")
   root "home#index"

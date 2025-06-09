@@ -12,5 +12,13 @@
 #  index_content_categories_on_category  (category) UNIQUE
 #
 class ContentCategory < ApplicationRecord
+  searchkick
   has_many :posts
+
+  def search_data
+    {
+      category: category,
+      post_id: posts.pluck(:id)
+    }
+  end
 end

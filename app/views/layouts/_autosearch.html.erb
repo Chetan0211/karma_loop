@@ -1,0 +1,39 @@
+<!--
+Params to pass here:
+users
+posts
+-->
+<turbo-frame id="search_results">
+  <% if posts.count > 0 %>
+    <h3 class="px-2 py-1 text-lg font-semibold text-[var(--txt-clr-default)] uppercase">Posts</h3>
+    <% posts.each do |post| %>
+      <%= link_to post_path(id: post.id), data:{turbo_frame:"_top"}, class:"block px-2 py-2 text-sm text-[var(--txt-clr-default)] hover:bg-[var(--background-clr-thick)] rounded-md" do %>
+        <div class="flex items-center">
+          <span class="h-6 w-6 bg-[var(--background-clr-strong)] flex items-center justify-center mr-3 rounded">
+            <%= icon(icon: :file_lines_icon, options: {class: "text-[var(--txt-clr-subtle)]"}) %>
+          </span>
+          <div>
+            <p class="truncate"><%= post.title %></p>
+            <p class="text-xs text-[var(--txt-clr-lite)]">u/<%= post.user.username %></p>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
+  <% if users.count > 0 %>
+    <h3 class="px-2 py-1 text-lg font-semibold text-[var(--txt-clr-default) uppercase">Users</h3>
+    <% users.each do |user| %>
+      <%= link_to user_profile_path(id: user.id), data:{turbo_frame:"_top"}, class:"flex items-center px-2 py-2 text-sm text-[var(--txt-clr-default)] hover:bg-[var(--background-clr-thick)] rounded-md" do %>
+        <span class="h-6 w-6 rounded-full bg-[var(--background-clr-strong)] flex items-center justify-center mr-3">
+          <%= icon(icon: :regular_user_icon, options: {class: "text-[var(--txt-clr-subtle)]"}) %>
+        </span>
+        <span><%= user.username %></span>
+      <% end %>
+    <% end %>
+  <% end %>
+  <% if users.count == 0 && posts.count == 0 %>
+    <div class="p-4 text-center text-sm text-[var(--txt-clr-subtle)]">
+      No results found.
+    </div>
+  <% end %>
+</turbo-frame>
