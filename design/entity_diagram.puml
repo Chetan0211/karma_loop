@@ -19,6 +19,7 @@ entity users{
   **deleted_at**: timestamp without timezone
   **display_name**: character varying[30]
   **bio**: character varying[200]
+  **scope**: character varying
 }
 
 entity content_categories{
