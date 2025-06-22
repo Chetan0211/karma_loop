@@ -36,6 +36,7 @@ class User < ApplicationRecord
   searchkick word_start: [:username, :name]
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  has_many :notifications, as: :recipient
   has_one_attached :profile_picture
   has_many :groups, class_name: "Group", foreign_key: "admin_id"
   has_many :group_users
@@ -68,6 +69,15 @@ class User < ApplicationRecord
   end
   def blocked_users
     group = Group.includes(:group_users).where(type:"friend", group_users:{user_id: self.id, status: "blocked"}).pluck(:group_id);
+    User.includes(:group_users).where(group_users:{group_id: group}).where.not(id: self.id);
+  end
+
+  def friend_requests
+    User.includes(:group_users).where(group_users:{group_id: friend_groups, status:"requested"}).where.not(id: self.id);
+  end
+
+  def requested
+    group = Group.includes(:group_users).where(type:"friend", group_users:{user_id: self.id, status: "requested"}).pluck(:group_id);
     User.includes(:group_users).where(group_users:{group_id: group}).where.not(id: self.id);
   end
   

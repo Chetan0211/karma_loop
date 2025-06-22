@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_06_09_171351) do
+ActiveRecord::Schema[7.1].define(version: 2025_06_19_160852) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -100,6 +100,30 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_09_171351) do
     t.index ["type"], name: "index_groups_on_type"
   end
 
+  create_table "notification_events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "type", null: false
+    t.string "record_type", null: false
+    t.uuid "record_id", null: false
+    t.jsonb "params"
+    t.integer "notifications_count", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_id"], name: "index_notification_events_on_record_id"
+    t.index ["record_type"], name: "index_notification_events_on_record_type"
+  end
+
+  create_table "notifications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "notification_event_id", null: false
+    t.string "recipient_type", null: false
+    t.uuid "recipient_id", null: false
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["notification_event_id"], name: "index_notifications_on_notification_event_id"
+    t.index ["recipient_id"], name: "index_notifications_on_recipient_id"
+    t.index ["recipient_type"], name: "index_notifications_on_recipient_type"
+  end
+
   create_table "posts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "title", null: false
     t.uuid "user_id", null: false
@@ -165,6 +189,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_09_171351) do
   add_foreign_key "group_users", "groups"
   add_foreign_key "group_users", "users"
   add_foreign_key "groups", "users", column: "admin_id"
+  add_foreign_key "notifications", "notification_events"
   add_foreign_key "posts", "content_categories"
   add_foreign_key "posts", "users"
   add_foreign_key "posts_reactions", "posts", on_delete: :cascade

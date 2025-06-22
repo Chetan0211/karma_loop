@@ -59,6 +59,16 @@ module IconViewHelper
     tag.i(class: "fa-solid fa-user #{classes.strip}",**options.except(:class))
   end
 
+  def user_check_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-user-check #{classes.strip}",**options.except(:class))
+  end
+
+  def user_plus_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-user-plus #{classes.strip}",**options.except(:class))
+  end
+
   def regular_user_icon(options={})
     classes = options.fetch(:class,"")
     tag.i(class: "fa-regular fa-user #{classes.strip}",**options.except(:class))
@@ -117,6 +127,11 @@ module IconViewHelper
   def file_lines_icon(options={})
     classes = options.fetch(:class,"")
     tag.i(class: "fa-solid fa-file-lines #{classes.strip}",**options.except(:class))
+  end
+
+  def clock_rotate_left_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-clock-rotate-left #{classes.strip}",**options.except(:class))
   end
 
   def icon(icon:, options:{})

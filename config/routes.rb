@@ -1,7 +1,7 @@
 require 'sidekiq/web'
 
 Rails.application.routes.draw do
-  devise_for :users, controllers:{registrations: 'users/registrations'}
+  devise_for :users, controllers:{registrations: 'users/registrations', sessions: 'users/sessions'}
   mount Sidekiq::Web => '/sidekiq'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -31,6 +31,10 @@ Rails.application.routes.draw do
     get "post_reaction" => "post#post_reaction", as: :post_reaction
     get "comment_reaction" => "post#comment_reaction", as: :comment_reaction
   end
+
+  # friend routes
+  get "friend_request/:id" => "friends#friend_request", as: :friend_request
+  get "remove_friend/:id" => "friends#remove_friend_request", as: :remove_friend
 
   #settings routes
   get "site_settings" => "settings#site_settings", as: :site_settings

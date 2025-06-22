@@ -1,5 +1,39 @@
 <div data-controller="home--index" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="hidden md:block md:col-span-1">
+      <div class="sticky top-20">
+        <nav class="space-y-1">
+          <%= link_to user_profile_path(id: current_user.id), class: "text-[var(--txt-clr-muted)] hover:bg-[var(--background-clr-thick)] hover:text-[var(--txt-clr-strong)] group flex items-center px-3 py-2 text-sm font-medium rounded-md" do %>
+            <span class="h-8 w-8 overflow-hidden rounded-full bg-[var(--primary-100)] text-[var(--primary-600)] flex items-center justify-center mr-3">
+              <% if current_user.profile_picture.attached? %>
+                <%= image_tag url_for(current_user.profile_picture) %>
+              <% else %>
+                <%= icon(icon: :user_icon, options: {class: "fa-fw"}) %>
+              <% end %>
+            </span>
+            <%= current_user.display_name %>
+          <% end %>
+          <a href="#" class="text-[var(--txt-clr-muted)] hover:bg-[var(--background-clr-thick)] hover:text-[var(--txt-clr-strong)] group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+            <span class="h-8 w-8 overflow-hidden rounded-full bg-[var(--primary-100)] text-[var(--primary-600)] flex items-center justify-center mr-3">
+              <i class="fa-solid fa-user-group"></i>
+            </span>
+            Friends
+          </a>
+          <a href="#" class="text-[var(--txt-clr-muted)] hover:bg-[var(--background-clr-thick)] hover:text-[var(--txt-clr-strong)] group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+            <span class="h-8 w-8 overflow-hidden rounded-full bg-[var(--primary-100)] text-[var(--primary-600)] flex items-center justify-center mr-3">
+              <i class="fa-solid fa-users"></i>
+            </span>
+            Communities
+          </a>
+          <a href="#" class="text-[var(--txt-clr-muted)] hover:bg-[var(--background-clr-thick)] hover:text-[var(--txt-clr-strong)] group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+            <span class="h-8 w-8 overflow-hidden rounded-full bg-[var(--primary-100)] text-[var(--primary-600)] flex items-center justify-center mr-3">
+              <i class="fa-solid fa-bookmark"></i>
+            </span>
+            Saved
+          </a>
+        </nav>
+      </div>
+    </div>
     <div class="md:col-span-2 space-y-4">
       <% @posts.each do |post| %>
         <%= render "shared/post", post: post %>
