@@ -358,7 +358,7 @@
     --background-clr-body: var(--primary-50);
     --background-clr-clear: theme('colors.white');
 
-    --border-clr-strong: theme('colors.slate.100');
+    --border-clr-lite: theme('colors.slate.100');
     --border-clr-subtle: theme('colors.slate.200');         /* Lighter, for subtle divisions */
     --border-clr-default: theme('colors.slate.300');
     --border-clr-thick: theme('colors.slate.400');
@@ -421,7 +421,7 @@
     --background-clr-clear: theme('colors.black');
 
 
-    --border-clr-strong: theme('colors.slate.900');
+    --border-clr-lite: theme('colors.slate.900');
     --border-clr-subtle: theme('colors.slate.800');         /* Lighter, for subtle divisions */
     --border-clr-default: theme('colors.slate.700');
     --border-clr-thick: theme('colors.slate.600');

@@ -11,9 +11,35 @@
     <%= stylesheet_link_tag "https://ga.jspm.io/npm:cropperjs@1.5.13/dist/cropper.css", rel: "stylesheet" %>
     <%= yield :page_javascript %>
     <%= javascript_importmap_tags %>
+    <script>
+      function getThemeMode() {
+        const theme = localStorage.getItem('dark_mode');
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (theme === 'dark' || (!theme && prefersDark)) {
+          document.documentElement.classList.add('dark');
+          document.documentElement.classList.remove('light');
+        }
+        else {
+          document.documentElement.classList.add('light');
+          document.documentElement.classList.remove('dark');
+        }
+
+        const siteTheme = localStorage.getItem('site_theme');
+        if (siteTheme) {
+          document.documentElement.classList.add(siteTheme);
+        }
+        else {
+          document.documentElement.classList.add('purple');
+        }
+      }
+      getThemeMode();
+    </script>
   </head>
-  <body class="full-screen">
-    <%= turbo_stream_from "#{current_user&.id}error_notifications" %>
+  <body class="full-screen" data-notification-sound-path="<%= asset_path('notification.wav') %>">
+    <% if current_user.present? %>
+      <%= turbo_stream_from "#{current_user&.id}error_notifications" %>
+      <%= turbo_stream_from "ui_#{current_user.id}" %>
+    <% end %>
     <div id="error-notifications">
     </div>
     <%= render 'layouts/flash' %>

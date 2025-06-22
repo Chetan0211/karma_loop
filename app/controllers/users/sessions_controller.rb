@@ -4,19 +4,21 @@ class Users::SessionsController < Devise::SessionsController
   # before_action :configure_sign_in_params, only: [:create]
 
   # GET /resource/sign_in
-  # def new
-  #   super
-  # end
+  def new
+    super
+  end
 
   # POST /resource/sign_in
-  # def create
-  #   super
-  # end
+  def create
+    super
+    cookies.encrypted[:kloop_session_user_id] = { value: current_user.id } if current_user
+  end
 
   # DELETE /resource/sign_out
-  # def destroy
-  #   super
-  # end
+  def destroy
+    super
+    cookies.encrypted[:kloop_session] = nil if current_user == nil
+  end
 
   # protected
 

@@ -21,6 +21,8 @@ module KarmaLoop
     config.generators do |g|
       g.test_framework :rspec, fixture: false
       g.fixture_replacement :factory_bot, dir: "spec/factories"
+      g.orm :active_record, primary_key_type: :uuid
+      g.orm :active_record, foreign_key_type: :uuid
     end
 
     # Configuration for the application, engines, and railties goes here.

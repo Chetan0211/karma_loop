@@ -1,0 +1,17 @@
+<!--
+params to pass here:
+notification
+-->
+<%= link_to notification.notification_event.type.constantize.link(notification), class:"flex items-start px-4 py-3 text-sm text-[var(--txt-clr-default)] hover:bg-[var(--background-clr-thick)]" do %>
+  <span class="h-8 w-8 overflow-hidden rounded-full bg-[var(--background-clr-strong)] flex items-center justify-center">
+    <% if notification.recipient.profile_picture.attached? %>
+      <%= image_tag url_for(notification.recipient.profile_picture) %>
+    <% else %>
+      <%= icon(icon: :user_icon, options:{class: "text-[var(--txt-clr-subtle)] text-sm"} ) %>
+    <% end %>
+  </span>
+  <div class="ml-3 w-0 flex-1">
+    <p class="truncate"><%= notification.notification_event.type.constantize.message(notification) %></p>
+    <p class="text-xs text-[var(--txt-clr-subtle)]"><%= PostHelper.calculate_created_date(notification.created_at) %></p>
+  </div>
+<% end %>

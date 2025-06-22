@@ -109,3 +109,7 @@ body {
 .trix-content pre{
   background-color: var(--background-clr-thick) !important;
 }
+
+[x-cloak] {
+  display: none !important;
+}
