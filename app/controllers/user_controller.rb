@@ -6,6 +6,9 @@ class UserController < ApplicationController
     @posts = Post.where(user: @user)
   end
 
+  def connections
+  end
+
   def update_profile_picture
     picture = profile_picture_params
     UpdateProfilePicJob.perform_now(params[:id], picture["profile_picture"], picture["crop_x"], picture["crop_y"], picture["crop_size"])

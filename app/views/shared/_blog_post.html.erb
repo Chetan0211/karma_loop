@@ -2,7 +2,7 @@
 Params to pass here:
 post: Model
 -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div id="<%= post.id %>" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     <div class="md:col-span-2 space-y-4">
       <div class="bg-[var(--background-clr-clear)] rounded-md shadow overflow-hidden">
@@ -25,35 +25,31 @@ post: Model
           <div class="flex items-center space-x-2 sm:space-x-4 text-xs font-medium text-[var(--txt-clr-subtle)] border-t border-b py-2 my-4">
             <div id="reaction_div_parent_<%= post.id %>" class="flex items-center space-x-1 p-1 rounded <%= post.current_user_reaction(current_user.id) %>">
               <div>
-                <%= link_to post_post_reaction_path(post_id: post.id, reaction:"like"), 
+                <%= link_to post_reaction_path(post_id: post.id, reaction:"like"), 
                   id:"like_button_parent_#{post.id}",
-                  remote: true,
                   class: "p-1 rounded hover:bg-[var(--background-clr-strong)] text-[var(--txt-clr-subtle)] hover:text-[var(--primary-600)] #{post.current_user_reaction(current_user.id) == 'like' ? "hidden" : ""}",
-                  data: { turbo_method: "get" } do %>
+                  data: { turbo_method: "post" } do %>
                   <%= icon(icon: :like_icon, options: {class:"fa-fw text-base w-5 h-5"}) %>
                 <% end %>
-                <%= link_to post_post_reaction_path(post_id: post.id, reaction: nil), 
+                <%= link_to post_reaction_path(post_id: post.id, reaction: nil), 
                   id:"like_button_parent_liked_#{post.id}",
-                  remote: true,
                   class: "p-1 rounded hover:bg-[var(--background-clr-strong)] text-[var(--primary-600)] #{post.current_user_reaction(current_user.id) == 'like' ? "" : "hidden"}",
-                  data: { turbo_method: "get" } do %>
+                  data: { turbo_method: "post" } do %>
                   <%= icon(icon: :like_icon, options: {class:"fa-fw text-base w-5 h-5"}) %>
                 <% end %>
               </div>
               <span class="font-semibold text-[var(--txt-clr-default)] w-6 text-center"><%= post.likes - post.dislikes %></span>
               <div>
-                <%= link_to post_post_reaction_path(post_id: post.id, reaction:"dislike"), 
+                <%= link_to post_reaction_path(post_id: post.id, reaction:"dislike"), 
                   id:"dislike_button_parent_#{post.id}",
-                  remote: true, 
                   class: "p-1 rounded hover:bg-[var(--background-clr-strong)] text-[var(--txt-clr-subtle)] hover:text-[var(--secondary-600)] #{post.current_user_reaction(current_user.id) == 'dislike' ? "hidden" : ""}",
-                  data: { turbo_method: "get" } do %>
+                  data: { turbo_method: "post" } do %>
                   <%= icon(icon: :dislike_icon, options: {class:"fa-fw text-base w-5 h-5"}) %>
                 <% end %>
-                <%= link_to post_post_reaction_path(post_id: post.id, reaction: nil), 
+                <%= link_to post_reaction_path(post_id: post.id, reaction: nil), 
                   id:"dislike_button_parent_disliked_#{post.id}",
-                  remote: true, 
                   class: "p-1 rounded hover:bg-[var(--background-clr-strong)] text-[var(--secondary-600)] #{post.current_user_reaction(current_user.id) == 'dislike' ? "" : "hidden"}",
-                  data: { turbo_method: "get" } do %>
+                  data: { turbo_method: "post" } do %>
                   <%= icon(icon: :dislike_icon, options: {class:"fa-fw text-base w-5 h-5"}) %>
                 <% end %>
               </div>

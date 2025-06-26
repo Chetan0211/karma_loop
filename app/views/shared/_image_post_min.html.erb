@@ -5,7 +5,7 @@ post: Model
 <% content_for :page_javascript do %>
   <%= javascript_include_tag "post/image_post", "data-turbo-track": "reload" %>
 <% end %>
-<div class="bg-[var(--background-clr-clear)] rounded-md shadow overflow-hidden flex hover:shadow-lg transition-shadow duration-150" x-data="carousel(<%= post.images.count %>)">
+<div id="<%= post.id %>" class="bg-[var(--background-clr-clear)] rounded-md shadow overflow-hidden flex hover:shadow-lg transition-shadow duration-150" x-data="carousel(<%= post.images.count %>)">
   <%= render "shared/posts_like_unlike", post: post %>
 
   <div class="p-3 sm:p-4 relative flex-grow min-w-0 hover:bg-[var(--background-clr-thick)]">

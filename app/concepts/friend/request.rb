@@ -3,6 +3,7 @@ class Friend::Request < Trailblazer::Operation
   step :fetch_or_create_group
   step :follow_request
   step :send_notifications
+  step :update_ui
 
   def prepare_data(result, params:, **)
     result[:from] = User.find(params[:from])
@@ -11,7 +12,7 @@ class Friend::Request < Trailblazer::Operation
 
   def fetch_or_create_group(result, **)
     result[:group] = nil
-    group_user = result[:to].group_users.includes(:group).where(group:{id: result[:from].group_users.pluck(:group_id), type: "friend"}).first
+    group_user = result[:from].group_users.includes(:group).where(group:{id: result[:to].group_users.pluck(:group_id), type: "friend"}).first
     if group_user.present?
       result[:group] = group_user.group
     else
@@ -31,5 +32,17 @@ class Friend::Request < Trailblazer::Operation
   end
   def send_notifications(result, **)
     Notification::FriendRequestNotification.with(record: result[:from],from: result[:from], to: result[:to], group: result[:group], group_user: result[:group_user]).deliver_later(result[:to])
+  end
+
+  def update_ui(result, **)
+    Turbo::StreamsChannel.broadcast_render_to("ui_#{result[:from].id}", 
+      template: "friends/friend_request", 
+      locals:{send_to: result[:from], from: result[:from], to: result[:to]},
+    )
+
+    Turbo::StreamsChannel.broadcast_render_to("ui_#{result[:to].id}", 
+      template: "friends/friend_request", 
+      locals:{send_to: result[:to], from: result[:from], to: result[:to]},
+    )
   end
 end

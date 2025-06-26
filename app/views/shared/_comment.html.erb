@@ -23,15 +23,13 @@ comment: Model
         <%= link_to post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction: "like"), 
           id:"comment_like_button_#{comment.id}", 
           class: "flex items-center space-x-1 hover:text-[var(--primary-600)] #{comment.current_user_reaction(current_user.id) == "like" ? "hidden" : ""}",
-          remote: true, 
-          data: { turbo_method: "get" }  do %>
+          data: { turbo_method: "post" }  do %>
           <%= icon(icon: :like_icon, options:{class:"fa-fw text-base w-4 h-4"}) %>
         <% end %>
         <%= link_to post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction: nil), 
           id:"comment_like_button_liked_#{comment.id}", 
           class: "flex items-center space-x-1 text-[var(--primary-600)] #{comment.current_user_reaction(current_user.id) == "like" ? "" : "hidden"}",
-          remote: true, 
-          data: { turbo_method: "get" }  do %>
+          data: { turbo_method: "post" }  do %>
           <%= icon(icon: :like_icon, options:{class:"fa-fw text-base w-4 h-4"}) %>
         <% end %>
       </div>
@@ -40,15 +38,13 @@ comment: Model
         <%= link_to post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction: "dislike"), 
           id:"comment_dislike_button_#{comment.id}", 
           class: "flex items-center space-x-1 hover:text-[var(--secondary-600)] #{comment.current_user_reaction(current_user.id) == "dislike" ? "hidden" : ""}",
-          remote: true, 
-          data: { turbo_method: "get" } do %>
+          data: { turbo_method: "post" } do %>
           <%= icon(icon: :dislike_icon, options:{class:"fa-fw text-base w-4 h-4"}) %>
         <% end %>
         <%= link_to post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction: nil), 
           id:"comment_dislike_button_disliked_#{comment.id}", 
           class: "flex items-center space-x-1 text-[var(--secondary-600)] #{comment.current_user_reaction(current_user.id) == "dislike" ? "" : "hidden"}",
-          remote: true, 
-          data: { turbo_method: "get" } do %>
+          data: { turbo_method: "post" } do %>
           <%= icon(icon: :dislike_icon, options:{class:"fa-fw text-base w-4 h-4"}) %>
         <% end %>
       </div>

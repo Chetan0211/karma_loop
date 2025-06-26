@@ -1,0 +1,20 @@
+<!--
+params to pass here:
+current_user
+user
+
+Alphine values:
+hasIncomingRequest
+-->
+<div id="incoming_request_tab" x-init="hasIncomingRequest=<%= current_user.friend_request?(user) %>" x-show="hasIncomingRequest" x-cloak x-transition class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+  <div class="bg-[var(--background-clr-clear)] rounded-lg p-4 flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
+    <div class="flex items-center">
+      <i class="fa-solid fa-user-clock text-[var(--primary-600)] mr-3 text-lg"></i>
+      <p class="text-sm font-medium text-[var(--primary-800)]">Sent you a friend request.</p>
+    </div>
+    <div class="flex items-center space-x-3 flex-shrink-0">
+      <%= button_to "Accept", request_response_path(id: user.id, status: "accept"), method: :patch, data:{turbo_method: "patch"}, class:"px-4 py-1.5 text-sm font-semibold text-[var(--txt-clr-default)] bg-[var(--primary-600)] hover:bg-[var(--primary-700)] rounded-full transition-colors duration-150", "@click"=>"hasIncomingRequest = false" %>
+      <%= button_to "Decline", request_response_path(id: user.id, status: "decline"), method: :patch, data:{turbo_method: "patch"}, class:"px-4 py-1.5 text-sm font-semibold text-[var(--txt-clr-default)] bg-[var(--background-clr-thick)] hover:bg-[var(--background-clr-strong)] rounded-full transition-colors duration-150", "@click"=>"hasIncomingRequest = false" %>
+    </div>
+  </div>
+</div>

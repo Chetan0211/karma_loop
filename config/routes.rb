@@ -15,8 +15,9 @@ Rails.application.routes.draw do
   patch "update_profile/:id" => "user#update_profile", as: :update_profile
   delete "remove_profile_picture/:id" => "user#remove_profile_picture", as: :remove_profile_picture
   patch "update_password/:id" => "user#update_password", as: :update_password
+  get "connections" => "user#connections", as: :connections
 
-  # background jobs
+  # background jobs just for test
   get "video_transcode" => "background#video_transcode", as: :video_transcode
 
   #search routes
@@ -28,13 +29,14 @@ Rails.application.routes.draw do
   # post routes
   resources :post, only: [:new, :create, :show] do
     post "comment" => "post#comment", as: :add_comment
-    get "post_reaction" => "post#post_reaction", as: :post_reaction
-    get "comment_reaction" => "post#comment_reaction", as: :comment_reaction
+    post "reaction" => "post#post_reaction", as: :reaction
+    post "comment_reaction" => "post#comment_reaction", as: :comment_reaction
   end
 
   # friend routes
-  get "friend_request/:id" => "friends#friend_request", as: :friend_request
-  get "remove_friend/:id" => "friends#remove_friend_request", as: :remove_friend
+  post "friend_request/:id" => "friends#friend_request", as: :friend_request
+  patch "unfollow_friend/:id" => "friends#unfollow_friend", as: :unfollow_friend
+  patch "request_response/:id" => "friends#request_response", as: :request_response
 
   #settings routes
   get "site_settings" => "settings#site_settings", as: :site_settings

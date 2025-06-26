@@ -3,18 +3,18 @@ params to pass here:
 user
 -->
 <div id="<%= current_user.id %>_follow_button_<%= user.id %>" class="flex-1" >
-  <% if current_user.following.include?(user) %>
-    <%= button_to remove_friend_path(id: user.id), method: :get, data:{turbo_method: "get"}, class: "bg-[var(--background-clr-clear)] w-full h-full hover:bg-[var(--background-clr-body)] text-[var(--txt-clr-default)] border border-[var(--border-clr-default)] text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out" do %>
+  <% if current_user.following?(user) %>
+    <%= button_to unfollow_friend_path(id: user.id), method: :patch, data:{turbo_method: "patch"}, class: "bg-[var(--background-clr-clear)] w-full h-full hover:bg-[var(--background-clr-body)] text-[var(--txt-clr-default)] border border-[var(--border-clr-default)] text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out" do %>
       <%= icon(icon: :user_check_icon, options:{class: "mr-1"}) %>
       <span>Following</span>
     <% end %>
-  <% elsif current_user.requested.include?(user) %>
-    <%= button_to remove_friend_path(id: user.id), method: :get, data:{turbo_method: "get"}, class: "bg-[var(--background-clr-thick)] w-full h-full hover:bg-[var(--background-clr-strong)] text-[var(--txt-clr-default)] border border-[var(--border-clr-default)] text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out" do %>
+  <% elsif current_user.requested?(user) %>
+    <%= button_to unfollow_friend_path(id: user.id), method: :patch, data:{turbo_method: "patch"}, class: "bg-[var(--background-clr-thick)] w-full h-full hover:bg-[var(--background-clr-strong)] text-[var(--txt-clr-default)] border border-[var(--border-clr-default)] text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out" do %>
       <%= icon(icon: :clock_rotate_left_icon, options:{class: "mr-1"}) %>
       <span>Requested</span>
     <% end %>
   <% else %>
-    <%= button_to friend_request_path(id: user.id), method: :get, data:{turbo_method: "get"}, class: "bg-[var(--primary-600)] w-full h-full hover:bg-[var(--primary-700)] text-[var(--txt-clr-default)] border border-[var(--primary-500)] text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out" do %>
+    <%= button_to friend_request_path(id: user.id), method: :post, data:{turbo_method: "post"}, class: "bg-[var(--primary-600)] w-full h-full hover:bg-[var(--primary-700)] text-[var(--txt-clr-default)] border border-[var(--primary-500)] text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out" do %>
       <%= icon(icon: :user_plus_icon, options:{class: "mr-1"}) %>
       <span>Follow</span>
     <% end %>

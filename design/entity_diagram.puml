@@ -131,6 +131,30 @@ entity active_storage_varient_records{
   **variation_digest**: character varying
 }
 
+entity notifications{
+  **id**: uuid [**PK**] **<<generated>>**
+  **notification_event_id**: uuid [**FK**]
+  **recipient_type**: character varying
+  **recipient_id**: uuid
+  **read_at**: timestamp without timezone
+  **created_at**: timestamp without timezone
+  **updated_at**: timestamp without timezone
+}
+
+entity notification_events{
+  **id**: uuid [**PK**] **<<generated>>**
+  **type**: character varying
+  **record_id**: uuid
+  **record_type**: character varying
+  **params**: jsonb
+  **notifications_count**: integer
+  **created_at**: timestamp without timezone
+  **updated_at**: timestamp without timezone
+}
+
+notification_events ||--{ notifications
+users ||--{ notifications : "using record_id"
+
 posts ||--{ action_text_rich_texts : "using record_id"
 comments ||--{ action_text_rich_texts : "using record_id"
 

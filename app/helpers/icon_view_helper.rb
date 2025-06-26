@@ -69,6 +69,11 @@ module IconViewHelper
     tag.i(class: "fa-solid fa-user-plus #{classes.strip}",**options.except(:class))
   end
 
+  def users_slash_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-users-slash #{classes.strip}",**options.except(:class))
+  end
+
   def regular_user_icon(options={})
     classes = options.fetch(:class,"")
     tag.i(class: "fa-regular fa-user #{classes.strip}",**options.except(:class))

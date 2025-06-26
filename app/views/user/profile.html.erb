@@ -1,4 +1,13 @@
-<div data-controller="user--profile" id="profile_component" x-data="{ activeTab: 'posts', isEditModalOpen: false, bio: `<%= @user.bio %>`, displayName: '<%= @user.display_name %>', displayNameError: false, isCropperModalOpen: false, profilePresent: <%= @user.profile_picture.attached? %> }">
+<div data-controller="user--profile" id="profile_component" x-data="{ 
+activeTab: 'posts', 
+isEditModalOpen: false, 
+bio: `<%= @user.bio %>`, 
+displayName: '<%= @user.display_name %>', 
+displayNameError: false, 
+isCropperModalOpen: false, 
+profilePresent: <%= @user.profile_picture.attached? %>,
+hasIncomingRequest: <%= current_user.friend_request?(@user) %>
+}">
   <div class="bg-gradient-to-r from-[var(--primary-500)] to-[var(--secondary-600)] h-32 sm:h-40">
   </div>
   <div class="bg-[var(--background-clr-clear)] shadow-sm pb-4">
@@ -28,6 +37,7 @@
       </div>
     </div>
   </div>
+  <%= render partial: "incoming_request_tab", locals:{user: @user} %>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div class="md:col-span-2 space-y-4">

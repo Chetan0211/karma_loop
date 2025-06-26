@@ -1,7 +1,7 @@
 <!--
 TODO: Yet work on it
 -->
-<div class="bg-[var(--background-clr-clear)] rounded-md shadow overflow-hidden flex hover:shadow-lg transition-shadow duration-150" x-data="carousel(<%= post.images.count %>)">
+<div id="<%= post.id %>" class="bg-[var(--background-clr-clear)] rounded-md shadow overflow-hidden flex hover:shadow-lg transition-shadow duration-150" x-data="carousel(<%= post.images.count %>)">
   <%= render "shared/posts_like_unlike", post: post %>
 
   <div class="p-3 sm:p-4 relative flex-grow min-w-0 hover:bg-[var(--background-clr-thick)]">
@@ -20,15 +20,6 @@ TODO: Yet work on it
 
       <div class="my-3 bg-black rounded-md overflow-hidden relative group aspect-video">
         <div class="video-player w-full h-full" data-hls-url=<%= post.processed_video_url %>></div>
-        <%# <video
-        id="test_player"
-        src="https://placehold.co/v/1280x720/DAE0E6/777777/mp4?text=Video+Placeholder"
-        controls
-        class="w-full h-full object-contain"
-        poster="https://placehold.co/1280x720/cccccc/333333?text=Video+Poster"
-        onerror="this.poster='https://placehold.co/1280x720/f87171/ffffff?text=Video+Error'; this.controls=false;">
-            Your browser does not support the video tag.
-        </video> %>
       </div>
       <div class="text-sm text-[var(--txt-clr-default)] mb-3 max-h-24 line-clamp-3">
         <%= post.description %>

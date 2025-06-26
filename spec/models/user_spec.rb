@@ -102,15 +102,15 @@ RSpec.describe User, type: :model do
     }
 
     it "valid followers" do
-      expect(base_user.followers.count).to eq(follower_count)
+      expect(base_user.all_followers.count).to eq(follower_count)
     end
 
     it "valid following" do
-      expect(base_user.following.count).to eq(following_count)
+      expect(base_user.all_following.count).to eq(following_count)
     end
 
     it "valid blocked users" do
-      expect(base_user.blocked_users.count).to eq(block_count)
+      expect(base_user.all_blocked_users.count).to eq(block_count)
     end
   end
 end

@@ -1,0 +1,9 @@
+<% if send_to.id == from.id  %>
+  <%= turbo_stream.replace "#{from.id}_follow_button_#{to.id}" do %>
+    <%= render partial: "shared/helpers/follow_request_button", locals:{current_user: from, user: to} %>
+  <% end %>
+<% else %>
+  <%= turbo_stream.replace "incoming_request_tab" do %>
+    <%= render partial: "user/incoming_request_tab", locals:{current_user: to, user: from} %>
+  <% end %>
+<% end %>

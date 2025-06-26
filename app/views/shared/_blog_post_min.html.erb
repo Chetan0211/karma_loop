@@ -2,7 +2,7 @@
 Params to pass here:
 post: Model
 -->
-<div class="bg-[var(--background-clr-clear)] rounded-md shadow overflow-hidden flex">
+<div id="<%= post.id %>" class="bg-[var(--background-clr-clear)] rounded-md shadow overflow-hidden flex">
   <%= render "shared/posts_like_unlike", post: post %>
 
   <div class="p-3 sm:p-4 flex-grow min-w-0 relative hover:bg-[var(--background-clr-thick)]">

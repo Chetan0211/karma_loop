@@ -1,0 +1,120 @@
+<!--
+params to pass:
+current_user: devise automatically provides it until you render this from other means
+-->
+<div x-data="{ activeTab: 'following' }">
+  <!-- Tab Navigation -->
+  <div class="border-b border-[var(--border-clr-subtle)] bg-[var(--background-clr-clear)] rounded-t-lg shadow-sm">
+    <nav class="-mb-px flex flex-wrap sm:space-x-8 px-4 sm:px-6">
+      <button @click="activeTab = 'following'" :class="{ 'text-[var(--primary-600)] border-[var(--primary-600)]': activeTab === 'following', 'text-gray-500 border-transparent hover:text-gray-700': activeTab !== 'following' }" class="py-3 px-2 sm:px-4 text-sm font-medium border-b-2 transition-colors">Following</button>
+      <button @click="activeTab = 'followers'" :class="{ 'text-[var(--primary-600)] border-[var(--primary-600)]': activeTab === 'followers', 'text-gray-500 border-transparent hover:text-gray-700': activeTab !== 'followers' }" class="py-3 px-2 sm:px-4 text-sm font-medium border-b-2 transition-colors">Followers</button>
+      <button @click="activeTab = 'requests'" :class="{ 'text-[var(--primary-600)] border-[var(--primary-600)]': activeTab === 'requests', 'text-gray-500 border-transparent hover:text-gray-700': activeTab !== 'requests' }" class="py-3 px-2 sm:px-4 text-sm font-medium border-b-2 transition-colors relative">
+        Requests
+        <!-- Notification Badge -->
+        <%# <span class="absolute top-2 -right-1 flex h-3 w-3">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+        </span> %>
+      </button>
+      <button @click="activeTab = 'requested'" :class="{ 'text-[var(--primary-600)] border-[var(--primary-600)]': activeTab === 'requested', 'text-gray-500 border-transparent hover:text-gray-700': activeTab !== 'requested' }" class="py-3 px-2 sm:px-4 text-sm font-medium border-b-2 transition-colors">Requested</button>
+    </nav>
+  </div>
+  <!-- Tab Content -->
+  <div class="bg-[var(--background-clr-clear)] shadow-lg rounded-b-lg">
+    <!-- Following List -->
+    <div x-show="activeTab === 'following'" id="connections_following_list" class="divide-y divide-[var(--background-clr-strong]">
+      <% if current_user.all_following.empty? %>
+        <div class="p-10 text-center">
+          <%= icon(icon: :users_slash_icon, options:{class: "fa-2x text-[var(--txt-clr-lite)]"}) %>
+          <p class="mt-2 text-sm text-gray-500" x-text="`You are not following anyone yet.`"></p>
+        </div>
+      <% else %>
+        <% current_user.all_following.each do |user| %>
+          <div class="p-4 sm:p-6 flex items-center space-x-4">
+            <span class="h-12 w-12 rounded-full bg-[var(--background-clr-strong)] flex-shrink-0 flex items-center justify-center">
+              <% if user.profile_picture.attached? %>
+                <%= image_tag url_for(user.profile_picture) %>
+              <% else %>
+                <%= icon(icon: :user_icon, options:{class: "text-[var(--txt-clr-subtle)] text-lg sm:text-lg"} ) %>
+              <% end %>
+            </span>
+            <div class="flex-1 min-w-0">
+              <p class="font-semibold text-[var(--primary-600)]"><%= user.display_name %></p>
+              <p class="text-sm text-[var(--txt-clr-subtle)] truncate">u/<%= user.username %></p>
+            </div>
+            <div class="flex-shrink-0">
+              <button class="group w-28 text-center text-sm font-semibold py-1.5 px-3 rounded-full duration-150 text-[var(--txt-clr-default)] border border-[var(--border-clr-default)] hover:border-[var(--primary-400)] hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)]">
+                Unfollow
+              </button>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+    <!-- Followers List -->
+    <div x-show="activeTab === 'followers'" id="connextions_followers_list" style="display: none;" class="divide-y divide-gray-200">
+      <% if current_user.all_followers.empty? %>
+        <div class="p-10 text-center">
+          <%= icon(icon: :users_slash_icon, options:{class: "fa-2x text-[var(--txt-clr-lite)]"}) %>
+          <p class="mt-2 text-sm text-gray-500" x-text="`Let your friends and other people know you are here.`"></p>
+        </div>
+      <% else %>
+        <% current_user.all_followers.each do |user| %>
+          <div class="p-4 sm:p-6 flex items-center space-x-4">
+            <span class="h-12 w-12 rounded-full bg-[var(--background-clr-strong)] flex-shrink-0 flex items-center justify-center">
+              <% if user.profile_picture.attached? %>
+                <%= image_tag url_for(user.profile_picture) %>
+              <% else %>
+                <%= icon(icon: :user_icon, options:{class: "text-[var(--txt-clr-subtle)] text-lg sm:text-lg"} ) %>
+              <% end %>
+            </span>
+            <div class="flex-1 min-w-0">
+              <p class="font-semibold text-[var(--primary-600)]"><%= user.display_name %></p>
+              <p class="text-sm text-[var(--txt-clr-subtle)] truncate">u/<%= user.username %></p>
+            </div>
+            <div class="flex-shrink-0">
+              <button class="group w-28 text-center text-sm font-semibold py-1.5 px-3 rounded-full duration-150 text-[var(--txt-clr-default)] border border-[var(--border-clr-default)] hover:border-[var(--primary-400)] hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)]">
+                Remove
+              </button>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+    <!-- Friend Requests List -->
+    <div x-show="activeTab === 'requests'" x-data="" id="connextions_requests_list" style="display: none;" class="divide-y divide-gray-200">
+      <div class="p-10 text-center">
+        <%= icon(icon: :users_slash_icon, options:{class: "fa-2x text-[var(--txt-clr-lite)]"}) %>
+        <p class="mt-2 text-sm text-gray-500" x-text="`No one requested at this point.`"></p>
+      </div>
+      <!-- User Item -->
+      <div class="p-4 sm:p-6 flex items-center space-x-4">
+        <span class="inline-block h-12 w-12 rounded-full bg-gray-200 flex-shrink-0"></span>
+        <div class="flex-1 min-w-0">
+          <a href="#" class="font-semibold text-purple-600 hover:underline">RequestingUser</a>
+          <p class="text-sm text-gray-500 truncate">Sent you a friend request.</p>
+        </div>
+        <div class="flex-shrink-0 flex items-center space-x-2">
+          <button class="w-24 text-center text-sm font-semibold py-1.5 px-3 rounded-full transition-colors duration-150 bg-purple-600 text-white hover:bg-purple-700">Accept</button>
+          <button class="w-24 text-center text-sm font-semibold py-1.5 px-3 rounded-full transition-colors duration-150 bg-gray-200 hover:bg-gray-300">Decline</button>
+        </div>
+      </div>
+      <!-- Add more requests here -->
+    </div>
+    <!-- Requested List -->
+    <div x-show="activeTab === 'requested'" id="connextions_requested_list" style="display: none;" class="divide-y divide-gray-200">
+      <!-- User Item -->
+      <div class="p-4 sm:p-6 flex items-center space-x-4">
+        <span class="inline-block h-12 w-12 rounded-full bg-gray-200 flex-shrink-0"></span>
+        <div class="flex-1 min-w-0">
+          <a href="#" class="font-semibold text-purple-600 hover:underline">PendingUser</a>
+          <p class="text-sm text-gray-500 truncate">Friend request sent.</p>
+        </div>
+        <div class="flex-shrink-0">
+          <button class="w-28 text-center text-sm font-semibold py-1.5 px-3 rounded-full transition-colors duration-150 bg-gray-200 hover:bg-gray-300">Cancel</button>
+        </div>
+      </div>
+      <!-- Add more users here -->
+    </div>
+  </div>
+</div>

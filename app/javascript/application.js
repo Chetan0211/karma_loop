@@ -20,6 +20,9 @@ function initializeVideoPlayer() {
   let videoObserver = videoInteractionObserver();
   let players = document.querySelectorAll(".video-player");
   players.forEach((shakaContainer) => {
+    if (shakaContainer.querySelector("video")) {
+      return;
+    }
     let source = shakaContainer.dataset.hlsUrl;
     if (shaka.Player.isBrowserSupported()) { 
       let splayer = new shaka.Player();

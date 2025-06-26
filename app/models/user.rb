@@ -60,36 +60,65 @@ class User < ApplicationRecord
     }
   end
 
-  def following
-    group = Group.includes(:group_users).where(type:"friend", group_users:{user_id: self.id, status: "follower"}).pluck(:group_id);
-    User.includes(:group_users).where(group_users:{group_id: group}).where.not(id: self.id);
-  end
-  def followers
-    User.includes(:group_users).where(group_users:{group_id: friend_groups, status:"follower"}).where.not(id: self.id);
-  end
-  def blocked_users
-    group = Group.includes(:group_users).where(type:"friend", group_users:{user_id: self.id, status: "blocked"}).pluck(:group_id);
-    User.includes(:group_users).where(group_users:{group_id: group}).where.not(id: self.id);
+  def all_following
+    group = friend_groups_with_status("follower")
+    User.includes(:group_users).where(group_users:{group_id: group}).where.not(id: self.id)
   end
 
-  def friend_requests
-    User.includes(:group_users).where(group_users:{group_id: friend_groups, status:"requested"}).where.not(id: self.id);
+  def following?(user)
+    group = friend_groups_with_status("follower");
+    GroupUser.where(group_id: group, user_id: user.id).present?
   end
 
-  def requested
-    group = Group.includes(:group_users).where(type:"friend", group_users:{user_id: self.id, status: "requested"}).pluck(:group_id);
-    User.includes(:group_users).where(group_users:{group_id: group}).where.not(id: self.id);
+  def all_followers
+    User.includes(:group_users).where(group_users:{group_id: friend_groups, status:"follower"}).where.not(id: self.id)
+  end
+
+  def follower?(user)
+    GroupUser.where(group_id: friend_groups, user_id: user.id, status:"follower").present?
+  end
+
+  def all_blocked_users
+    group = friend_groups_with_status("blocked");
+    User.includes(:group_users).where(group_users:{group_id: group}).where.not(id: self.id)
+  end
+
+  def blocked?(user)
+    group = friend_groups_with_status("blocked");
+    GroupUser.where(group_id: group, user_id: user.id).present?
+  end
+
+  def all_friend_requests
+    User.includes(:group_users).where(group_users:{group_id: friend_groups, status:"requested"}).where.not(id: self.id)
+  end
+
+  def friend_request?(user)
+    GroupUser.where(group_id: friend_groups, user_id: user.id, status:"requested").present?
+  end
+
+  def all_requested
+    group = Group.includes(:group_users).where(type:"friend", group_users:{user_id: self.id, status: "requested"}).pluck(:group_id)
+    User.includes(:group_users).where(group_users:{group_id: group}).where.not(id: self.id)
+  end
+
+  def requested?(user)
+    group = friend_groups_with_status("requested");
+    GroupUser.where(group_id: group, user_id: user.id).present?
   end
   
   private
 
+  def friend_groups_with_status(group)
+    Group.where(type:"friend").joins(:group_users).where(group_users:{user_id: self.id, status: group}).pluck(:group_id)
+  end
+
   def friend_groups
-    Group.includes(:group_users).where(type:"friend",group_users:{user_id: self.id}).pluck(:group_id);
+    Group.where(type:"friend").joins(:group_users).where(group_users:{user_id: self.id}).pluck(:group_id)
   end
   def chat_groups
-    Group.includes(:group_users).where(type:"group",group_users:{user_id: self.id}).pluck(:group_id);
+    Group.where(type:"group").joins(:group_users).where(group_users:{user_id: self.id}).pluck(:group_id)
   end
   def community_groups
-    Group.includes(:group_users).where(type:"community",group_users:{user_id: self.id}).pluck(:group_id);
+    Group.where(type:"community").joins(:group_users).where(group_users:{user_id: self.id}).pluck(:group_id)
   end
 end
