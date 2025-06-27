@@ -139,6 +139,11 @@ module IconViewHelper
     tag.i(class: "fa-solid fa-clock-rotate-left #{classes.strip}",**options.except(:class))
   end
 
+  def inbox_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-inbox #{classes.strip}",**options.except(:class))
+  end
+
   def icon(icon:, options:{})
     result = nil
     begin

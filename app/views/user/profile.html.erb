@@ -5,6 +5,7 @@ bio: `<%= @user.bio %>`,
 displayName: '<%= @user.display_name %>', 
 displayNameError: false, 
 isCropperModalOpen: false, 
+connection_activeTab: 'following', 
 profilePresent: <%= @user.profile_picture.attached? %>,
 hasIncomingRequest: <%= current_user.friend_request?(@user) %>
 }">
@@ -27,12 +28,33 @@ hasIncomingRequest: <%= current_user.friend_request?(@user) %>
             <h1 class="text-2xl md:text-3xl font-bold text-[var(--txt-clr-strong)] truncate"><%= @user.display_name %></h1>
             <p class="text-sm font-medium text-[var(--txt-clr-subtle)] truncate">k/<%= @user.username %></p>
             <p class="mt-2 text-sm text-[var(--txt-clr-default)] line-clamp-3"><%= @user.bio %></p>
+            <div class="mt-3 flex items-center space-x-4 text-sm text-[var(--txt-clr-muted)] md:hidden">
+              <a href="/friends-page-link?tab=followers" class="hover:underline">
+                <span class="font-semibold text-[var(--txt-clr-thick)]"><%= number_to_k(@user.all_followers.count) %></span> Followers
+              </a>
+              <a href="/friends-page-link?tab=following" class="hover:underline">
+                <span class="font-semibold text-[var(--txt-clr-thick)]"><%= number_to_k(@user.all_following.count) %></span> Following
+              </a>
+            </div>
           </div>
           <% if @user.id == current_user.id %>
-            <button type="button" @click="isEditModalOpen = true" class="inline-flex items-center px-4 py-2 border border-[var(--border-clr-default)] shadow-sm text-sm font-medium rounded-full text-[var(--txt-clr-default)] bg-[var(--background-clr-clear)] hover:bg-[var(--background-clr-body)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-500)] transition duration-150 ease-in-out flex-shrink-0">
+            <button type="button" 
+            @click="isEditModalOpen = true" 
+            class="inline-flex items-center px-4 py-2 border border-[var(--border-clr-default)] shadow-sm text-sm font-medium rounded-full text-[var(--txt-clr-default)] bg-[var(--background-clr-clear)] hover:bg-[var(--background-clr-body)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-500)] transition duration-150 ease-in-out flex-shrink-0">
               <%= icon(icon: :pen_to_square_icon, options:{class: "mr-1.5"}) %> Edit Profile
             </button>
           <% end %>
+        </div>
+      </div>
+      <div class="md:hidden">
+        <div class="mt-4 flex space-x-2">
+          <% if @user.id != current_user.id %>
+            <%= render partial: "shared/helpers/follow_request_button", locals:{user: @user} %>
+          <% end %>
+          <button class="flex-1 bg-[var(--background-clr-thick)] hover:bg-[var(--background-clr-strong)] text-[var(--txt-clr-default)] text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out border border-[var(--border-clr-default)]">
+            <i class="fa-regular fa-comment-dots"></i>
+            <span>Chat</span>
+          </button>
         </div>
       </div>
     </div>
@@ -42,25 +64,49 @@ hasIncomingRequest: <%= current_user.friend_request?(@user) %>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div class="md:col-span-2 space-y-4">
         <div class="border-b border-[var(--border-clr-subtle)] bg-[var(--background-clr-clear)] rounded-t-md shadow-sm">
-          <nav class="-mb-px flex space-x-6 sm:space-x-8 px-4 sm:px-6" aria-label="Tabs">
-            <button @click="activeTab = 'posts'" :class="{ 'border-[var(--primary-500)] text-[var(--primary-600)]': activeTab === 'posts', 'border-transparent text-[var(--txt-clr-subtle)] hover:text-[var(--txt-clr-default)] hover:border-[var(--border-clr-default)]': activeTab !== 'posts' }" class="whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors duration-150 ease-in-out focus:outline-none">
-              Posts
+          <nav class="-mb-px flex justify-around sm:justify-start sm:space-x-8 px-0 sm:px-6" aria-label="Tabs">
+            <button @click="activeTab = 'posts'" 
+            :class="{ 'border-[var(--primary-500)] text-[var(--primary-600)]': activeTab === 'posts', 'border-transparent text-[var(--txt-clr-subtle)] hover:text-[var(--txt-clr-default)] hover:border-[var(--border-clr-default)]': activeTab !== 'posts' }" 
+            class="flex-1 sm:flex-none whitespace-nowrap py-3 px-1 sm:px-1 border-b-2 font-medium text-sm transition-colors duration-150 ease-in-out focus:outline-none flex items-center justify-center">
+              <i class="fa-solid fa-list-alt sm:mr-2"></i>
+              <span class="hidden sm:inline">Posts</span>
             </button>
-            <button @click="activeTab = 'saved'" :class="{ 'border-[var(--primary-500)] text-[var(--primary-600)]': activeTab === 'saved', 'border-transparent text-[var(--txt-clr-subtle)] hover:text-[var(--txt-clr-default)] hover:border-[var(--border-clr-default)]': activeTab !== 'saved' }" class="whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors duration-150 ease-in-out focus:outline-none">
-              Saved
+            <button @click="activeTab = 'saved'" 
+            :class="{ 'border-[var(--primary-500)] text-[var(--primary-600)]': activeTab === 'saved', 'border-transparent text-[var(--txt-clr-subtle)] hover:text-[var(--txt-clr-default)] hover:border-[var(--border-clr-default)]': activeTab !== 'saved' }" 
+            class="flex-1 sm:flex-none whitespace-nowrap py-3 px-1 sm:px-1 border-b-2 font-medium text-sm transition-colors duration-150 ease-in-out focus:outline-none flex items-center justify-center">
+              <i class="fa-regular fa-bookmark sm:mr-2"></i>
+              <span class="hidden sm:inline">Saved</span>
+            </button>
+            <button @click="activeTab = 'friends'" 
+            :class="{ 'border-[var(--primary-500)] text-[var(--primary-600)]': activeTab === 'friends', 'border-transparent text-[var(--txt-clr-subtle)] hover:text-[var(--txt-clr-default)] hover:border-[var(--border-clr-default)]': activeTab !== 'friends' }" 
+            class="flex-1 sm:flex-none whitespace-nowrap py-3 px-1 sm:px-1 border-b-2 font-medium text-sm transition-colors duration-150 ease-in-out focus:outline-none flex items-center justify-center">
+              <i class="fa-solid fa-user-group sm:mr-2"></i>
+              <span class="hidden sm:inline">Friends</span>
             </button>
           </nav>
         </div>
         <div class="space-y-4">
           <div x-show="activeTab === 'posts'" x-cloak x-transition class="space-y-4">
-            <% @posts.each do |post| %>
-              <%= render "shared/post", post: post %>
+            <% unless @posts.present? %>
+              <div x-transition class="bg-[var(--background-clr-clear)] rounded-b-md shadow-sm text-center p-12">
+                <%= icon(icon: :inbox_icon, options:{class:"fa-3x text-[var(--txt-clr-muted)]"}) %>
+                <p class="mt-4 text-sm font-medium text-[var(--txt-clr-subtle)]">This user hasn't posted anything yet.</p>
+              </div>
+            <% else %>
+              <% @posts.each do |post| %>
+                <%= render "shared/post", post: post %>
+              <% end %>
             <% end %>
           </div>
           <div x-show="activeTab === 'saved'" x-cloak x-transition class="space-y-4">
-            <div class="bg-[var(--background-clr-clear)] rounded-md shadow p-4 text-center text-[var(--txt-clr-subtle)]">
-              Saved posts and comments will appear here. (Content structure similar to posts/comments)
+            <div x-transition class="bg-[var(--background-clr-clear)] rounded-b-md shadow-sm text-center p-12">
+              <%= icon(icon: :save_icon, options:{class:"fa-3x text-[var(--txt-clr-muted)]"}) %>
+              <p class="mt-4 text-sm font-medium text-[var(--txt-clr-subtle)]">You haven't saved any posts yet.</p>
+              <p class="text-xs text-[var(--txt-clr-lite)] mt-1">Saved posts will appear here.</p>
             </div>
+          </div>
+          <div x-show="activeTab === 'friends'" x-cloak x-transition class="space-y-4">
+            <%= render partial:"shared/connections", locals:{user: @user} %>
           </div>
         </div>
       </div>
@@ -69,12 +115,20 @@ hasIncomingRequest: <%= current_user.friend_request?(@user) %>
           <h4 class="font-semibold mb-3 border-b pb-2 text-[var(--txt-clr-thick)]"><%= @user.username %></h4>
           <div class="space-y-2 text-sm">
             <div class="flex justify-between">
+              <span class="font-medium text-[var(--txt-clr-muted)]">Following</span>
+              <span class="font-semibold text-[var(--txt-clr-thick)]"><%= number_to_k(@user.all_following.count) %></span>
+            </div>
+            <div class="flex justify-between border-b pb-3">
+              <span class="font-medium text-[var(--txt-clr-muted)]">Followers</span>
+              <span class="font-semibold text-[var(--txt-clr-thick)]"><%= number_to_k(@user.all_followers.count) %></span>
+            </div>
+            <div class="flex justify-between">
               <span class="font-medium text-[var(--txt-clr-muted)]">Post Karma</span>
-              <span class="font-semibold text-[var(--txt-clr-thick)]"><%= number_with_delimiter(@posts.count) %></span>
+              <span class="font-semibold text-[var(--txt-clr-thick)]"><%= number_to_k(@posts.count) %></span>
             </div>
             <div class="flex justify-between">
               <span class="font-medium text-[var(--txt-clr-muted)]">Comment Karma</span>
-              <span class="font-semibold text-[var(--txt-clr-thick)]"><%= number_with_delimiter(@user.comments.count) %></span>
+              <span class="font-semibold text-[var(--txt-clr-thick)]"><%= number_to_k(@user.comments.count) %></span>
             </div>
             <div class="flex justify-between items-center mt-3 pt-3 border-t">
               <span class="font-medium text-[var(--txt-clr-muted)]">Cake day</span>

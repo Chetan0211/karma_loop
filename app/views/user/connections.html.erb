@@ -1,8 +1,8 @@
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="{ connection_activeTab: 'following' }">
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-[var(--txt-clr-strong))]">Connections</h1>
     <p class="text-sm text-[var(--txt-clr-subtle)] mt-1">Manage your followers, following, and friend requests.</p>
   </div>
   <!-- Tabbed Interface -->
-  <%= render partial:"shared/connections" %>
+  <%= render partial:"shared/connections", locals:{user: current_user} %>
 </div>

@@ -5,11 +5,19 @@ from: user who requested the friend request
 to: user who received the friend request
 -->
 <% if send_to.id == from.id  %>
-  <%= turbo_stream.replace "#{from.id}_follow_button_#{to.id}" do %>
-    <%= render partial: "shared/helpers/follow_request_button", locals:{current_user: from, user: to} %>
+  <turbo-stream action="replace" targets=".<%=from.id%>_follow_button_<%=to.id%>">
+    <template>
+      <%= render partial: "shared/helpers/follow_request_button", locals:{current_user: from, user: to} %>
+    </template>
+  </turbo-stream>
+  <%= turbo_stream.replace "connections" do %>
+    <%= render partial: "shared/connections", locals:{user: from} %>
   <% end %>
 <% else %>
   <%= turbo_stream.replace "incoming_request_tab" do %>
     <%= render partial: "user/incoming_request_tab", locals:{current_user: to, user: from} %>
+  <% end %>
+  <%= turbo_stream.replace "connections" do %>
+    <%= render partial: "shared/connections", locals:{user: to} %>
   <% end %>
 <% end %>

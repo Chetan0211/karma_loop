@@ -2,3 +2,4 @@
 :queues:
   - video
   - default
+  - notification

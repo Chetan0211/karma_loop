@@ -1,4 +1,6 @@
 class PostController < ApplicationController
+  include SendPopupMessage
+
   before_action :authenticate_user!
   def index
     
@@ -61,13 +63,8 @@ class PostController < ApplicationController
     if result.success?
       head :ok
     else
-      head :bad_request
-      Turbo::StreamsChannel.broadcast_update_to(
-          "#{current_user.id}error_notifications",
-          target: "error-notifications",
-          partial: "shared/error_message",
-          locals: { message: "Something went wrong. Can't able to react to the post" }
-        )
+      head :internal_server_error
+      send_error_popup(user_id: current_user.id, message: "Something went wrong. Can't able to react to the post.")
     end
   end
 
@@ -82,13 +79,8 @@ class PostController < ApplicationController
     if result.success?
       head :ok
     else
-      head :bad_request
-      Turbo::StreamsChannel.broadcast_update_to(
-          "#{current_user.id}error_notifications",
-          target: "error-notifications",
-          partial: "shared/error_message",
-          locals: { message: "Something went wrong. Can't able to react to the comment" }
-        )
+      head :internal_server_error
+      send_error_popup(user_id: current_user.id, message: "Something went wrong. Can't able to react to the comment.")
     end
   end
 

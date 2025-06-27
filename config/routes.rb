@@ -37,6 +37,7 @@ Rails.application.routes.draw do
   post "friend_request/:id" => "friends#friend_request", as: :friend_request
   patch "unfollow_friend/:id" => "friends#unfollow_friend", as: :unfollow_friend
   patch "request_response/:id" => "friends#request_response", as: :request_response
+  patch "remove_friend/:id" => "friends#remove_friend", as: :remove_friend
 
   #settings routes
   get "site_settings" => "settings#site_settings", as: :site_settings

@@ -1,5 +1,5 @@
 class NotificationJob < ApplicationJob
-  queue_as :default
+  queue_as :notification
 
   def perform(**args)
     service = args[:class_name].constantize

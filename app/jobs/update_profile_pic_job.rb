@@ -1,4 +1,5 @@
 class UpdateProfilePicJob < ApplicationJob
+  include SendPopupMessage
   queue_as :default
 
   def perform(user_id, profile_picture, prev_pic, crop_x, crop_y, crop_size)
@@ -23,12 +24,7 @@ class UpdateProfilePicJob < ApplicationJob
       user.save!
 
       if user.errors.any?
-        Turbo::StreamsChannel.broadcast_update_to(
-          "#{user.id}error_notifications",
-          target: "error-notifications",
-          partial: "shared/error_message",
-          locals: { message: "Checking turbo" }
-        )
+        send_error_popup(user_id: user.id, message: "Something went wrong. Can't able to update profile picture.")
       end
 
       cropped_temp_file.close;
