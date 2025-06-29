@@ -1,25 +1,29 @@
 <!--
 params to pass:
-user: devise automatically provides it until you render this from other means
+current_user: 
+user: 
 
 alphine:
 connection_activeTab
 -->
-<div id="connections" class="flex flex-col md:min-h-0 min-h-[calc(100vh-14rem)]">
+<% temp_ability = Ability.new(current_user) %>
+<div id="connections_<%= user.id %>" class="flex flex-col md:min-h-0 min-h-[calc(100vh-14rem)]">
   <!-- Tab Navigation -->
   <div class="border-b border-[var(--border-clr-subtle)] bg-[var(--background-clr-clear)] rounded-t-lg shadow-sm">
     <nav class="-mb-px flex space-x-6 overflow-x-auto no-scrollbar px-4 sm:px-6">
       <button @click="connection_activeTab = 'following'" :class="{ 'text-[var(--primary-600)] border-[var(--primary-600)]': connection_activeTab === 'following', 'text-gray-500 border-transparent hover:text-gray-700': connection_activeTab !== 'following' }" class="py-3 px-2 sm:px-4 text-sm font-medium border-b-2 transition-colors">Following</button>
       <button @click="connection_activeTab = 'followers'" :class="{ 'text-[var(--primary-600)] border-[var(--primary-600)]': connection_activeTab === 'followers', 'text-gray-500 border-transparent hover:text-gray-700': connection_activeTab !== 'followers' }" class="py-3 px-2 sm:px-4 text-sm font-medium border-b-2 transition-colors">Followers</button>
-      <button @click="connection_activeTab = 'requests'" :class="{ 'text-[var(--primary-600)] border-[var(--primary-600)]': connection_activeTab === 'requests', 'text-gray-500 border-transparent hover:text-gray-700': connection_activeTab !== 'requests' }" class="py-3 px-2 sm:px-4 text-sm font-medium border-b-2 transition-colors relative">
-        Requests
-        <!-- Notification Badge -->
-        <%# <span class="absolute top-2 -right-1 flex h-3 w-3">
+      <% if temp_ability.can? :manage, user %>
+        <button @click="connection_activeTab = 'requests'" :class="{ 'text-[var(--primary-600)] border-[var(--primary-600)]': connection_activeTab === 'requests', 'text-gray-500 border-transparent hover:text-gray-700': connection_activeTab !== 'requests' }" class="py-3 px-2 sm:px-4 text-sm font-medium border-b-2 transition-colors relative">
+          Requests
+          <!-- Notification Badge -->
+          <%# <span class="absolute top-2 -right-1 flex h-3 w-3">
           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
           <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
         </span> %>
-      </button>
-      <button @click="connection_activeTab = 'requested'" :class="{ 'text-[var(--primary-600)] border-[var(--primary-600)]': connection_activeTab === 'requested', 'text-gray-500 border-transparent hover:text-gray-700': connection_activeTab !== 'requested' }" class="py-3 px-2 sm:px-4 text-sm font-medium border-b-2 transition-colors">Requested</button>
+        </button>
+        <button @click="connection_activeTab = 'requested'" :class="{ 'text-[var(--primary-600)] border-[var(--primary-600)]': connection_activeTab === 'requested', 'text-gray-500 border-transparent hover:text-gray-700': connection_activeTab !== 'requested' }" class="py-3 px-2 sm:px-4 text-sm font-medium border-b-2 transition-colors">Requested</button>
+      <% end %>
     </nav>
   </div>
   <!-- Tab Content -->
@@ -32,22 +36,24 @@ connection_activeTab
           <p class="mt-2 text-sm text-gray-500" x-text="`You are not following anyone yet.`"></p>
         </div>
       <% else %>
-        <% user.all_following.each do |user| %>
+        <% user.all_following.each do |f_user| %>
           <div class="p-4 sm:p-6 flex items-center space-x-4">
             <span class="h-12 w-12 overflow-hidden rounded-full bg-[var(--background-clr-strong)] flex-shrink-0 flex items-center justify-center">
-              <% if user.profile_picture.attached? %>
-                <%= image_tag url_for(user.profile_picture) %>
+              <% if f_user.profile_picture.attached? %>
+                <%= image_tag url_for(f_user.profile_picture) %>
               <% else %>
                 <%= icon(icon: :user_icon, options:{class: "text-[var(--txt-clr-subtle)] text-lg sm:text-lg"} ) %>
               <% end %>
             </span>
             <div class="flex-1 min-w-0">
-              <p class="font-semibold text-[var(--primary-600)]"><%= user.display_name %></p>
-              <p class="text-sm text-[var(--txt-clr-subtle)] truncate">u/<%= user.username %></p>
+              <p class="font-semibold text-[var(--primary-600)]"><%= f_user.display_name %></p>
+              <p class="text-sm text-[var(--txt-clr-subtle)] truncate">u/<%= f_user.username %></p>
             </div>
-            <div class="flex-shrink-0">
-              <%= button_to "Unfollow", unfollow_friend_path(id: user.id), method: :patch, data:{turbo_method: "patch"}, class:"group w-28 text-center text-sm font-semibold py-1.5 px-3 rounded-full duration-150 text-[var(--txt-clr-default)] border border-[var(--border-clr-default)] hover:border-[var(--primary-400)] hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)]" %>
-            </div>
+            <% if (temp_ability.can? :manage, user) && f_user.id != user.id %>
+              <div class="flex-shrink-0">
+                <%= button_to "Unfollow", unfollow_friend_path(id: f_user.id), method: :patch, data:{turbo_method: "patch"}, class:"group w-28 text-center text-sm font-semibold py-1.5 px-3 rounded-full duration-150 text-[var(--txt-clr-default)] border border-[var(--border-clr-default)] hover:border-[var(--primary-400)] hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)]" %>
+              </div>
+            <% end %>
           </div>
         <% end %>
       <% end %>
@@ -60,82 +66,90 @@ connection_activeTab
           <p class="mt-2 text-sm text-gray-500" x-text="`Let your friends and other people know you are here.`"></p>
         </div>
       <% else %>
-        <% user.all_followers.each do |user| %>
+        <% user.all_followers.each do |f_user| %>
           <div class="p-4 sm:p-6 flex items-center space-x-4">
             <span class="h-12 w-12 overflow-hidden rounded-full bg-[var(--background-clr-strong)] flex-shrink-0 flex items-center justify-center">
-              <% if user.profile_picture.attached? %>
-                <%= image_tag url_for(user.profile_picture) %>
+              <% if f_user.profile_picture.attached? %>
+                <%= image_tag url_for(f_user.profile_picture) %>
               <% else %>
                 <%= icon(icon: :user_icon, options:{class: "text-[var(--txt-clr-subtle)] text-lg sm:text-lg"} ) %>
               <% end %>
             </span>
             <div class="flex-1 min-w-0">
-              <p class="font-semibold text-[var(--primary-600)]"><%= user.display_name %></p>
-              <p class="text-sm text-[var(--txt-clr-subtle)] truncate">u/<%= user.username %></p>
+              <p class="font-semibold text-[var(--primary-600)]"><%= f_user.display_name %></p>
+              <p class="text-sm text-[var(--txt-clr-subtle)] truncate">u/<%= f_user.username %></p>
             </div>
-            <div class="flex-shrink-0">
-              <%= button_to "Remove", remove_friend_path(id: user.id), method: :patch, data:{turbo_method: "patch"}, class:"group w-28 text-center text-sm font-semibold py-1.5 px-3 rounded-full duration-150 text-[var(--txt-clr-default)] border border-[var(--border-clr-default)] hover:border-[var(--primary-400)] hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)]" %>
-            </div>
+            <% if (temp_ability.can? :manage, user) && f_user.id != user.id %>
+              <div class="flex-shrink-0">
+                <%= button_to "Remove", remove_friend_path(id: f_user.id), method: :patch, data:{turbo_method: "patch"}, class:"group w-28 text-center text-sm font-semibold py-1.5 px-3 rounded-full duration-150 text-[var(--txt-clr-default)] border border-[var(--border-clr-default)] hover:border-[var(--primary-400)] hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)]" %>
+              </div>
+            <% end %>
           </div>
         <% end %>
       <% end %>
     </div>
     <!-- Friend Requests List -->
-    <div x-show="connection_activeTab === 'requests'" x-data="" id="connextions_requests_list" style="display: none;" class="divide-y divide-gray-200">
-      <% if user.all_friend_requests.empty? %>
-        <div class="p-10 text-center">
-          <%= icon(icon: :users_slash_icon, options:{class: "fa-2x text-[var(--txt-clr-lite)]"}) %>
-          <p class="mt-2 text-sm text-gray-500" x-text="`No one requested at this point.`"></p>
-        </div>
-      <% else %>
-        <% user.all_friend_requests.each do |user| %>
-          <div class="p-4 sm:p-6 flex items-center space-x-4">
-            <span class="h-12 w-12 overflow-hidden rounded-full bg-[var(--background-clr-strong)] flex-shrink-0 flex items-center justify-center">
-              <% if user.profile_picture.attached? %>
-                <%= image_tag url_for(user.profile_picture) %>
-              <% else %>
-                <%= icon(icon: :user_icon, options:{class: "text-[var(--txt-clr-subtle)] text-lg sm:text-lg"} ) %>
-              <% end %>
-            </span>
-            <div class="flex-1 min-w-0">
-              <p class="font-semibold text-[var(--primary-600)]"><%= user.display_name %></p>
-              <p class="text-sm text-[var(--txt-clr-subtle)] truncate">u/<%= user.username %></p>
-            </div>
-            <div class=" flex flex-shrink-0">
-              <%= button_to "Accept", request_response_path(id: user.id, status: "accept"), method: :patch, data:{turbo_method: "patch"}, class:"group w-28 text-center text-sm font-semibold py-1.5 px-3 bg-[var(--primary-500)] rounded-full duration-150 text-[var(--txt-clr-default)] border border-[var(--primary-500)] hover:border-[var(--primary-700)] hover:bg-[var(--primary-600)]" %>
-              <%= button_to "Decline", request_response_path(id: user.id, status: "decline"), method: :patch, data:{turbo_method: "patch"}, class:"group w-28 text-center text-sm font-semibold py-1.5 px-3 rounded-full duration-150 text-[var(--txt-clr-default)] border border-[var(--border-clr-default)] hover:border-[var(--primary-400)] hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)]" %>
-            </div>
+    <% if temp_ability.can? :manage, user %>
+      <div x-show="connection_activeTab === 'requests'" x-data="" id="connextions_requests_list" style="display: none;" class="divide-y divide-gray-200">
+        <% if user.all_friend_requests.empty? %>
+          <div class="p-10 text-center">
+            <%= icon(icon: :users_slash_icon, options:{class: "fa-2x text-[var(--txt-clr-lite)]"}) %>
+            <p class="mt-2 text-sm text-gray-500" x-text="`No one requested at this point.`"></p>
           </div>
-        <% end %>
-      <% end %>
-    </div>
-    <!-- Requested List -->
-    <div x-show="connection_activeTab === 'requested'" id="connextions_requested_list" style="display: none;" class="divide-y divide-gray-200">
-      <% if user.all_requested.empty? %>
-        <div class="p-10 text-center">
-          <%= icon(icon: :users_slash_icon, options:{class: "fa-2x text-[var(--txt-clr-lite)]"}) %>
-          <p class="mt-2 text-sm text-gray-500" x-text="`Go ahead and send some friend requests to your friends.`"></p>
-        </div>
-      <% else %>
-        <% user.all_requested.each do |user| %>
-          <div class="p-4 sm:p-6 flex items-center space-x-4">
-            <span class="h-12 w-12 overflow-hidden rounded-full bg-[var(--background-clr-strong)] flex-shrink-0 flex items-center justify-center">
-              <% if user.profile_picture.attached? %>
-                <%= image_tag url_for(user.profile_picture) %>
-              <% else %>
-                <%= icon(icon: :user_icon, options:{class: "text-[var(--txt-clr-subtle)] text-lg sm:text-lg"} ) %>
+        <% else %>
+          <% user.all_friend_requests.each do |f_user| %>
+            <div class="p-4 sm:p-6 flex items-center space-x-4">
+              <span class="h-12 w-12 overflow-hidden rounded-full bg-[var(--background-clr-strong)] flex-shrink-0 flex items-center justify-center">
+                <% if f_user.profile_picture.attached? %>
+                  <%= image_tag url_for(f_user.profile_picture) %>
+                <% else %>
+                  <%= icon(icon: :user_icon, options:{class: "text-[var(--txt-clr-subtle)] text-lg sm:text-lg"} ) %>
+                <% end %>
+              </span>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-[var(--primary-600)]"><%= f_user.display_name %></p>
+                <p class="text-sm text-[var(--txt-clr-subtle)] truncate">u/<%= f_user.username %></p>
+              </div>
+              <% if temp_ability.can? :manage, user %>
+                <div class=" flex flex-shrink-0">
+                  <%= button_to "Accept", request_response_path(id: f_user.id, status: "accept"), method: :patch, data:{turbo_method: "patch"}, class:"group w-28 text-center text-sm font-semibold py-1.5 px-3 bg-[var(--primary-500)] rounded-full duration-150 text-[var(--txt-clr-default)] border border-[var(--primary-500)] hover:border-[var(--primary-700)] hover:bg-[var(--primary-600)] mr-2" %>
+                  <%= button_to "Decline", request_response_path(id: f_user.id, status: "decline"), method: :patch, data:{turbo_method: "patch"}, class:"group w-28 text-center text-sm font-semibold py-1.5 px-3 rounded-full duration-150 text-[var(--txt-clr-default)] border border-[var(--border-clr-default)] hover:border-[var(--primary-400)] hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)]" %>
+                </div>
               <% end %>
-            </span>
-            <div class="flex-1 min-w-0">
-              <p class="font-semibold text-[var(--primary-600)]"><%= user.display_name %></p>
-              <p class="text-sm text-[var(--txt-clr-subtle)] truncate">u/<%= user.username %></p>
             </div>
-            <div class="flex-shrink-0">
-              <%= button_to "Remove", unfollow_friend_path(id: user.id), method: :patch, data:{turbo_method: "patch"}, class:"group w-28 text-center text-sm font-semibold py-1.5 px-3 rounded-full duration-150 text-[var(--txt-clr-default)] border border-[var(--border-clr-default)] hover:border-[var(--primary-400)] hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)]" %>
-            </div>
-          </div>
+          <% end %>
         <% end %>
-      <% end %>
-    </div>
+      </div>
+      <!-- Requested List -->
+      <div x-show="connection_activeTab === 'requested'" id="connextions_requested_list" style="display: none;" class="divide-y divide-gray-200">
+        <% if user.all_requested.empty? %>
+          <div class="p-10 text-center">
+            <%= icon(icon: :users_slash_icon, options:{class: "fa-2x text-[var(--txt-clr-lite)]"}) %>
+            <p class="mt-2 text-sm text-gray-500" x-text="`Go ahead and send some friend requests to your friends.`"></p>
+          </div>
+        <% else %>
+          <% user.all_requested.each do |f_user| %>
+            <div class="p-4 sm:p-6 flex items-center space-x-4">
+              <span class="h-12 w-12 overflow-hidden rounded-full bg-[var(--background-clr-strong)] flex-shrink-0 flex items-center justify-center">
+                <% if f_user.profile_picture.attached? %>
+                  <%= image_tag url_for(f_user.profile_picture) %>
+                <% else %>
+                  <%= icon(icon: :user_icon, options:{class: "text-[var(--txt-clr-subtle)] text-lg sm:text-lg"} ) %>
+                <% end %>
+              </span>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-[var(--primary-600)]"><%= f_user.display_name %></p>
+                <p class="text-sm text-[var(--txt-clr-subtle)] truncate">u/<%= f_user.username %></p>
+              </div>
+              <% if temp_ability.can? :manage, user %>
+                <div class="flex-shrink-0">
+                  <%= button_to "Remove", unfollow_friend_path(id: f_user.id), method: :patch, data:{turbo_method: "patch"}, class:"group w-28 text-center text-sm font-semibold py-1.5 px-3 rounded-full duration-150 text-[var(--txt-clr-default)] border border-[var(--border-clr-default)] hover:border-[var(--primary-400)] hover:bg-[var(--primary-50)] hover:text-[var(--primary-600)]" %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 </div>

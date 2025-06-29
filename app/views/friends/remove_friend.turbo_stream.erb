@@ -1,14 +1,32 @@
 <% if send_to.id == from.id  %>
-  <%= turbo_stream.replace "connections" do %>
-    <%= render partial: "shared/connections", locals:{user: from} %>
+  <%= turbo_stream.replace "connections_#{from.id}" do %>
+    <%= render partial: "shared/connections", locals:{current_user: send_to, user: from} %>
+  <% end %>
+  <%= turbo_stream.replace "connections_#{to.id}" do %>
+    <%= render partial: "shared/connections", locals:{current_user: send_to, user: to} %>
   <% end %>
 <% else %>
-  <turbo-stream action="replace" targets=".<%=to.id%>_follow_button_<%=from.id%>">
+  <turbo-stream action="replace" targets="._<%=to.id%>_follow_button_<%=from.id%>">
     <template>
       <%= render partial: "shared/helpers/follow_request_button", locals:{current_user: to, user: from} %>
     </template>
   </turbo-stream>
-  <%= turbo_stream.replace "connections" do %>
-    <%= render partial: "shared/connections", locals:{user: to} %>
+  <%= turbo_stream.replace "connections_#{from.id}" do %>
+    <%= render partial: "shared/connections", locals:{current_user: send_to, user: from} %>
+  <% end %>
+  <%= turbo_stream.replace "connections_#{to.id}" do %>
+    <%= render partial: "shared/connections", locals:{current_user: send_to, user: to} %>
   <% end %>
 <% end %>
+<turbo-stream action="update" targets=".following_count_<%=from.id%>">
+  <template><%= from.all_following.count %></template>
+</turbo-stream>
+<turbo-stream action="update" targets=".followers_count_<%=from.id%>">
+  <template><%= from.all_followers.count %></template>
+</turbo-stream>
+<turbo-stream action="update" targets=".following_count_<%=to.id%>">
+  <template><%= to.all_following.count %></template>
+</turbo-stream>
+<turbo-stream action="update" targets=".followers_count_<%=to.id%>">
+  <template><%= to.all_followers.count %></template>
+</turbo-stream>

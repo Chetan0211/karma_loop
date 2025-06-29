@@ -6,7 +6,9 @@ user
 Alphine values:
 hasIncomingRequest
 -->
-<div id="incoming_request_tab" x-init="hasIncomingRequest=<%= current_user.friend_request?(user) %>" x-show="hasIncomingRequest" x-cloak x-transition class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+<% puts "current user for incoming request tab: #{current_user}" %>
+<% Rails.logger.info("current user for incoming request tab: #{current_user.inspect}") %>
+<div id="incoming_request_tab_<%= user.id %>" x-init="hasIncomingRequest=<%= current_user.friend_request?(user) && current_user != user %>" x-show="hasIncomingRequest" x-cloak x-transition class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
   <div class="bg-[var(--background-clr-clear)] rounded-lg p-4 flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
     <div class="flex items-center">
       <i class="fa-solid fa-user-clock text-[var(--primary-600)] mr-3 text-lg"></i>

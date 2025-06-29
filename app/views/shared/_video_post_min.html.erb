@@ -1,5 +1,6 @@
 <!--
-TODO: Yet work on it
+params used here:
+post
 -->
 <div id="<%= post.id %>" class="bg-[var(--background-clr-clear)] rounded-md shadow overflow-hidden flex hover:shadow-lg transition-shadow duration-150" x-data="carousel(<%= post.images.count %>)">
   <%= render "shared/posts_like_unlike", post: post %>

@@ -30,10 +30,10 @@ hasIncomingRequest: <%= current_user.friend_request?(@user) %>
             <p class="mt-2 text-sm text-[var(--txt-clr-default)] line-clamp-3"><%= @user.bio %></p>
             <div class="mt-3 flex items-center space-x-4 text-sm text-[var(--txt-clr-muted)] md:hidden">
               <a href="/friends-page-link?tab=followers" class="hover:underline">
-                <span class="font-semibold text-[var(--txt-clr-thick)]"><%= number_to_k(@user.all_followers.count) %></span> Followers
+                <span class="font-semibold text-[var(--txt-clr-thick)] followers_count_<%= @user.id %>"><%= number_to_k(@user.all_followers.count) %></span> Followers
               </a>
               <a href="/friends-page-link?tab=following" class="hover:underline">
-                <span class="font-semibold text-[var(--txt-clr-thick)]"><%= number_to_k(@user.all_following.count) %></span> Following
+                <span class="font-semibold text-[var(--txt-clr-thick)] following_count_<%= @user.id %>"><%= number_to_k(@user.all_following.count) %></span> Following
               </a>
             </div>
           </div>
@@ -87,16 +87,7 @@ hasIncomingRequest: <%= current_user.friend_request?(@user) %>
         </div>
         <div class="space-y-4">
           <div x-show="activeTab === 'posts'" x-cloak x-transition class="space-y-4">
-            <% unless @posts.present? %>
-              <div x-transition class="bg-[var(--background-clr-clear)] rounded-b-md shadow-sm text-center p-12">
-                <%= icon(icon: :inbox_icon, options:{class:"fa-3x text-[var(--txt-clr-muted)]"}) %>
-                <p class="mt-4 text-sm font-medium text-[var(--txt-clr-subtle)]">This user hasn't posted anything yet.</p>
-              </div>
-            <% else %>
-              <% @posts.each do |post| %>
-                <%= render "shared/post", post: post %>
-              <% end %>
-            <% end %>
+            <%= render partial:"posts", locals:{user: @user} %>
           </div>
           <div x-show="activeTab === 'saved'" x-cloak x-transition class="space-y-4">
             <div x-transition class="bg-[var(--background-clr-clear)] rounded-b-md shadow-sm text-center p-12">
@@ -116,11 +107,11 @@ hasIncomingRequest: <%= current_user.friend_request?(@user) %>
           <div class="space-y-2 text-sm">
             <div class="flex justify-between">
               <span class="font-medium text-[var(--txt-clr-muted)]">Following</span>
-              <span class="font-semibold text-[var(--txt-clr-thick)]"><%= number_to_k(@user.all_following.count) %></span>
+              <span class="font-semibold text-[var(--txt-clr-thick)] following_count_<%= @user.id %>"><%= number_to_k(@user.all_following.count) %></span>
             </div>
             <div class="flex justify-between border-b pb-3">
               <span class="font-medium text-[var(--txt-clr-muted)]">Followers</span>
-              <span class="font-semibold text-[var(--txt-clr-thick)]"><%= number_to_k(@user.all_followers.count) %></span>
+              <span class="font-semibold text-[var(--txt-clr-thick)] followers_count_<%= @user.id %>"><%= number_to_k(@user.all_followers.count) %></span>
             </div>
             <div class="flex justify-between">
               <span class="font-medium text-[var(--txt-clr-muted)]">Post Karma</span>

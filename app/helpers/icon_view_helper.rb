@@ -144,6 +144,11 @@ module IconViewHelper
     tag.i(class: "fa-solid fa-inbox #{classes.strip}",**options.except(:class))
   end
 
+  def lock_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-lock #{classes.strip}",**options.except(:class))
+  end
+
   def icon(icon:, options:{})
     result = nil
     begin

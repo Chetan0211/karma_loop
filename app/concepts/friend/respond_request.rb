@@ -29,7 +29,7 @@ class Friend::RespondRequest < Trailblazer::Operation
 
   def update_ui(result, **)
     Turbo::StreamsChannel.broadcast_render_to("ui_#{result[:from].id}", 
-      template: "friends/unfollow_friend", 
+      template: "friends/request_response", 
       locals:{send_to: result[:from], from: result[:from], to: result[:to]},
     )
     

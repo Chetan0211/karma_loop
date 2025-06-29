@@ -8,7 +8,6 @@ class Post::Create < Trailblazer::Operation
   step :video_transcode
 
   def setup_model(result, **options)
-    #TODO: Once we start implementing images and videos this code has to change
     options[:params][:status] = "video_process" if options[:params][:content_type] == "video"
     result[:model] = Post.new(options[:params])
   end 

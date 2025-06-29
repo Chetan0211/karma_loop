@@ -1,0 +1,23 @@
+<!--
+params to pass:
+current_user: 
+user: 
+-->
+<% temp_ability = Ability.new(current_user) %>
+<% if temp_ability.can?(:read_posts, user) %>
+  <% unless user.posts.present? %>
+    <div x-transition class="bg-[var(--background-clr-clear)] rounded-b-md shadow-sm text-center p-12">
+      <%= icon(icon: :inbox_icon, options:{class:"fa-3x text-[var(--txt-clr-muted)]"}) %>
+      <p class="mt-4 text-sm font-medium text-[var(--txt-clr-subtle)]">This user hasn't posted anything yet.</p>
+    </div>
+  <% else %>
+    <% user.posts.each do |post| %>
+      <%= render "shared/post", post: post %>
+    <% end %>
+  <% end %>
+<% else %>
+  <div x-transition class="bg-[var(--background-clr-clear)] rounded-b-md shadow-sm text-center p-12">
+    <%= icon(icon: :lock_icon, options:{class:"fa-3x text-[var(--txt-clr-muted)]"}) %>
+    <p class="mt-4 text-sm font-medium text-[var(--txt-clr-subtle)]">This account is private. Follow <strong><%=user.username%></strong> to see their posts.</p>
+  </div>
+<% end %>

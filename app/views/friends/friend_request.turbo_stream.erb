@@ -5,19 +5,37 @@ from: user who requested the friend request
 to: user who received the friend request
 -->
 <% if send_to.id == from.id  %>
-  <turbo-stream action="replace" targets=".<%=from.id%>_follow_button_<%=to.id%>">
+  <turbo-stream action="replace" targets="._<%=from.id%>_follow_button_<%=to.id%>">
     <template>
       <%= render partial: "shared/helpers/follow_request_button", locals:{current_user: from, user: to} %>
     </template>
   </turbo-stream>
-  <%= turbo_stream.replace "connections" do %>
-    <%= render partial: "shared/connections", locals:{user: from} %>
+  <%= turbo_stream.replace "connections_#{from.id}" do %>
+    <%= render partial: "shared/connections", locals:{current_user: send_to, user: from} %>
+  <% end %>
+  <%= turbo_stream.replace "connections_#{to.id}" do %>
+    <%= render partial: "shared/connections", locals:{current_user: send_to, user: to} %>
   <% end %>
 <% else %>
-  <%= turbo_stream.replace "incoming_request_tab" do %>
+  <%= turbo_stream.replace "incoming_request_tab_#{from.id}" do %>
     <%= render partial: "user/incoming_request_tab", locals:{current_user: to, user: from} %>
   <% end %>
-  <%= turbo_stream.replace "connections" do %>
-    <%= render partial: "shared/connections", locals:{user: to} %>
+  <%= turbo_stream.replace "connections_#{from.id}" do %>
+    <%= render partial: "shared/connections", locals:{current_user: send_to, user: from} %>
+  <% end %>
+  <%= turbo_stream.replace "connections_#{to.id}" do %>
+    <%= render partial: "shared/connections", locals:{current_user: send_to, user: to} %>
   <% end %>
 <% end %>
+<turbo-stream action="update" targets=".following_count_<%=from.id%>">
+  <template><%= from.all_following.count %></template>
+</turbo-stream>
+<turbo-stream action="update" targets=".followers_count_<%=from.id%>">
+  <template><%= from.all_followers.count %></template>
+</turbo-stream>
+<turbo-stream action="update" targets=".following_count_<%=to.id%>">
+  <template><%= to.all_following.count %></template>
+</turbo-stream>
+<turbo-stream action="update" targets=".followers_count_<%=to.id%>">
+  <template><%= to.all_followers.count %></template>
+</turbo-stream>
