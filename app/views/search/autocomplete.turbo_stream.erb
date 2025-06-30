@@ -1,0 +1,13 @@
+<% if @search_text.present? %>
+  <turbo-stream action="replace" targets=".search_results_<%= @user.id %>" >
+    <template>
+      <%= render partial: "layouts/autosearch", formats: [:html], locals: {user: @user, users: @grouped_results["User"].present? ? @grouped_results["User"] : [], posts: @grouped_results["Post"].present? ? @grouped_results["Post"] : []} %>
+    </template>
+  </turbo-stream>
+<% else %>
+  <turbo-stream action="replace" targets=".search_results_<%= @user.id %>" >
+    <template>
+      <%= render partial: "shared/trending_posts", formats: [:html], locals: {posts: [], user: @user} %>
+    </template>
+  </turbo-stream>
+<% end %>

@@ -35,7 +35,11 @@
       getThemeMode();
     </script>
   </head>
-  <body class="full-screen" data-notification-sound-path="<%= asset_path('notification.wav') %>">
+  <body class="full-screen" data-notification-sound-path="<%= asset_path('notification.wav') %>" 
+  x-data="{
+  isSearchModalOpen: false,
+  footer_active_tab: '',
+  }">
     <% if current_user.present? %>
       <%= turbo_stream_from "#{current_user&.id}error_notifications" %>
       <%= turbo_stream_from "ui_#{current_user.id}" %>
@@ -48,6 +52,9 @@
         <%= render "layouts/header" %>
       <% end %>
       <%= yield %>
+      <% if current_user %>
+        <%= render "layouts/footer" %>
+      <% end %>
     </div>
   </body>
 </html>

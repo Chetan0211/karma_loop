@@ -55,7 +55,7 @@ x-data="{
               class:"block w-full border border-[var(--border-clr-default)] rounded-md leading-5 bg-[var(--background-clr-clear)] placeholder-[var(--txt-clr-subtle)] focus:outline-none focus:placeholder-[var(--txt-clr-lite)] focus:ring-1 focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] sm:text-sm transition duration-150 ease-in-out" %>
             <% end %>
             <div x-show="show_search" x-cloak class=" absolute w-full left-0 mt-2 rounded-md shadow-lg py-1 bg-[var(--background-clr-clear)] ring-1 ring-[var(--border-clr-strong)] ring-opacity-5 z-10">
-              <%= render partial: "shared/trending_posts", locals: {posts: []} %>
+              <%= render partial: "shared/trending_posts", locals: {posts: [], user: current_user} %>
             </div>
           </div>
         </div>
@@ -141,7 +141,7 @@ x-data="{
         </div>
       </div>
       <div class="-mr-2 flex md:hidden">
-        <button type="button" class="p-1 mr-2 rounded-full text-[var(--txt-clr-lite)] hover:text-[var(--txt-clr-subtle)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-500)]">
+        <button type="button" @click="isSearchModalOpen = true" class="p-1 mr-2 rounded-full text-[var(--txt-clr-lite)] hover:text-[var(--txt-clr-subtle)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-500)]">
           <span class="sr-only">Search</span>
           <%= icon(icon: :search_icon, options:{class:"text-xl"}) %>
         </button>
@@ -285,3 +285,36 @@ x-data="{
   </div>
   <!-- Mobile hamburger menu start -->
 </nav>
+<div data-controller="header"
+        x-show="isSearchModalOpen"
+        x-cloak
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-50 bg-[var(--background-clr-clear)] md:hidden"
+        style="display: none;"
+    >
+  <div class="flex flex-col h-full">
+    <!-- Search Modal Header -->
+    <div class="flex items-center p-2 border-b border-[var(--border-clr-subtle)] flex-shrink-0">
+      <button @click="isSearchModalOpen = false" class="p-2 text-[var(--txt-clr-subtle)] hover:text-[var(--primary-600)]">
+        <i class="fa-solid fa-arrow-left text-lg"></i>
+      </button>
+      <%= form_with url: search_index_path, method: :get do |f| %>
+        <%= f.text_field :search_text,
+              "@focus"=> "show_search = true",
+              placeholder: "Search k-loop",
+              data:{action: "input->header#seachOnChange", search_url_template: autocomplete_path(search_text:"PLACEHOLDER")},
+              autocomplete: "off",
+              class:"block w-full border border-[var(--border-clr-default)] rounded-md leading-5 bg-[var(--background-clr-clear)] placeholder-[var(--txt-clr-subtle)] focus:outline-none focus:placeholder-[var(--txt-clr-lite)] focus:ring-1 focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] sm:text-sm transition duration-150 ease-in-out" %>
+      <% end %>
+    </div>
+    <!-- Search Modal Results -->
+    <div class="overflow-y-auto p-2">
+      <%= render partial: "shared/trending_posts", locals: {posts: [], user: current_user} %>
+    </div>
+  </div>
+</div>

@@ -3,7 +3,7 @@ Params to pass here:
 users
 posts
 -->
-<turbo-frame id="search_results">
+<div class="search_results_<%= user.id %>">
   <% if posts.count > 0 %>
     <h3 class="px-2 py-1 text-lg font-semibold text-[var(--txt-clr-default)] uppercase">Posts</h3>
     <% posts.each do |post| %>
@@ -36,4 +36,4 @@ posts
       No results found.
     </div>
   <% end %>
-</turbo-frame>
+</div>

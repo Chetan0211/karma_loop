@@ -8,7 +8,8 @@ isCropperModalOpen: false,
 connection_activeTab: 'following', 
 profilePresent: <%= @user.profile_picture.attached? %>,
 hasIncomingRequest: <%= current_user.friend_request?(@user) %>
-}">
+}"
+x-init="footer_active_tab = 'profile'">
   <div class="bg-gradient-to-r from-[var(--primary-500)] to-[var(--secondary-600)] h-32 sm:h-40">
   </div>
   <div class="bg-[var(--background-clr-clear)] shadow-sm pb-4">

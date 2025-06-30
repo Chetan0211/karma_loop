@@ -1,7 +1,7 @@
 <% content_for :page_javascript do %>
   <%= javascript_include_tag "post/new", "data-turbo-track": "reload" %>
 <% end %>
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="post_new">
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-init="footer_active_tab = 'create_post'" x-data="post_new">
   <div class="bg-[var(--background-clr-clear)] p-6 sm:p-8 rounded-lg shadow-lg">
     <div class="mb-6">
       <h1 class="text-2xl sm:text-3xl font-bold text-[var(--txt-clr-strong)]">Create New Post</h1>

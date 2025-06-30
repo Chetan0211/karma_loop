@@ -37,13 +37,13 @@ class PostController < ApplicationController
   end
 
   def show
-    authorize! :read, params[:id]
     @post = Post.includes(:posts_reactions).find(params[:id])
+    authorize! :read, @post
   end
 
   def comment
-    authorize! :create_comment, params[:id]
     @post = Post.find(params[:post_id])
+    authorize! :create_comment, @post
     @comment = @post.comments.build(comment_params)
     @comment.commenter = current_user
     if @comment.save
@@ -56,7 +56,8 @@ class PostController < ApplicationController
   end
 
   def post_reaction
-    authorize! :read, id: params[:id]
+    post = Post.find(params[:post_id])
+    authorize! :read, post
     reaction = {
       post_id: params[:post_id],
       user_id: current_user.id,
@@ -72,7 +73,8 @@ class PostController < ApplicationController
   end
 
   def comment_reaction
-    authorize! :read, id: params[:id]
+    post = Post.find(params[:post_id])
+    authorize! :read, post
     reaction={
       post_id: params[:post_id],
       comment_id: params[:comment_id],
