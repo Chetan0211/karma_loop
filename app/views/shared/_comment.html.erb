@@ -1,6 +1,8 @@
 <!--
 Params to pass here:
-comment: Model
+comment:
+post:
+current_user:
 -->
 
 <div id="<%= comment.id %>" class="flex space-x-3">
@@ -20,13 +22,13 @@ comment: Model
     </div>
     <div id="comment_reaction_<%=comment.id%>" class="flex items-center space-x-3 text-xs text-[var(--txt-clr-subtle)] font-medium <%=comment.current_user_reaction(current_user.id)%>">
       <div>
-        <%= link_to post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction: "like"), 
+        <%= link_to post_comment_reaction_path(post_id: post.id, comment_id: comment.id, reaction: "like"), 
           id:"comment_like_button_#{comment.id}", 
           class: "flex items-center space-x-1 hover:text-[var(--primary-600)] #{comment.current_user_reaction(current_user.id) == "like" ? "hidden" : ""}",
           data: { turbo_method: "post" }  do %>
           <%= icon(icon: :like_icon, options:{class:"fa-fw text-base w-4 h-4"}) %>
         <% end %>
-        <%= link_to post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction: nil), 
+        <%= link_to post_comment_reaction_path(post_id: post.id, comment_id: comment.id, reaction: nil), 
           id:"comment_like_button_liked_#{comment.id}", 
           class: "flex items-center space-x-1 text-[var(--primary-600)] #{comment.current_user_reaction(current_user.id) == "like" ? "" : "hidden"}",
           data: { turbo_method: "post" }  do %>
@@ -35,13 +37,13 @@ comment: Model
       </div>
       <span class="font-semibold text-[var(--txt-clr-default)] w-6 text-center"><%= (comment.likes - comment.dislikes) %></span>
       <div>
-        <%= link_to post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction: "dislike"), 
+        <%= link_to post_comment_reaction_path(post_id: post.id, comment_id: comment.id, reaction: "dislike"), 
           id:"comment_dislike_button_#{comment.id}", 
           class: "flex items-center space-x-1 hover:text-[var(--secondary-600)] #{comment.current_user_reaction(current_user.id) == "dislike" ? "hidden" : ""}",
           data: { turbo_method: "post" } do %>
           <%= icon(icon: :dislike_icon, options:{class:"fa-fw text-base w-4 h-4"}) %>
         <% end %>
-        <%= link_to post_comment_reaction_path(post_id: params[:id], comment_id: comment.id, reaction: nil), 
+        <%= link_to post_comment_reaction_path(post_id: post.id, comment_id: comment.id, reaction: nil), 
           id:"comment_dislike_button_disliked_#{comment.id}", 
           class: "flex items-center space-x-1 text-[var(--secondary-600)] #{comment.current_user_reaction(current_user.id) == "dislike" ? "" : "hidden"}",
           data: { turbo_method: "post" } do %>
@@ -51,7 +53,7 @@ comment: Model
       <button id="reply_comment_button_<%= comment.id %>" class="hover:underline">Reply</button>
     </div>
     <div class="flex items-center space-x-3 text-xs text-[var(--txt-clr-subtle)] font-medium">
-        <%= form_with url: post_add_comment_path(post_id: params[:id]), model: Comment.new, remote: true, id: "reply_comment_form_#{comment.id}", html: { style: "display: none;" } do |form| %>
+        <%= form_with url: post_add_comment_path(post_id: post.id), model: Comment.new, remote: true, id: "reply_comment_form_#{comment.id}", html: { style: "display: none;" } do |form| %>
           <%= form.hidden_field :parent_id, value: comment.id %>
           <%= form.rich_text_area :comment, id:"id:comment_comment_#{comment.id}", class: "w-full p-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] transition duration-150 ease-in-out text-sm" %>
           <div class="flex justify-end mt-2">
@@ -64,7 +66,7 @@ comment: Model
     <% if comment.replies.any? %>
       <% comment.replies.each do |reply| %>
         <div class="comment-thread mt-4 space-y-4">
-          <%= render partial: 'shared/comment', locals: { comment: reply } %>
+          <%= render partial: 'shared/comment', locals:{comment: reply, post: post, current_user: current_user} %>
         </div>
       <% end %>
     <% end %>

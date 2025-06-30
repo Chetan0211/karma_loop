@@ -20,6 +20,9 @@
   <%= turbo_stream.replace "connections_#{to.id}" do %>
     <%= render partial: "shared/connections", locals:{current_user: send_to, user: to} %>
   <% end %>
+  <%= turbo_stream.update "user_posts_#{from.id}" do %>
+    <%= render partial: "user/posts", locals:{current_user: send_to, user: from} %>
+  <% end %>
 <% end %>
 <turbo-stream action="update" targets=".following_count_<%=from.id%>">
   <template><%= from.all_following.count %></template>

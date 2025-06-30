@@ -4,9 +4,9 @@ post: Model
 
 -->
 <% if post.content_type == 'blog' %>
-  <%= render "shared/blog_post", post: post %>
+  <%= render partial: "shared/blog_post", locals: {post: post, current_user: current_user} %>
 <% elsif post.content_type == 'images' %>
-  <%= render "shared/image_post", post: post %>
+  <%= render partial: "shared/image_post", locals: {post: post, current_user: current_user} %>
 <% elsif post.content_type == 'video' %>
-  <%= render "shared/video_post", post: post %>
+  <%= render partial: "shared/video_post", locals: {post: post, current_user: current_user} %>
 <% end %>

@@ -149,6 +149,11 @@ module IconViewHelper
     tag.i(class: "fa-solid fa-lock #{classes.strip}",**options.except(:class))
   end
 
+  def rocket_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-rocket #{classes.strip}",**options.except(:class))
+  end
+
   def icon(icon:, options:{})
     result = nil
     begin

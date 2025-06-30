@@ -2,7 +2,8 @@ class ApplicationController < ActionController::Base
   before_action :set_current
 
   rescue_from CanCan::AccessDenied do |exception|
-    
+    flash[:error] = "Access Denied: #{exception.message}"
+    redirect_to root_path
   end
 
   private

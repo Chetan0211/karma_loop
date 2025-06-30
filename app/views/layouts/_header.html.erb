@@ -232,11 +232,6 @@ x-data="{
           <%= icon(icon: :close_icon, options: {class: "text-xl"}) %>
         </button>
       </div>
-      <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-        <a href="#" class="bg-[var(--primary-50)] border-[var(--primary-500)] text-[var(--primary-700)] block pl-3 pr-4 py-2 border-l-4 text-base font-medium" aria-current="page">Home</a>
-        <a href="#" class="border-transparent text-[var(--txt-clr-subtle)] hover:bg-[var(--background-clr-body)] hover:border-[var(--border-clr-default)] hover:text-[var(--txt-clr-default)] block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Popular</a>
-        <a href="#" class="border-transparent text-[var(--txt-clr-subtle)] hover:bg-[var(--background-clr-body)] hover:border-[var(--border-clr-default)] hover:text-[var(--txt-clr-default)] block pl-3 pr-4 py-2 border-l-4 text-base font-medium">All</a>
-      </div>
       <div class="pt-4 pb-3 border-t border-[var(--border-clr-subtle)]">
         <div class="flex items-center px-5">
           <div class="flex-shrink-0">
@@ -252,10 +247,6 @@ x-data="{
             <div class="text-base font-medium text-[var(--txt-clr-thick)]">User Name</div>
             <div class="text-sm font-medium text-[var(--txt-clr-subtle)]">user@example.com</div>
           </div>
-          <button type="button" class="ml-auto bg-[var(--background-clr-clear)] flex-shrink-0 p-1 rounded-full text-[var(--txt-clr-lite)] hover:text-[var(--txt-clr-subtle)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-500)]">
-            <span class="sr-only">View notifications</span>
-            <%= icon(icon: :bell_icon, options: {class: "text-xl"}) %>
-          </button>
         </div>
         <div class="mt-3 px-2 space-y-1">
           <%= link_to user_profile_path(id: current_user.id), class: "block rounded-md px-3 py-2 text-base font-medium text-[var(--txt-clr-subtle)] hover:bg-[var(--background-clr-body)] hover:text-[var(--txt-clr-thick)]" do %>

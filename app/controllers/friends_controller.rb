@@ -4,6 +4,8 @@ class FriendsController < ApplicationController
   before_action :authenticate_user!
 
   def friend_request
+    friend_to_request = User.find(params[:id])
+    authorize! :request_friend, friend_to_request, message: "You can't send friend request to this user."
     result = Friend::Request.call(params: {from: current_user.id, to: params[:id]})
     if result.success?
       head :ok

@@ -3,7 +3,7 @@ Params to pass here:
 post: Model
 -->
 <div id="<%= post.id %>" class="bg-[var(--background-clr-clear)] rounded-md shadow overflow-hidden flex">
-  <%= render "shared/posts_like_unlike", post: post %>
+  <%= render partial: "shared/posts_like_unlike", locals: {post: post, current_user: current_user} %>
 
   <div class="p-3 sm:p-4 flex-grow min-w-0 relative hover:bg-[var(--background-clr-thick)]">
     <%= link_to post_path(id: post.id), class: "absolute top-0 left-0 w-full h-full z-1" do %>

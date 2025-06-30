@@ -16,6 +16,9 @@ to: user who received the friend request
   <%= turbo_stream.replace "connections_#{to.id}" do %>
     <%= render partial: "shared/connections", locals:{current_user: send_to, user: to} %>
   <% end %>
+  <%= turbo_stream.update "user_posts_#{to.id}" do %>
+    <%= render partial: "user/posts", locals:{current_user: send_to, user: to} %>
+  <% end %>
 <% else %>
   <%= turbo_stream.replace "incoming_request_tab_#{from.id}" do %>
     <%= render partial: "user/incoming_request_tab", locals:{current_user: to, user: from} %>

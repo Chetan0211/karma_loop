@@ -2,8 +2,7 @@ class UserController < ApplicationController
   before_action :authenticate_user!
 
   def profile
-    @user = User.includes(:comments).find(params[:id])
-    @posts = Post.where(user: @user)
+    @user = User.includes(:posts, :comments).find(params[:id])
   end
 
   def connections

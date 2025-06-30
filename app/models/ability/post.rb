@@ -1,17 +1,11 @@
 class Ability::Post
   include CanCan::Ability
   def initialize(user)
-    #TODO: Need to re evaluate these because there are some miss understanding while creating these authorizations
-    can :create , Post
-    can :read, Post, status: "published", scope: :public
-    can :read, Post, user_id: user.id
-    can :read, Post, status: "published", user:{ group_users: { user_id: user.id, status: "follower", group:{ type: "friend" }}}
-    can [:update, :destroy], Post, user_id: user.id
+    can [:create, :update, :destroy, :read], Post, user_id: user.id
+    can [:read, :create_comment, :read_comment], Post, status: "published", scope: :public, deleted_at: nil
+    can [:read, :create_comment, :read_comment], Post, status: "published", user_id: user.all_following.pluck(:id), deleted_at: nil
 
-    can [:create, :read], Comment, post:{user: {status: "published", scope: "public"}}
-    can [:create, :read], Comment, post:{user: {status: "published", group_users: {user_id: user.id, status: "follower", group:{type: "friend"}}}}
-    can [:update], Comment, commenter_id: user.id
-    can [:destroy], Comment, commenter_id: user.id
-    can [:destroy], Comment, post: {user_id: user.id}
+    can [:update_comment, :destroy_comment], Comment, commenter_id: user.id
+    can [:destroy_comment], Comment, post: {user_id: user.id}
   end
 end

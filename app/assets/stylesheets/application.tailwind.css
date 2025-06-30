@@ -332,7 +332,7 @@
     --secondary-950-rgb: 46, 16, 101;     /* from #2e1065 */
   }
 
-  :root html.theme-purple html.theme-blue html.theme-orange{
+  :root, html.theme-purple, html.theme-blue, html.theme-green, html.theme-cyan, html.theme-orange, html.theme-pink{
     --black: theme('colors.black');
     --white: theme('colors.white');
 

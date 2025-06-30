@@ -13,12 +13,12 @@
             </span>
             <%= current_user.display_name %>
           <% end %>
-          <a href="#" class="text-[var(--txt-clr-muted)] hover:bg-[var(--background-clr-thick)] hover:text-[var(--txt-clr-strong)] group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+          <%= link_to connections_path, class: "text-[var(--txt-clr-muted)] hover:bg-[var(--background-clr-thick)] hover:text-[var(--txt-clr-strong)] group flex items-center px-3 py-2 text-sm font-medium rounded-md" do %>
             <span class="h-8 w-8 overflow-hidden rounded-full bg-[var(--primary-100)] text-[var(--primary-600)] flex items-center justify-center mr-3">
               <i class="fa-solid fa-user-group"></i>
             </span>
             Friends
-          </a>
+          <% end %>
           <a href="#" class="text-[var(--txt-clr-muted)] hover:bg-[var(--background-clr-thick)] hover:text-[var(--txt-clr-strong)] group flex items-center px-3 py-2 text-sm font-medium rounded-md">
             <span class="h-8 w-8 overflow-hidden rounded-full bg-[var(--primary-100)] text-[var(--primary-600)] flex items-center justify-center mr-3">
               <i class="fa-solid fa-users"></i>
@@ -35,8 +35,23 @@
       </div>
     </div>
     <div class="md:col-span-2 space-y-4">
-      <% @posts.each do |post| %>
-        <%= render "shared/post", post: post %>
+      <% if @posts.present? %>
+        <% @posts.each do |post| %>
+          <%= render "shared/post", post: post %>
+        <% end %>
+      <% else %>
+        <div x-transition class="bg-[var(--background-clr-clear)] rounded-md shadow-sm p-8 text-center">
+          <div class="max-w-md mx-auto">
+            <%= icon(icon: :rocket_icon, options: {class: "fa-3x text-[var(--txt-clr-lite)]"}) %>
+            <h2 class="mt-4 text-xl font-semibold text-[var(--txt-clr-thick)]">This page is pretty quiet</h2>
+            <p class="mt-2 text-sm text-[var(--txt-clr-muted)]">
+              There are no posts here yet. Be the first to share something with the community!
+            </p>
+            <%= link_to new_post_path,class: "mt-6 inline-flex items-center px-6 py-2 border border-transparent text-[var(--white)] shadow-sm text-sm font-medium rounded-full bg-[var(--primary-600)] hover:bg-[var(--primary-700)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-500)]" do %>
+              <%= icon(icon: :plus_icon, options: {class: "mr-2"}) %> Create Post
+            <% end %>
+          </div>
+        </div>
       <% end %>
     </div>
     <div class="hidden md:block space-y-4">

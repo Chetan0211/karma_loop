@@ -11,8 +11,8 @@ user:
       <p class="mt-4 text-sm font-medium text-[var(--txt-clr-subtle)]">This user hasn't posted anything yet.</p>
     </div>
   <% else %>
-    <% user.posts.each do |post| %>
-      <%= render "shared/post", post: post %>
+    <% user.posts.order(updated_at: :desc).each do |post| %>
+      <%= render "shared/post",post: post, current_user: current_user %>
     <% end %>
   <% end %>
 <% else %>

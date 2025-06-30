@@ -1,12 +1,13 @@
 <!--
 Params to pass here:
-post: Model
+post: 
+current_user:
 -->
 <% content_for :page_javascript do %>
   <%= javascript_include_tag "post/image_post", "data-turbo-track": "reload" %>
 <% end %>
 <div id="<%= post.id %>" class="bg-[var(--background-clr-clear)] rounded-md shadow overflow-hidden flex hover:shadow-lg transition-shadow duration-150" x-data="carousel(<%= post.images.count %>)">
-  <%= render "shared/posts_like_unlike", post: post %>
+  <%= render partial: "shared/posts_like_unlike", locals: {post: post, current_user: current_user} %>
 
   <div class="p-3 sm:p-4 relative flex-grow min-w-0 hover:bg-[var(--background-clr-thick)]">
     <%= link_to post_path(id: post.id), class: "absolute top-0 left-0 w-full h-full z-100" do %>

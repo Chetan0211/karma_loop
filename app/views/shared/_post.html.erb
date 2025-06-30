@@ -4,9 +4,9 @@ post: Model
 -->
 <% case post.content_type%>
 <% when 'blog'%>
-  <%= render "shared/blog_post_min", post: post %>
+  <%= render partial: "shared/blog_post_min", locals: {post: post, current_user: current_user} %>
 <% when 'images'%>
-  <%= render "shared/image_post_min", post: post %>
+  <%= render partial: "shared/image_post_min", locals: {post: post, current_user: current_user} %>
 <% when 'video'%>
-  <%= render "shared/video_post_min", post: post %>
+  <%= render partial: "shared/video_post_min", locals: {post: post, current_user: current_user} %>
 <% end %>

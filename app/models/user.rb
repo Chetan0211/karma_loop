@@ -88,6 +88,10 @@ class User < ApplicationRecord
     GroupUser.where(group_id: group, user_id: user.id).present?
   end
 
+  def blocked_from_users
+    User.includes(:group_users).where(group_users:{group_id: friend_groups, status:"blocked"}).where.not(id: self.id)
+  end
+
   def all_friend_requests
     User.includes(:group_users).where(group_users:{group_id: friend_groups, status:"requested"}).where.not(id: self.id)
   end

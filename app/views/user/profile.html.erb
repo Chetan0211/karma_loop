@@ -69,14 +69,16 @@ hasIncomingRequest: <%= current_user.friend_request?(@user) %>
             :class="{ 'border-[var(--primary-500)] text-[var(--primary-600)]': activeTab === 'posts', 'border-transparent text-[var(--txt-clr-subtle)] hover:text-[var(--txt-clr-default)] hover:border-[var(--border-clr-default)]': activeTab !== 'posts' }" 
             class="flex-1 sm:flex-none whitespace-nowrap py-3 px-1 sm:px-1 border-b-2 font-medium text-sm transition-colors duration-150 ease-in-out focus:outline-none flex items-center justify-center">
               <i class="fa-solid fa-list-alt sm:mr-2"></i>
-              <span class="hidden sm:inline">Posts</span>
+              <span class="hidden sm:inline">Posts (<%= @user.posts.count %>)</span>
             </button>
-            <button @click="activeTab = 'saved'" 
+            <% if @user.id == current_user.id %>
+              <button @click="activeTab = 'saved'" 
             :class="{ 'border-[var(--primary-500)] text-[var(--primary-600)]': activeTab === 'saved', 'border-transparent text-[var(--txt-clr-subtle)] hover:text-[var(--txt-clr-default)] hover:border-[var(--border-clr-default)]': activeTab !== 'saved' }" 
             class="flex-1 sm:flex-none whitespace-nowrap py-3 px-1 sm:px-1 border-b-2 font-medium text-sm transition-colors duration-150 ease-in-out focus:outline-none flex items-center justify-center">
-              <i class="fa-regular fa-bookmark sm:mr-2"></i>
-              <span class="hidden sm:inline">Saved</span>
-            </button>
+                <i class="fa-regular fa-bookmark sm:mr-2"></i>
+                <span class="hidden sm:inline">Saved</span>
+              </button>
+            <% end %>
             <button @click="activeTab = 'friends'" 
             :class="{ 'border-[var(--primary-500)] text-[var(--primary-600)]': activeTab === 'friends', 'border-transparent text-[var(--txt-clr-subtle)] hover:text-[var(--txt-clr-default)] hover:border-[var(--border-clr-default)]': activeTab !== 'friends' }" 
             class="flex-1 sm:flex-none whitespace-nowrap py-3 px-1 sm:px-1 border-b-2 font-medium text-sm transition-colors duration-150 ease-in-out focus:outline-none flex items-center justify-center">
@@ -86,17 +88,17 @@ hasIncomingRequest: <%= current_user.friend_request?(@user) %>
           </nav>
         </div>
         <div class="space-y-4">
-          <div x-show="activeTab === 'posts'" x-cloak x-transition class="space-y-4">
+          <div id="user_posts_<%= @user.id %>" x-show="activeTab === 'posts'" x-cloak class="space-y-4">
             <%= render partial:"posts", locals:{user: @user} %>
           </div>
-          <div x-show="activeTab === 'saved'" x-cloak x-transition class="space-y-4">
-            <div x-transition class="bg-[var(--background-clr-clear)] rounded-b-md shadow-sm text-center p-12">
+          <div x-show="activeTab === 'saved'" x-cloak class="space-y-4">
+            <div class="bg-[var(--background-clr-clear)] rounded-b-md shadow-sm text-center p-12">
               <%= icon(icon: :save_icon, options:{class:"fa-3x text-[var(--txt-clr-muted)]"}) %>
               <p class="mt-4 text-sm font-medium text-[var(--txt-clr-subtle)]">You haven't saved any posts yet.</p>
               <p class="text-xs text-[var(--txt-clr-lite)] mt-1">Saved posts will appear here.</p>
             </div>
           </div>
-          <div x-show="activeTab === 'friends'" x-cloak x-transition class="space-y-4">
+          <div x-show="activeTab === 'friends'" x-cloak class="space-y-4">
             <%= render partial:"shared/connections", locals:{user: @user} %>
           </div>
         </div>
@@ -115,7 +117,7 @@ hasIncomingRequest: <%= current_user.friend_request?(@user) %>
             </div>
             <div class="flex justify-between">
               <span class="font-medium text-[var(--txt-clr-muted)]">Post Karma</span>
-              <span class="font-semibold text-[var(--txt-clr-thick)]"><%= number_to_k(@posts.count) %></span>
+              <span class="font-semibold text-[var(--txt-clr-thick)]"><%= number_to_k(@user.posts.count) %></span>
             </div>
             <div class="flex justify-between">
               <span class="font-medium text-[var(--txt-clr-muted)]">Comment Karma</span>

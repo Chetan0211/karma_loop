@@ -1,6 +1,7 @@
 class SearchController < ApplicationController
   def autocomplete
     if params["search_text"].present?
+      # TODO: Need to show the post results only when user has access to them.
       search_results = Searchkick.search(params["search_text"], models:[User, Post], match: :word_start, limit: 10)
       grouped_results = search_results.group_by{|result| result.class.to_s}
       render partial: "layouts/autosearch",  locals: {users: grouped_results["User"].present? ? grouped_results["User"] : [], posts: grouped_results["Post"].present? ? grouped_results["Post"] : []}
