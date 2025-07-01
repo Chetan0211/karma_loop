@@ -2,12 +2,14 @@
 #
 # Table name: group_users
 #
-#  id         :uuid             not null, primary key
-#  status     :string
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  group_id   :uuid             not null
-#  user_id    :uuid             not null
+#  id                :uuid             not null, primary key
+#  last_read_at      :datetime
+#  status            :string
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  group_id          :uuid             not null
+#  last_read_chat_id :uuid
+#  user_id           :uuid             not null
 #
 # Indexes
 #

@@ -85,6 +85,8 @@ entity group_users{
   **id**: uuid [**PK**] **<<generated>>**
   **group_id**: uuid [**FK**]
   **user_id**: uuid [**FK**]
+  **last_read_chat_id**: uuid [**FK**]
+  **last_read_at**: timestamp without timezone
   **status**: character varying
   **created_at**: timestamp without timezone
   **updated_at**: timestamp without timezone
@@ -151,6 +153,32 @@ entity notification_events{
   **created_at**: timestamp without timezone
   **updated_at**: timestamp without timezone
 }
+
+entity chats{
+  **id**: uuid [**PK**] **<<generated>>**
+  **user_id**: uuid [**FK**]
+  **group_id**: uuid [**FK**]
+  **reply_to**: uuid [**FK**]
+  **message**: text
+  **created_at**: timestamp without timezone
+  **updated_at**: timestamp without timezone
+}
+
+entity chat_reactions{
+  **id**: uuid [**PK**] **<<generated>>**
+  **chat_id**: uuid [**FK**]
+  **user_id**: uuid [**FK**]
+  **reaction**: character varying
+  **created_at**: timestamp without timezone
+  **updated_at**: timestamp without timezone
+}
+
+chats ||--{ active_storage_attachments : "record_id"
+chats ||--{ chats : "using: reply_to"
+chats ||--{ chat_reactions
+users ||--{ chat_reactions
+groups ||--{ chats
+users ||--{ chats
 
 notification_events ||--{ notifications
 users ||--{ notifications : "using record_id"

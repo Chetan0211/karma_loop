@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_06_19_160852) do
+ActiveRecord::Schema[7.1].define(version: 2025_07_01_150613) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -52,6 +52,28 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_19_160852) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness"
   end
 
+  create_table "chat_reactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "chat_id", null: false
+    t.uuid "user_id", null: false
+    t.string "reaction"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_id"], name: "index_chat_reactions_on_chat_id"
+    t.index ["reaction"], name: "index_chat_reactions_on_reaction"
+    t.index ["user_id"], name: "index_chat_reactions_on_user_id"
+  end
+
+  create_table "chats", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.uuid "group_id", null: false
+    t.uuid "reply_to_id"
+    t.text "message", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_id"], name: "index_chats_on_group_id"
+    t.index ["user_id"], name: "index_chats_on_user_id"
+  end
+
   create_table "comments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "commenter_id", null: false
     t.uuid "post_id", null: false
@@ -85,6 +107,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_19_160852) do
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "last_read_chat_id"
+    t.datetime "last_read_at"
     t.index ["group_id"], name: "index_group_users_on_group_id"
     t.index ["user_id"], name: "index_group_users_on_user_id"
   end
@@ -180,6 +204,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_19_160852) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "chat_reactions", "chats"
+  add_foreign_key "chat_reactions", "users"
+  add_foreign_key "chats", "chats", column: "reply_to_id"
+  add_foreign_key "chats", "groups"
+  add_foreign_key "chats", "users"
   add_foreign_key "comments", "comments", column: "parent_id", on_delete: :cascade
   add_foreign_key "comments", "posts"
   add_foreign_key "comments", "users", column: "commenter_id"
