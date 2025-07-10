@@ -1,0 +1,6 @@
+<% if params[:page].present? %>
+<% else %>
+  <%= turbo_stream.update "active_chat_window" do %>
+    <%= render partial: "active_chat_window", locals:{current_user: current_user, group: @group, chats: @chats} %>
+  <% end %>
+<% end %>

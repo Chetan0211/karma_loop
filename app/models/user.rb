@@ -65,6 +65,10 @@ class User < ApplicationRecord
     User.includes(:group_users).where(group_users:{group_id: group}).where.not(id: self.id)
   end
 
+  def all_chat_groups
+    Group.where(type: %w[friend group]).joins(:group_users, :chats).where(group_users:{user_id: self.id}).uniq
+  end
+
   def following?(user)
     group = friend_groups_with_status("follower");
     GroupUser.where(group_id: group, user_id: user.id).present?

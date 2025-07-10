@@ -26,6 +26,8 @@ Rails.application.routes.draw do
   
   resources :admin, only: [:index]
 
+  resources :chat, only: [:index, :create, :show]
+
   # post routes
   resources :post, only: [:new, :create, :show] do
     post "comment" => "post#comment", as: :add_comment

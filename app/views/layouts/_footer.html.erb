@@ -17,13 +17,13 @@
       <span class="text-xs font-medium mt-0.5">Create</span>
     <% end %>
     <!-- Chat -->
-    <a href="#" 
-    class="flex flex-col items-center justify-center w-full h-full"
-    @click="footer_active_tab = 'chat'"
-    :class="{'text-[var(--primary-600)]' : footer_active_tab == 'chat', 'text-[var(--txt-clr-subtle)]' : footer_active_tab != 'chat'}">
+    <%= link_to chat_index_path(),
+    class: "flex flex-col items-center justify-center w-full h-full",
+    "@click"=>"footer_active_tab = 'chat'",
+    ":class"=>"{'text-[var(--primary-600)]' : footer_active_tab == 'chat', 'text-[var(--txt-clr-subtle)]' : footer_active_tab != 'chat'}" do %>
       <i class="fa-solid fa-comment-dots text-xl"></i>
       <span class="text-xs font-medium">Chat</span>
-    </a>
+    <% end %>
     <!-- Profile -->
     <%= link_to user_profile_path(id: current_user.id),
     class: "flex flex-col items-center justify-center w-full h-full",

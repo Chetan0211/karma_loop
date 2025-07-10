@@ -24,7 +24,13 @@ class Group < ApplicationRecord
 
   TYPES = %w[friend group community].freeze
   validates :type, inclusion: { in: TYPES }
-
+  
+  has_one_attached :group_picture
   belongs_to :admin, class_name: "User", optional: true
   has_many :group_users, dependent: :destroy
+  has_many :chats
+
+  def member(current_user)
+    User.includes(group_users: :group).where(group_users:{group_id: self.id}).where.not(group_users:{user_id: current_user.id}).first
+  end
 end

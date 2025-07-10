@@ -1,0 +1,48 @@
+<!--
+params used here:
+current_user
+chat
+
+-->
+<div id="<%= chat.id %>" class="group relative chat-message" :class="<%= current_user.id == chat.user_id %> ? 'flex justify-end' : 'flex justify-start'" data-date="<%= chat.created_at.to_date %>">
+  <!-- Message Actions (Reply, React) -->
+  <div class="absolute top-1/2 -translate-y-1/2 flex items-center space-x-1 bg-[var(--background-clr-strong)] shadow-md rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity" :class="<%= current_user.id == chat.user_id %> ? 'left-0 -translate-x-full -ml-2' : 'right-0 translate-x-full mr-2'">
+    <button @click="setReplyingTo(message)" class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--background-clr-strong)]"><i class="fa-solid fa-reply text-xs text-[var(--txt-clr-muted)]"></i></button>
+    <div x-data="{ reactionsOpen: false }" @mouseleave="reactionsOpen = false" class="relative">
+      <button @click="reactionsOpen = !reactionsOpen" class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--background-clr-strong)]"><i class="fa-regular fa-face-smile text-xs text-[var(--txt-clr-muted)]"></i></button>
+      <div x-show="reactionsOpen" x-transition class="absolute bottom-full mb-2 flex space-x-1 bg-[var(--background-clr-clear)] shadow-lg rounded-full p-1">
+        <button @click="addReaction(message, '👍'); reactionsOpen = false" class="text-lg p-1 rounded-full hover:bg-[var(--background-clr-strong)]">👍</button>
+        <button @click="addReaction(message, '❤️'); reactionsOpen = false" class="text-lg p-1 rounded-full hover:bg-[var(--background-clr-strong)]">❤️</button>
+        <button @click="addReaction(message, '😂'); reactionsOpen = false" class="text-lg p-1 rounded-full hover:bg-[var(--background-clr-strong)]">😂</button>
+        <button @click="addReaction(message, '😮'); reactionsOpen = false" class="text-lg p-1 rounded-full hover:bg-[var(--background-clr-strong)]">😮</button>
+      </div>
+    </div>
+  </div>
+  <!-- Message Bubble -->
+  <div class="max-w-xs lg:max-w-md">
+    <div class="px-4 py-2 rounded-2xl" :class="<%= current_user.id == chat.user_id %> ? 'bg-[var(--primary-600)] text-[var(--txt-clr-default)] rounded-br-none' : 'bg-[var(--background-clr-strong)] text-[var(--txt-clr-default)] rounded-bl-none'">
+      <!-- ** MODIFIED: Quoted Reply UI ** -->
+      <div x-show="false" class="mb-2 p-2 rounded-md border-l-4" :class="<%= current_user.id == chat.user_id %> ? 'bg-[var(--primary-500)]' : 'bg-[var(--background-clr-strong)] border-[var(--border-clr-thick)]'">
+        <p class="text-xs font-semibold" :class="<%= current_user.id == chat.user_id %> ? 'text-[var(--primary-100)]' : 'text-[var(--txt-clr-muted)]'">Chat name</p>
+        <p class="text-xs italic truncate" :class="<%= current_user.id == chat.user_id %> ? 'text-[var(--primary-200)]' : 'text-[var(--primary-500)]'">message reply to text</p>
+      </div>
+      <!-- Main Message Text -->
+      <p class="text-sm"><%= chat.message %></p>
+      <div class="flex items-center justify-end mt-1" x-data="{ status: '' }", x-init="status = 'delivered'">
+        <p class="text-xs text-[var(--txt-clr-muted)] mr-1.5"><%=chat.created_at.strftime("%H:%M")%></p>
+        <!-- ** NEW: Individual Message Status Icons ** -->
+        <i x-show="status === 'sending'" class="fa-solid fa-clock-rotate-left text-[var(--txt-clr-muted)]"></i>
+        <i x-show="status === 'sent'" class="fa-regular fa-circle text-[var(--txt-clr-muted)]"></i>
+        <i x-show="status === 'delivered'" class="fa-solid fa-circle-check text-[var(--txt-clr-muted)]"></i>
+        <i x-show="status === 'read'" class="fa-solid fa-circle-check text-[var(--link-clr)]"></i>
+      </div>
+    </div>
+    <!-- Reactions Display -->
+    <div x-show="false" class="flex space-x-1 mt-1" :class="<%= current_user.id == chat.user_id %> ? 'justify-end' : 'justify-start'">
+      <div class="bg-gray-200 dark:bg-gray-600 rounded-full px-2 py-0.5 text-xs flex items-center">
+          <span class="mr-1">emoji</span>
+          <span class="font-semibold text-gray-700 dark:text-gray-200">count</span>
+        </div>
+    </div>
+  </div>
+</div>
