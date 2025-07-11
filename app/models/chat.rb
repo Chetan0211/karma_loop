@@ -26,6 +26,6 @@ class Chat < ApplicationRecord
 
   belongs_to :group
   belongs_to :user
-  has_many :reactions
+  has_many :message_interactions
   has_one :reply_to, class_name: 'Chat', foreign_key: :reply_to_id
 end

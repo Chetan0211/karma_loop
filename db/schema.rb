@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_07_01_150613) do
+ActiveRecord::Schema[7.1].define(version: 2025_07_11_075736) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -50,17 +50,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_01_150613) do
     t.string "variation_digest", null: false
     t.uuid "blob_id", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness"
-  end
-
-  create_table "chat_reactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "chat_id", null: false
-    t.uuid "user_id", null: false
-    t.string "reaction"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["chat_id"], name: "index_chat_reactions_on_chat_id"
-    t.index ["reaction"], name: "index_chat_reactions_on_reaction"
-    t.index ["user_id"], name: "index_chat_reactions_on_user_id"
   end
 
   create_table "chats", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -107,8 +96,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_01_150613) do
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.uuid "last_read_chat_id"
-    t.datetime "last_read_at"
     t.index ["group_id"], name: "index_group_users_on_group_id"
     t.index ["user_id"], name: "index_group_users_on_user_id"
   end
@@ -122,6 +109,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_01_150613) do
     t.datetime "updated_at", null: false
     t.index ["admin_id"], name: "index_groups_on_admin_id"
     t.index ["type"], name: "index_groups_on_type"
+  end
+
+  create_table "message_interactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "chat_id", null: false
+    t.uuid "user_id", null: false
+    t.string "reaction"
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_id"], name: "index_message_interactions_on_chat_id"
+    t.index ["user_id"], name: "index_message_interactions_on_user_id"
   end
 
   create_table "notification_events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -204,8 +202,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_01_150613) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "chat_reactions", "chats"
-  add_foreign_key "chat_reactions", "users"
   add_foreign_key "chats", "chats", column: "reply_to_id"
   add_foreign_key "chats", "groups"
   add_foreign_key "chats", "users"
@@ -218,6 +214,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_01_150613) do
   add_foreign_key "group_users", "groups"
   add_foreign_key "group_users", "users"
   add_foreign_key "groups", "users", column: "admin_id"
+  add_foreign_key "message_interactions", "chats"
+  add_foreign_key "message_interactions", "users"
   add_foreign_key "notifications", "notification_events"
   add_foreign_key "posts", "content_categories"
   add_foreign_key "posts", "users"
