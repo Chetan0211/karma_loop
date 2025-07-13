@@ -37,7 +37,7 @@ class:"w-full text-left p-4 flex items-center space-x-4 hover:bg-[var(--backgrou
       <p class="text-xs text-[var(--txt-clr-subtle)]"><%= last_chat.present? ? PostHelper.calculate_created_date(last_chat.created_at) : "" %></p>
     </div>
     <div class="flex justify-between items-center mt-1">
-      <p class="text-sm text-[var(--txt-clr-subtle)] truncate"><%= last_chat.message %></p>
+      <p class="text-sm text-[var(--txt-clr-subtle)] truncate"><%= last_chat.present? ? last_chat.message : "" %></p>
       <%# <span class="text-xs text-white bg-purple-600 rounded-full px-2 py-0.5">chat unread</span> %>
     </div>
   </div>

@@ -66,7 +66,7 @@ class User < ApplicationRecord
   end
 
   def all_chat_groups
-    Group.where(type: %w[friend group]).joins(:group_users, :chats).where(group_users:{user_id: self.id}).uniq
+    Group.where(type: %w[friend group]).joins(:group_users).where(group_users:{user_id: self.id}).includes(:chats).uniq
   end
 
   def following?(user)
