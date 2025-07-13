@@ -11,9 +11,31 @@ export default class extends Controller {
           if (node.nodeType === 1 && node.matches('.chat-message')) {
             this.checkDateSeperatorOnMessage(node);
             this.scrollToBottom();
+            if (node.dataset.chatRead === 'false') {
+              this.visibilityObserver.observe(node);
+            }
           }
         })
       })
+    });
+
+    this.visibilityObserver = new IntersectionObserver((entries) => {
+      console.log("entries: ", entries.length);
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const messageElement = entry.target;
+          this.markMessageAsRead(messageElement);
+          // Once a message is marked as read, stop observing it.
+          this.visibilityObserver.unobserve(messageElement);
+        }
+      });
+    });
+
+    this.element.querySelectorAll('.chat-message').forEach(message => {
+      if (message.dataset.chatRead === 'false') {
+        this.addUnreadMessageBar(message);
+        this.visibilityObserver.observe(message);
+      }
     });
 
     let group = this.element.dataset.groupId;
@@ -22,6 +44,23 @@ export default class extends Controller {
     scroll_area.scrollTop = scroll_area.scrollHeight;
 
     this.observer.observe(chat_list, { childList: true });
+  }
+
+  addUnreadMessageBar(node) {
+    console.log("has unread message");
+    let templateElement = document.querySelector('[data-chat-target="chat_unread_bar"]').content.cloneNode(true);
+    let newTemplate = templateElement.firstElementChild.outerHTML;
+    let group_id = chat_form.dataset.groupId;
+    let chat_list = document.querySelector(`#chat_list_${group_id}`);
+    if (chat_list.querySelector(".chat-unread-separator") == null) {
+      node.insertAdjacentHTML('beforebegin', newTemplate);
+    }
+  }
+
+  markMessageAsRead(node) {
+    node.dataset.chatRead = "true";
+    let readUrl = node.dataset.readUrl;
+    fetch(readUrl, { method: 'GET' }).then(response => console.log(response.status));
   }
 
   scrollToBottom() {
@@ -64,6 +103,10 @@ export default class extends Controller {
     }
     chat_list.insertAdjacentHTML("beforeend", newTemplate);
     message_element.value = "";
+
+    if (chat_list.querySelector(".chat-unread-separator") != null) {
+      chat_list.querySelector(".chat-unread-separator").remove();
+    }
   }
 
   appendDate(chat_list) {

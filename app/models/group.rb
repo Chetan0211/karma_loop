@@ -30,7 +30,11 @@ class Group < ApplicationRecord
   has_many :group_users, dependent: :destroy
   has_many :chats
 
-  def member(current_user)
-    User.includes(group_users: :group).where(group_users:{group_id: self.id}).where.not(group_users:{user_id: current_user.id}).first
+  def member?(user)
+    User.includes(group_users: :group).where(group_users:{group_id: self.id, user_id: user.id}).present?
+  end
+
+  def members(current_user)
+    User.includes(group_users: :group).where(group_users:{group_id: self.id}).where.not(group_users:{user_id: current_user.id})
   end
 end

@@ -7,7 +7,7 @@ alphine params:
 activeChat
 -->
 <% 
-member = group.type == "friend" ? group.member(current_user) : nil 
+member = group.type == "friend" ? group.members(current_user).first : nil 
 last_chat = group.chats.order(created_at: :asc).last
 %>
 <%= link_to chat_path(id: group.id), 

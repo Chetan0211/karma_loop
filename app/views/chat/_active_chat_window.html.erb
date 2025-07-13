@@ -4,7 +4,7 @@ group
 current_user
 chats
 -->
-<% member = group.type == "friend" ? group.member(current_user) : nil %>
+<% member = group.type == "friend" ? group.members(current_user).first : nil %>
 <div class="flex flex-col h-full" data-controller="chat" data-group-id="<%= group.id %>">
   <!-- Active Chat Header -->
   <div class="p-4 border-b border-[var(--border-clr-subtle)] bg-[var(--background-clr-clear)] flex items-center space-x-4 flex-shrink-0">
@@ -72,7 +72,7 @@ chats
   </div>
 </div>
 <template data-chat-form-target="chat_sent_template">
-  <div id="{{CHAT_ID}}" class="group relative flex justify-end" data-date="{{DATE}}">
+  <div id="{{CHAT_ID}}" class="group relative flex justify-end" data-date="{{DATE}}" data-chat-read="true">
     <!-- Message Bubble -->
     <div class="max-w-xs lg:max-w-md">
       <div class="px-4 py-2 rounded-2xl bg-[var(--primary-600)] text-[var(--txt-clr-default)] rounded-br-none">
@@ -103,5 +103,10 @@ chats
 <template data-chat-target="chat_date">
   <div class="flex justify-center my-4 date-separator" data-date="{{DATE}}">
     <span class="bg-[var(--background-clr-strong)] text-[var(--txt-clr-muted)] text-xs font-semibold px-3 py-1 rounded-full">{{FORMATED_DATE}}</span>
+  </div>
+</template>
+<template data-chat-target="chat_unread_bar">
+  <div class="flex justify-center my-4 chat-unread-separator">
+    <span class="bg-[var(--background-clr-strong)] text-[var(--txt-clr-muted)] text-xs font-semibold px-3 py-1 rounded-full">Unread Messages</span>
   </div>
 </template>

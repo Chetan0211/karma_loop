@@ -28,4 +28,11 @@ class Chat < ApplicationRecord
   belongs_to :user
   has_many :message_interactions
   has_one :reply_to, class_name: 'Chat', foreign_key: :reply_to_id
+
+  def all_read?
+    (group.members(user).count + 1) == message_interactions.count
+  end
+  def user_read?(user)
+    message_interactions.where(user_id: user.id).present?
+  end
 end

@@ -3,12 +3,23 @@ class Chat::Create < Trailblazer::Operation
   step Contract::Build(constant: Chat::Contract::Create)
   step Contract::Validate()
   step Contract::Persist()
+  step :add_message_interaction
   step :send_notification
   step :update_ui
 
   def setup_model(result, chat_params:, temp_chat_id:, **)
     result[:model] = Chat.new(chat_params)
     result[:temp_chat_id] = temp_chat_id
+  end
+
+  def add_message_interaction(result, **)
+    params ={
+      user_id: result[:model].user_id,
+      chat_id: result[:model].id,
+      read_at: DateTime.now.utc
+    }
+    MessageInteraction::Create.call(params: params)
+    true
   end
 
   def send_notification(result, **)
