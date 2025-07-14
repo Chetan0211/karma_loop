@@ -76,7 +76,7 @@ x-data="{
               Notifications
             </div>
             <div class="max-h-80 overflow-y-auto" id="notifications_list">
-              <% current_user.notifications.order(created_at: :desc).each do |notification| %>
+              <% current_user.notifications.includes(:notification_event).where.not(notification_event:{type:"Notification::ChatNotification"}).order(created_at: :desc).each do |notification| %>
                 <%= render partial: "shared/notification", locals:{notification: notification} %>
               <% end %>
             </div>

@@ -23,20 +23,21 @@ class Chat::Create < Trailblazer::Operation
   end
 
   def send_notification(result, **)
+    result[:users] = User.includes(:group_users).where(group_users:{group_id: result[:model].group_id})
+    result[:chat] = Chat.find(result[:model].id)
+    Notification::ChatNotification.with(record: result[:chat].user, from: result[:chat].user, group: result[:chat].group, chat: result[:chat]).deliver_later(result[:users].where.not(id: result[:model].user_id))
     true
   end
 
   def update_ui(result, **)
     # Loop through group members and update the UI 
-    users = User.includes(:group_users).where(group_users:{group_id: result[:model].group_id})
-    chat = Chat.find(result[:model].id)
-    users.each do |user|
+    result[:users].each do |user|
       Turbo::StreamsChannel.broadcast_render_to("ui_#{user.id}", 
         template: "chat/create", 
         locals:{
-          chat: chat, 
+          chat: result[:chat], 
           current_user: user,
-          group_id: result[:model].group_id,
+          group_id: result[:chat].group_id,
           temp_chat_id: result[:temp_chat_id]
         },
       )
