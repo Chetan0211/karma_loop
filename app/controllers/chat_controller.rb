@@ -1,4 +1,5 @@
 class ChatController < ApplicationController
+  include SendPopupMessage
   before_action :authenticate_user!
 
   def index
@@ -52,7 +53,7 @@ class ChatController < ApplicationController
   def show
     @group = Group.find(params[:id])
     can?(:read, @group)
-    @chats = @group.chats.includes(:user)
+    @chats = @group.chats.includes(:user).order(created_at: :asc)
     respond_to do |format|
       format.turbo_stream
     end
@@ -74,7 +75,12 @@ class ChatController < ApplicationController
   end
 
   def chat_params
-    params.require(:new_chat).permit(:message, :group_id, :attachments, :reply_to_id, :temporary_chat_id)
+    permitted_params = params.require(:new_chat).permit(:message, :group_id, :reply_to_id, :temporary_chat_id, attachments: [])
+    permitted_params.tap do |whitelisted|
+      # Use reject! to remove any blank items from the attachments array
+      # The `&.` safe navigation operator prevents errors if `attachments` isn't present
+      whitelisted[:attachments]&.reject!(&:blank?)
+    end
   end
 
   def message_interaction_params

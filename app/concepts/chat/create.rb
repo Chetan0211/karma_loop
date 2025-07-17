@@ -2,6 +2,7 @@ class Chat::Create < Trailblazer::Operation
   step :setup_model
   step Contract::Build(constant: Chat::Contract::Create)
   step Contract::Validate()
+  step :validate_attachments_and_message
   step Contract::Persist()
   step :add_message_interaction
   step :send_notification
@@ -10,6 +11,15 @@ class Chat::Create < Trailblazer::Operation
   def setup_model(result, chat_params:, temp_chat_id:, **)
     result[:model] = Chat.new(chat_params)
     result[:temp_chat_id] = temp_chat_id
+  end
+
+  def validate_attachments_and_message(result, **)
+    if result[:model].message.blank? && result[:model].attachments.blank?
+      result['contract.default'].errors.add(:message, "Message and attachments can't be blank.")
+      return false
+    else
+      true
+    end
   end
 
   def add_message_interaction(result, **)

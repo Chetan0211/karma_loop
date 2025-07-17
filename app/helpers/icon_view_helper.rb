@@ -9,9 +9,29 @@ module IconViewHelper
     tag.i(class: "fa-solid fa-arrow-down #{classes.strip}",**options.except(:class))
   end
 
+  def arrow_left_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-arrow-left #{classes.strip}",**options.except(:class))
+  end
+
   def comment_icon(options={})
     classes = options.fetch(:class,"")
     tag.i(class: "fa-regular fa-comment #{classes.strip}",**options.except(:class))
+  end
+
+  def comments_icon_regular(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-regular fa-comments #{classes.strip}",**options.except(:class))
+  end
+
+  def comment_dot_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-comment-dots #{classes.strip}",**options.except(:class))
+  end
+
+  def comment_dot_icon_regular(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-regular fa-comment-dots #{classes.strip}",**options.except(:class))
   end
 
   def share_icon(options={})
@@ -22,6 +42,11 @@ module IconViewHelper
   def save_icon(options={})
     classes = options.fetch(:class,"")
     tag.i(class: "fa-regular fa-bookmark #{classes.strip}",**options.except(:class))
+  end
+
+  def bookmark_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-bookmark #{classes.strip}",**options.except(:class))
   end
 
   def ellipsis_icon(options={})
@@ -74,9 +99,24 @@ module IconViewHelper
     tag.i(class: "fa-solid fa-users-slash #{classes.strip}",**options.except(:class))
   end
 
-  def regular_user_icon(options={})
+  def user_icon_regular(options={})
     classes = options.fetch(:class,"")
     tag.i(class: "fa-regular fa-user #{classes.strip}",**options.except(:class))
+  end
+
+  def user_group_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-user-group #{classes.strip}",**options.except(:class))
+  end
+
+  def users_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-users #{classes.strip}",**options.except(:class))
+  end
+
+  def user_clock_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-user-clock #{classes.strip}",**options.except(:class))
   end
 
   def circle_exclamation_icon(options={})
@@ -87,6 +127,11 @@ module IconViewHelper
   def triangle_exclamation_icon(options={})
     classes = options.fetch(:class,"")
     tag.i(class: "fa-solid fa-triangle-exclamation #{classes.strip}",**options.except(:class))
+  end
+
+  def circle_icon_regular(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-regular fa-circle #{classes.strip}",**options.except(:class))
   end
 
   def cricle_check_icon(options={})
@@ -124,6 +169,11 @@ module IconViewHelper
     tag.i(class: "fa-solid fa-paper-plane #{classes.strip}",**options.except(:class))
   end
 
+  def paperclip_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-paperclip #{classes.strip}",**options.except(:class))
+  end
+
   def circle_info_icon(options={})
     classes = options.fetch(:class,"")
     tag.i(class: "fa-solid fa-circle-info #{classes.strip}",**options.except(:class))
@@ -132,6 +182,11 @@ module IconViewHelper
   def file_lines_icon(options={})
     classes = options.fetch(:class,"")
     tag.i(class: "fa-solid fa-file-lines #{classes.strip}",**options.except(:class))
+  end
+
+  def file_lines_icon_regular(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-regular fa-file-lines #{classes.strip}",**options.except(:class))
   end
 
   def clock_rotate_left_icon(options={})
@@ -152,6 +207,66 @@ module IconViewHelper
   def rocket_icon(options={})
     classes = options.fetch(:class,"")
     tag.i(class: "fa-solid fa-rocket #{classes.strip}",**options.except(:class))
+  end
+
+  def image_icon_regular(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-regular fa-image #{classes.strip}",**options.except(:class))
+  end
+
+  def file_video_icon_regular(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-regular fa-file-video #{classes.strip}",**options.except(:class))
+  end
+
+  def file_pdf_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-file-pdf #{classes.strip}",**options.except(:class))
+  end
+
+  def reply_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-reply #{classes.strip}",**options.except(:class))
+  end
+
+  def face_smile_icon_regular(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-face-smile #{classes.strip}",**options.except(:class))
+  end
+
+  def house_chimney_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-house-chimney #{classes.strip}",**options.except(:class))
+  end
+
+  def plus_circle_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-plus-circle #{classes.strip}",**options.except(:class))
+  end
+
+  def floppy_disk_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-floppy-disk #{classes.strip}",**options.except(:class))
+  end
+
+  def tick_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-check #{classes.strip}",**options.except(:class))
+  end
+
+  def chevron_left_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-chevron-left #{classes.strip}",**options.except(:class))
+  end
+
+  def chevron_right_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-chevron-right #{classes.strip}",**options.except(:class))
+  end
+
+  def list_alt_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-list-alt #{classes.strip}",**options.except(:class))
   end
 
   def icon(icon:, options:{})

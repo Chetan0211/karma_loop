@@ -5,11 +5,11 @@ current_user
 chats
 -->
 <% member = group.type == "friend" ? group.members(current_user).first : nil %>
-<div class="flex flex-col h-full" data-controller="chat" data-group-id="<%= group.id %>">
+<div class="flex flex-col h-full" data-controller="chat" x-data="chat" data-group-id="<%= group.id %>">
   <!-- Active Chat Header -->
   <div class="p-4 border-b border-[var(--border-clr-subtle)] bg-[var(--background-clr-clear)] flex items-center space-x-4 flex-shrink-0">
     <button @click="activeChat = null" class="text-[var(--txt-clr-subtle)] md:hidden">
-      <i class="fa-solid fa-arrow-left"></i>
+      <%= icon(icon: :arrow_left_icon) %>
     </button>
     <div class="relative">
       <span class="h-10 w-10 rounded-full bg-[var(--background-clr-strong)] overflow-hidden flex items-center justify-center">
@@ -38,7 +38,7 @@ chats
         <%= render partial: "chat/chat_list", locals: { chats: chats } %>
       <% else %>
         <div id="empty_chat_window_<%= group.id %>" class="flex flex-col flex-grow items-center justify-center h-full w-full text-center text-[var(--txt-clr-subtle)]">
-          <i class="fa-regular fa-comments fa-4x mb-4"></i>
+          <%= icon(icon: :comments_icon_regular, options:{class: "fa-4x mb-4"}) %>
           <h3 class="text-lg font-medium">Start a conversion</h3>
         </div>
       <% end %>
@@ -52,27 +52,164 @@ chats
         <p>Replying to <b x-text="replyingToMessage?.from === 'me' ? 'yourself' : activeChat.name"></b></p>
         <p class="italic truncate" x-text="replyingToMessage?.text"></p>
       </div>
-      <button @click="replyingToMessage = null" class="p-1 rounded-full hover:bg[var(--background-clr-strong)]"><i class="fa-solid fa-xmark text-xs"></i></button>
+      <button @click="replyingToMessage = null" class="p-1 rounded-full hover:bg[var(--background-clr-strong)]"><%= icon(icon: :close_icon, options:{class: "text-xs"}) %></button>
     </div>
     <%= form_with url: chat_index_path(),
     id: "chat_form",
-    method: :post, scope: :new_chat, 
+    method: :post, scope: :new_chat,
+    "x-ref"=>"chat_form",
     data:{
+      action: "turbo:submit-end->chat#reset",
       group_id: group.id
     }, 
     class: "flex items-center space-x-3" do |f| %>
+      <div @click.away="attachmentMenuOpen = false" class="relative">
+        <button @click="attachmentMenuOpen = !attachmentMenuOpen" type="button" class="text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 p-2 rounded-full">
+          <%= icon(icon: :paperclip_icon, options:{class: "text-lg"}) %>
+        </button>
+        <div x-show="attachmentMenuOpen" x-transition class="absolute bottom-full left-0 mb-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 p-1" style="display: none;">
+          <input type="file" x-ref="imageInput" class="hidden" accept="image/*" multiple= "true" @change="selectedAttachments($event)"/>
+          <input type="file" x-ref="videoInput" class="hidden" accept="video/*" multiple= "true" @change="selectedAttachments($event)"/>
+          <input type="file" x-ref="documentInput" class="hidden" accept=".pdf,.doc,.docx,.txt" multiple= "true" @change="selectedAttachments($event)"/>
+          <button type="button" @click="$refs.imageInput.click()" class="w-full text-left flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md"><%= icon(icon: :image_icon_regular, options:{class: "fa-fw mr-2"}) %> Images</button>
+          <button type="button" @click="$refs.videoInput.click()" class="w-full text-left flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md"><%= icon(icon: :file_video_icon_regular, options:{class: "fa-fw mr-2"}) %> Videos</button>
+          <button type="button" @click="$refs.documentInput.click()" class="w-full text-left flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md"><%= icon(icon: :file_lines_icon_regular, options:{class: "fa-fw mr-2"}) %> Document</button>
+        </div>
+      </div>
       <%= f.hidden_field :group_id, value: group.id %>
-      <%= f.hidden_field :temporary_chat_id, value: "testing" %>
+      <%= f.hidden_field :temporary_chat_id, value: nil %>
+      <%= f.file_field :attachments, id:"new_chat_attachments", accept: "image/*, video/*,.pdf,.doc,.docx,.txt", multiple: true, direct_upload: true, class: "hidden", "x-ref"=>"chat_attachments" %>
       <%= f.text_field :message, autocomplete: "off", class:"w-full px-4 py-2 border border-[var(--border-clr-default)] rounded-full text-sm bg-[var(--background-clr-thick)] focus:ring-[var(--primary-500)] focus:border-[var(--primary-500] focus:border-[var(--primary-500)]", placeholder:"Type a message..." %>
       <%= f.button class:"bg-[var(--primary-600)] text-white rounded-full h-10 w-10 flex-shrink-0 hover:bg-[var(--primary-700)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-2",
+      "x-ref"=>"chat_form_submit_button",
       data:{action: "click->chat#append"} do %>
-        <i class="fa-solid fa-paper-plane"></i>
+        <%= icon(icon: :paper_plane_icon) %>
       <% end %>
     <% end %>
   </div>
+  <div
+  x-show="isAttachmentModalOpen"
+  style="display: none;"
+  @keydown.escape.window="isAttachmentModalOpen = false"
+  class="fixed inset-0 z-50 overflow-y-auto"
+  aria-labelledby="attachment-modal-title"
+  role="dialog"
+  aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen">
+      <div x-show="isAttachmentModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-700 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+      <div
+      x-show="isAttachmentModalOpen"
+      x-transition:enter="ease-out duration-300"
+      x-transition:enter-start="opacity-0 scale-95"
+      x-transition:enter-end="opacity-100 scale-100"
+      x-transition:leave="ease-in duration-200"
+      x-transition:leave-start="opacity-100 scale-100"
+      x-transition:leave-end="opacity-0 scale-95"
+      class="flex flex-col bg-[var(--background-clr-clear)] rounded-lg text-left shadow-xl transform transition-all m-4 w-full max-w-4xl h-[90vh]">
+        <div class="p-4 border-b border-[var(--border-clr-strong)] flex justify-between items-center flex-shrink-0">
+          <h3 class="text-lg font-medium text-[var(--txt-clr-strong)]" id="attachment-modal-title">Review Attachments</h3>
+          <button @click="isAttachmentModalOpen = false; attachments = []" class="text-[var(--txt-clr-lite)] hover:text-[var(--txt-clr-muted)]">
+            <span class="sr-only">Close</span>
+            <%= icon(icon: :close_icon, options:{class: "text-xl"}) %>
+          </button>
+        </div>
+        <div class="p-4 sm:p-6 flex-grow overflow-y-auto custom-scrollbar">
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <template x-for="(file, index) in attachments" :key="index">
+              <div class="relative group aspect-square bg-[var(--background-clr-thick)] rounded-lg overflow-hidden">
+                <template x-if="file.type.startsWith('image/')">
+                  <img :src="URL.createObjectURL(file)" class="w-full h-full object-cover">
+                </template>
+                <template x-if="file.type.startsWith('video/')">
+                  <video :src="URL.createObjectURL(file)" class="w-full h-full object-cover"></video>
+                </template>
+                <template x-if="file.type === 'application/pdf'">
+                  <div class="w-full h-full flex flex-col items-center justify-center text-center p-2">
+                    <%= icon(icon: :file_pdf_icon, options:{class: "text-red-500 text-4xl"}) %>
+                    <p class="text-xs text-[var(--txt-clr-default)] mt-2 truncate" x-text="file.name"></p>
+                  </div>
+                </template>
+                <button @click="removeAttachment(index)" class="absolute top-1 right-1 bg-[var(--background-clr-strong)] text-[var(--txt-clr-default)] rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">&times;</button>
+              </div>
+            </template>
+          </div>
+        </div>
+        <div x-show="isUploading" class="mt-4 px-6 mb-8">
+          <div class="flex justify-between mb-1">
+            <span class="text-xs font-medium text-[var(--primary-700)]">Uploading...</span>
+            <span class="text-xs font-medium text-[var(--primary-700)]" x-text="uploadProgress + '%'"></span>
+          </div>
+          <div class="w-full bg-[var(--background-clr-strong)] rounded-full h-2.5">
+            <div class="bg-[var(--primary-600)] h-2.5 rounded-full transition-all duration-300 ease-out" :style="`width: ${uploadProgress}%`"></div>
+          </div>
+        </div>
+        <div x-show="!isUploading" class="bg-[var(--background-clr-thick)] px-4 py-3 sm:px-6 flex flex-col sm:flex-row-reverse gap-3 flex-shrink-0">
+          <button @click="sendMessage()" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[var(--primary-600)] text-base font-medium text-[var(--white)] hover:bg-[var(--primary-700)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-500)] sm:w-auto sm:text-sm">
+            Send
+          </button>
+          <button @click="isAttachmentModalOpen = false; attachments = []" type="button" class="w-full inline-flex justify-center rounded-md border border-[var(--border-clr-default)] shadow-sm px-4 py-2 bg-[var(--background-clr-thick)] text-base font-medium text-[var(--txt-clr-default)] hover:bg-[var(--background-clr-strong)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--secondary-500)] sm:w-auto sm:text-sm">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+  id="show_attachment"
+  x-show="showAttachmentMenu"
+  x-on:set-show-attachment-data.self="showAttachmentMenu = $event.detail.showMenu; showAttachmentData = $event.detail.data; console.log('show Menu: ',$event.detail.showMenu)"
+  x-cloak
+  @keydown.escape.window="showAttachmentMenu = false"
+  x-init="$watch('showAttachmentData', (value) => {
+    if (value && value.type.startsWith('video/')) {
+    $nextTick(() => {
+    console.log('video element')
+    });
+    }
+    })"
+    class="fixed inset-0 z-50 overflow-y-auto"
+    aria-labelledby="attachment-modal-title"
+    role="dialog"
+    aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen">
+      <div x-show="showAttachmentMenu" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-700 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+      <div
+      x-show="showAttachmentMenu"
+      x-transition:enter="ease-out duration-300"
+      x-transition:enter-start="opacity-0 scale-95"
+      x-transition:enter-end="opacity-100 scale-100"
+      x-transition:leave="ease-in duration-200"
+      x-transition:leave-start="opacity-100 scale-100"
+      x-transition:leave-end="opacity-0 scale-95"
+      class="flex flex-col bg-[var(--background-clr-clear)] rounded-lg text-left shadow-xl transform transition-all w-full max-w-4xl h-[calc(100dvh-10rem)]">
+        <div class="p-4 border-b border-[var(--border-clr-strong)] flex justify-end items-center flex-shrink-0">
+          <button @click="showAttachmentMenu = false; showAttachmentData=null" class="text-[var(--txt-clr-lite)] hover:text-[var(--txt-clr-muted)]">
+            <span class="sr-only">Close</span>
+            <%= icon(icon: :close_icon, options:{class: "text-xl"}) %>
+          </button>
+        </div>
+        <div class="p-4 sm:p-6 flex justify-center items-center flex-grow overflow-hidden">
+          <div class="relative aspect-square max-w-full max-h-full bg-[var(--background-clr-thick)] rounded-lg overflow-hidden">
+            <template x-if="showAttachmentData?.type?.startsWith('video/')">
+              <video :src="showAttachmentData?.url" x-ref="messageAttachVideoPlayer" controls class="w-full h-full object-cover"></video>
+            </template>
+            <template x-if="showAttachmentData?.type?.startsWith('image/')">
+              <img :src="showAttachmentData?.url" class="w-full h-full object-cover">
+            </template>
+            <template x-if="showAttachmentData?.type === 'application/pdf'">
+              <div class="w-full h-full flex flex-col items-center justify-center text-center p-2">
+                <%= icon(icon: :file_pdf_icon, options:{class: "text-red-500 text-4xl"}) %>
+                <p class="text-xs text-[var(--txt-clr-default)] mt-2 truncate">File In Progress</p>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <template data-chat-form-target="chat_sent_template">
-  <div id="{{CHAT_ID}}" class="group relative flex justify-end" data-date="{{DATE}}" data-chat-read="true">
+  <div id="{{CHAT_ID}}" class="group relative flex justify-end" x-init="$dispatch('new_chat_component:ready')" x-data="{message_attachments:[]}" x-on:set-attachments.self="message_attachments = $event.detail.attachments" data-date="{{DATE}}" data-chat-read="true">
     <!-- Message Bubble -->
     <div class="max-w-xs lg:max-w-md">
       <div class="px-4 py-2 rounded-2xl bg-[var(--primary-600)] text-[var(--txt-clr-default)] rounded-br-none">
@@ -81,11 +218,53 @@ chats
           <p class="text-xs font-semibold text-[var(--primary-100)]">Chat name</p>
           <p class="text-xs italic truncate text-[var(--primary-200)]">message reply to text</p>
         </div>
+        <div class="space-y-2">
+          <template x-for="(file, index) in message_attachments" :key="index">
+            <div class="relative group bg-[var(--background-clr-thick)] rounded-lg">
+              <template x-if="file.type && file.type.startsWith('image/')">
+                <div class="flex items-center p-3 bg-[var(--background-clr-thick)] rounded-lg border border-[var(--border-clr-default)]">
+                  <div class="flex-shrink-0">
+                    <img class="w-12 h-12 object-cover rounded-md" :src="file.url" alt="File thumbnail">
+                  </div>
+                  <div class="ml-4 flex-grow overflow-hidden">
+                    <p class="text-sm font-medium text-[var(--txt-clr-default)] truncate" x-text="file.name"></p>
+                    <p class="text-xs text-[var(--txt-clr-default)]" x-text="file.size"></p>
+                  </div>
+                </div>
+              </template>
+              <template x-if="file.type && file.type.startsWith('video/')">
+                <div class="flex items-center p-3 bg-[var(--background-clr-thick)] rounded-lg border border-[var(--border-clr-default)]">
+                  <div class="flex-shrink-0">
+                    <video :src="file.url" controls class="w-12 h-12 object-cover rounded-md"></video>
+                  </div>
+                  <div class="ml-4 flex-grow overflow-hidden">
+                    <p class="text-sm font-medium text-[var(--txt-clr-default)] truncate" x-text="file.name"></p>
+                    <p class="text-xs text-[var(--txt-clr-default)]" x-text="file.size"></p>
+                  </div>
+                </div>
+              </template>
+              <template x-if="file.type === 'application/pdf'">
+                <div class="flex items-center p-3 bg-[var(--background-clr-thick)] rounded-lg border border-[var(--border-clr-default)]">
+                  <div class="flex-shrink-0">
+                    <div class="w-12 h-12 flex flex-col items-center justify-center text-center p-2">
+                      <%= icon(icon: :file_pdf_icon, options:{class: "text-red-500 text-4xl"}) %>
+                      <p class="text-xs text-[var(--txt-clr-default)] mt-2 truncate" x-text="file.name"></p>
+                    </div>
+                  </div>
+                  <div class="ml-4 flex-grow overflow-hidden">
+                    <p class="text-sm font-medium text-[var(--txt-clr-default)] truncate" x-text="file.name"></p>
+                    <p class="text-xs text-[var(--txt-clr-default)]" x-text="file.size"></p>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </template>
+        </div>
         <!-- Main Message Text -->
         <p class="text-sm">{{MESSAGE}}</p>
         <div class="flex items-center justify-end mt-1">
           <p class="text-xs text-[var(--txt-clr-muted)] mr-1.5">{{MESSAGE_TIME}}</p>
-          <i class="fa-solid fa-clock-rotate-left text-[var(--txt-clr-muted)] text-sm"></i>
+          <%= icon(icon: :clock_rotate_left_icon, options:{class: "text-[var(--txt-clr-muted)] text-sm"}) %>
         </div>
       </div>
       <!-- Reactions Display --> <!--TODO: Reactions yet to implement-->
