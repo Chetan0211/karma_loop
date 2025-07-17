@@ -15,7 +15,7 @@ current_user:
     <div class="text-xs mb-1">
       <a href="#" class="font-semibold text-[var(--txt-clr-thick)] hover:underline"><%= comment.commenter.username %></a>
       <span class="text-[var(--txt-clr-subtle)] mx-1">•</span>
-      <span class="text-[var(--txt-clr-subtle)]"><%= comment.created_at %></span>
+      <span class="text-[var(--txt-clr-subtle)]"><%= PostHelper.calculate_created_date(comment.created_at) %></span>
     </div>
     <div class="text-sm text-[var(--txt-clr-thick)] mb-2 mx">
       <%= comment.comment %>
