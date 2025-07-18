@@ -47,12 +47,9 @@ chats
   <!-- Message Input Form -->
   <div class="p-4 bg-[var(--background-clr-clear)] border-t border-[var(--border-clr-subtle)] flex-shrink-0">
     <!-- Replying To Banner -->
-    <div x-show="false" x-transition class="bg-[var(--background-clr-thick)] p-2 rounded-md mb-2 flex justify-between items-center">
-      <div class="text-xs text-[var(--txt-clr-muted)] min-w-0">
-        <p>Replying to <b x-text="replyingToMessage?.from === 'me' ? 'yourself' : activeChat.name"></b></p>
-        <p class="italic truncate" x-text="replyingToMessage?.text"></p>
-      </div>
-      <button @click="replyingToMessage = null" class="p-1 rounded-full hover:bg[var(--background-clr-strong)]"><%= icon(icon: :close_icon, options:{class: "text-xs"}) %></button>
+    <div x-show="showReplyBanner" x-cloak x-transition class="bg-[var(--background-clr-thick)] p-2 max-h-32 overflow-hidden rounded-md mb-2 flex justify-between items-start">
+      <div id="form_replying_to" class="text-xs text-[var(--txt-clr-muted)] min-w-0 max-h-32 overflow-y-auto"></div>
+      <button @click="showReplyBanner = false" data-action="click->chat#removeReplyMessage" class="p-1 rounded-full hover:bg[var(--background-clr-strong)]"><%= icon(icon: :close_icon, options:{class: "text-xs"}) %></button>
     </div>
     <%= form_with url: chat_index_path(),
     id: "chat_form",
@@ -63,7 +60,7 @@ chats
       group_id: group.id
     }, 
     class: "flex items-center space-x-3" do |f| %>
-      <div @click.away="attachmentMenuOpen = false" class="relative">
+      <div @click.away="attachmentMenuOpen = false" class="relative -ml-3">
         <button @click="attachmentMenuOpen = !attachmentMenuOpen" type="button" class="text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 p-2 rounded-full">
           <%= icon(icon: :paperclip_icon, options:{class: "text-lg"}) %>
         </button>
@@ -78,10 +75,12 @@ chats
       </div>
       <%= f.hidden_field :group_id, value: group.id %>
       <%= f.hidden_field :temporary_chat_id, value: nil %>
+      <%= f.hidden_field :reply_to_id, value: nil %>
       <%= f.file_field :attachments, id:"new_chat_attachments", accept: "image/*, video/*,.pdf,.doc,.docx,.txt", multiple: true, direct_upload: true, class: "hidden", "x-ref"=>"chat_attachments" %>
       <%= f.text_field :message, autocomplete: "off", class:"w-full px-4 py-2 border border-[var(--border-clr-default)] rounded-full text-sm bg-[var(--background-clr-thick)] focus:ring-[var(--primary-500)] focus:border-[var(--primary-500] focus:border-[var(--primary-500)]", placeholder:"Type a message..." %>
       <%= f.button class:"bg-[var(--primary-600)] text-white rounded-full h-10 w-10 flex-shrink-0 hover:bg-[var(--primary-700)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-2",
       "x-ref"=>"chat_form_submit_button",
+      "@click"=>"showReplyBanner=false",
       data:{action: "click->chat#append"} do %>
         <%= icon(icon: :paper_plane_icon) %>
       <% end %>
@@ -213,11 +212,7 @@ chats
     <!-- Message Bubble -->
     <div class="max-w-xs lg:max-w-md">
       <div class="px-4 py-2 rounded-2xl bg-[var(--primary-600)] text-[var(--txt-clr-default)] rounded-br-none">
-        <!-- ** MODIFIED: Quoted Reply UI ** --> <!--TODO: Reply chat yet to implement-->
-        <div x-show="false" class="mb-2 p-2 rounded-md border-l-4 bg-[var(--primary-500)]">
-          <p class="text-xs font-semibold text-[var(--primary-100)]">Chat name</p>
-          <p class="text-xs italic truncate text-[var(--primary-200)]">message reply to text</p>
-        </div>
+        {{MESSAGE_REPLY}}
         <div class="space-y-2">
           <template x-for="(file, index) in message_attachments" :key="index">
             <div class="relative group bg-[var(--background-clr-thick)] rounded-lg">
@@ -287,5 +282,16 @@ chats
 <template data-chat-target="chat_unread_bar">
   <div class="flex justify-center my-4 chat-unread-separator">
     <span class="bg-[var(--background-clr-strong)] text-[var(--txt-clr-muted)] text-xs font-semibold px-3 py-1 rounded-full">Unread Messages</span>
+  </div>
+</template>
+<template data-chat-target="chat_reply_template">
+  <!-- 
+  Uses params:
+  CURRENT_USER
+  USER_NAME
+  -->
+  <div class="reply-container mb-2 p-2 rounded-md border-l-4" :class="{{CURRENT_USER}} ? 'bg-[var(--primary-500)]' : 'bg-[var(--background-clr-strong)] border-[var(--border-clr-thick)]'">
+    <p class="text-xs font-semibold" :class="{{CURRENT_USER}} ? 'text-[var(--primary-100)]' : 'text-[var(--primary-500)]'">{{USER_NAME}}</p>
+    <!--Message goes here-->
   </div>
 </template>

@@ -53,7 +53,7 @@ class ChatController < ApplicationController
   def show
     @group = Group.find(params[:id])
     can?(:read, @group)
-    @chats = @group.chats.includes(:user).order(created_at: :asc)
+    @chats = @group.chats.includes(:user, :reply_to).order(created_at: :asc)
     respond_to do |format|
       format.turbo_stream
     end

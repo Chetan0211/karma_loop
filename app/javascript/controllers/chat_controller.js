@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { format, isToday, isYesterday } from 'date-fns'
+import { add, format, isToday, isYesterday } from 'date-fns'
 
 // Connects to data-controller="chat"
 export default class extends Controller {
@@ -21,7 +21,6 @@ export default class extends Controller {
     });
 
     this.visibilityObserver = new IntersectionObserver((entries) => {
-      console.log("entries: ", entries.length);
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const messageElement = entry.target;
@@ -60,6 +59,7 @@ export default class extends Controller {
       attachmentMenuOpen: false,
       showAttachmentMenu: false,
       showAttachmentData: null,
+      showReplyBanner: false,
       isUploading: false,
       uploadProgress: 0,
       attachments: [],
@@ -130,7 +130,7 @@ export default class extends Controller {
   markMessageAsRead(node) {
     node.dataset.chatRead = "true";
     let readUrl = node.dataset.readUrl;
-    fetch(readUrl, { method: 'GET' }).then(response => console.log(response.status));
+    fetch(readUrl, { method: 'GET' });
   }
 
   scrollToBottom() {
@@ -164,6 +164,15 @@ export default class extends Controller {
       let temp_id = `${group_id}_temp_chat_id_${Date.now()}`;
       temp_chat_id_element.value = temp_id;
       let now = new Date();
+      let reply_message = document.getElementById("form_replying_to").innerHTML;
+      let form_reply_field = document.getElementById("new_chat_reply_to_id");
+
+      if (form_reply_field.value != "" || form_reply_field.value != null) {
+        newTemplate = newTemplate.replace("{{MESSAGE_REPLY}}", reply_message);
+      }
+      else {
+        newTemplate = newTemplate.replace("{{MESSAGE_REPLY}}", "");
+      }
 
       newTemplate = newTemplate
         .replace("{{CHAT_ID}}", temp_id)
@@ -197,6 +206,7 @@ export default class extends Controller {
     }
     //Send request to server by submitting the request
     chat_form.requestSubmit();
+    this.scrollToBottom();
   }
 
   reset(event) {
@@ -213,6 +223,7 @@ export default class extends Controller {
     cleanup_attachments.forEach(element => {
       element.remove();
     });
+    this.removeReplyMessage();
   }
 
   attachmentViewer(event) {
@@ -264,5 +275,56 @@ export default class extends Controller {
     }
 
     return format(date, 'MMMM d, yyyy');
+  }
+
+  replyMessage(event) {
+    this.removeReplyMessage();
+    let message_reply_button_event = event.currentTarget;
+    let chat_id = message_reply_button_event.dataset.chatId;
+    let chat_username = message_reply_button_event.dataset.username;
+    let reply_template_element = document.querySelector("[data-chat-target='chat_reply_template']").content.cloneNode(true);
+    let reply_template = reply_template_element.firstElementChild;
+
+    //preparing message
+    let reply_message_clone = document.getElementById(chat_id).cloneNode(true);
+    let message_bubble = reply_message_clone.querySelector(".message-bubble");
+    message_bubble.querySelector(`#chat_${chat_id}_seen_status`).remove();
+    message_bubble.lastChild.remove();
+    let reply_container = message_bubble.querySelector(".reply-container");
+    if (reply_container) {
+      reply_container.remove();
+    }
+
+    //preparing template
+    let original_message = message_bubble.firstElementChild;
+    for (let ele of original_message.children) {
+      ele.classList.add("text-xs")
+      ele.classList.add("italic")
+    }
+    reply_template.insertAdjacentHTML("beforeend", original_message.innerHTML);
+    reply_template = reply_template.outerHTML;
+
+    if (chat_username == "You") {
+      reply_template = reply_template.replaceAll("{{CURRENT_USER}}", "true");
+    }
+    else {
+      reply_template = reply_template.replaceAll("{{CURRENT_USER}}", "false");
+    }
+    reply_template = reply_template.replaceAll("{{USER_NAME}}", chat_username)
+
+
+    let reply_message_container = document.getElementById("form_replying_to");
+    reply_message_container.insertAdjacentHTML("beforeend", reply_template);
+
+    let form_reply_field = document.getElementById("new_chat_reply_to_id");
+    form_reply_field.value = chat_id;
+  }
+
+  removeReplyMessage() {
+    let reply_message_container = document.getElementById("form_replying_to");
+    reply_message_container.innerHTML = "";
+
+    let form_reply_field = document.getElementById("new_chat_reply_to_id");
+    form_reply_field.value = null;
   }
 }

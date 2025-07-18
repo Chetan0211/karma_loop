@@ -27,7 +27,7 @@ class Chat < ApplicationRecord
   belongs_to :group
   belongs_to :user
   has_many :message_interactions
-  has_one :reply_to, class_name: 'Chat', foreign_key: :reply_to_id
+  belongs_to :reply_to, class_name: 'Chat', foreign_key: :reply_to_id, optional: true
 
   def all_read?
     (group.members(user).count + 1) == message_interactions.count
