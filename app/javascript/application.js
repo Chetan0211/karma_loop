@@ -118,3 +118,17 @@ function videoInteractionObserver() {
 // document.addEventListener('DOMContentLoaded', getThemeMode);
 
 document.addEventListener('turbo:load', initializeVideoPlayer);import "./channels"
+
+document.addEventListener("DOMContentLoaded", () => {
+  const timeZoneCookie = "time_zone";
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; // e.g., "Asia/Kolkata"
+
+  // Check if the cookie exists and if its value is the current browser timezone
+  if (document.cookie.indexOf(`${timeZoneCookie}=`) === -1 || document.cookie.indexOf(`time_zone=${userTimeZone}`) === -1) {
+    // Set the cookie with the user's timezone
+    document.cookie = `${timeZoneCookie}=${userTimeZone};path=/;samesite=lax`;
+    
+    // Reload the page to send the new cookie to the server
+    window.location.reload();
+  }
+});

@@ -1,0 +1,96 @@
+<!--
+params used here:
+current_user
+chat
+
+-->
+<div id="<%= chat.id %>" class="flex max-w-full items-center chat-message" :class="<%= current_user.id == chat.user_id %> ? 'justify-end' : 'justify-start'" data-date="<%= chat.created_at.to_date %>" data-chat-read="<%= chat.user_read?(current_user) %>" data-read-url="<%= message_read_path(chat_id: chat.id) %>" >
+  <div class="group flex max-w-full items-center" :class="<%= current_user.id == chat.user_id %> ? 'flex-row-reverse' : 'flex-row'">
+    <!-- Message Bubble -->
+    <div class="max-w-[80%] lg:max-w-md message-bubble">
+      <div class="px-4 py-2 overflow-hidden rounded-2xl" :class="<%= current_user.id == chat.user_id %> ? 'bg-[var(--primary-600)] text-[var(--txt-clr-default)] rounded-br-none' : 'bg-[var(--background-clr-strong)] text-[var(--txt-clr-default)] rounded-bl-none'">
+        <!-- ** MODIFIED: Quoted Reply UI ** -->
+        <% if chat.reply_to.present? %>
+          <div x-show="<%= chat.reply_to.present? %>" class="reply-container mb-2 p-2 rounded-md border-l-4" :class="<%= current_user.id == chat.reply_to.user.id %> ? 'bg-[var(--primary-500)]' : 'bg-[var(--background-clr-strong)] border-[var(--border-clr-thick)]'">
+            <p class="text-xs font-semibold" :class="<%= current_user.id == chat.reply_to.user.id %> ? 'text-[var(--primary-100)]' : 'text-[var(--primary-500)]'"><%= (current_user.id == chat.reply_to.user.id) ? "You" : chat.reply_to.user.username %></p>
+            <% if chat.reply_to.attachments.present? %>
+              <% chat.reply_to.attachments.each do |attachment| %>
+                <div class="flex items-center p-3 bg-[var(--background-clr-thick)] rounded-lg border border-[var(--border-clr-default)]"
+                data-action="click->chat#attachmentViewer"
+                data-turbo="false"
+                data-file-format="<%= attachment.content_type %>" 
+                data-url="<%= url_for(attachment) %>">
+                  <div class="flex-shrink-0">
+                    <% if attachment.content_type.include?("image") %>
+                      <img class="w-12 h-12 object-cover rounded-md" src="<%= url_for(attachment) %>" alt="File thumbnail">
+                    <% elsif attachment.content_type.include?("video") %>
+                      <video src="<%= url_for(attachment) %>" class="w-12 h-12 object-cover rounded-md"></video>
+                    <% else %>
+                      <div class="w-12 h-12 flex flex-col items-center justify-center text-center p-2">
+                        <%= icon(icon: :file_pdf_icon, options:{class: "text-red-500 text-4xl"}) %>
+                      </div>
+                    <% end %>
+                  </div>
+                  <div class="ml-4 flex-grow overflow-hidden">
+                    <p class="text-sm font-medium text-[var(--txt-clr-default)] truncate"><%= attachment.filename.to_s %></p>
+                    <p class="text-xs text-[var(--txt-clr-default)]"><%= number_to_human_size(attachment.byte_size) %></p>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+            <p class="text-xs italic truncate" :class="<%= current_user.id == chat.reply_to.user.id %> ? 'text-[var(--primary-200)]' : 'text-[var(--txt-clr-muted)]'"><%= chat.reply_to.message %></p>
+          </div>
+        <% end %>
+        <!-- Main Message Text -->
+        <% if chat.attachments.present? %>
+          <% chat.attachments.each do |attachment| %>
+            <div class="flex items-center p-3 bg-[var(--background-clr-thick)] rounded-lg border border-[var(--border-clr-default)]"
+            data-action="click->chat#attachmentViewer"
+            data-turbo="false"
+            data-file-format="<%= attachment.content_type %>" 
+            data-url="<%= url_for(attachment) %>">
+              <div class="flex-shrink-0">
+                <% if attachment.content_type.include?("image") %>
+                  <img class="w-12 h-12 object-cover rounded-md" src="<%= url_for(attachment) %>" alt="File thumbnail">
+                <% elsif attachment.content_type.include?("video") %>
+                  <video src="<%= url_for(attachment) %>" class="w-12 h-12 object-cover rounded-md"></video>
+                <% else %>
+                  <div class="w-12 h-12 flex flex-col items-center justify-center text-center p-2">
+                    <%= icon(icon: :file_pdf_icon, options:{class: "text-red-500 text-4xl"}) %>
+                  </div>
+                <% end %>
+              </div>
+              <div class="ml-4 flex-grow overflow-hidden">
+                <p class="text-sm font-medium text-[var(--txt-clr-default)] truncate"><%= attachment.filename.to_s %></p>
+                <p class="text-xs text-[var(--txt-clr-default)]"><%= number_to_human_size(attachment.byte_size) %></p>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+        <p class="text-sm break-words"><%= chat.message %></p>
+        <%= render partial: "chat/chat_seen_status", locals:{chat: chat, current_user: current_user} %>
+      </div>
+      <!-- Reactions Display --> <!-- TODO: Yet to implement -->
+      <div x-show="false" class="flex space-x-1 mt-1" :class="<%= current_user.id == chat.user_id %> ? 'justify-end' : 'justify-start'">
+        <div class="bg-gray-200 dark:bg-gray-600 rounded-full px-2 py-0.5 text-xs flex items-center">
+          <span class="mr-1">emoji</span>
+          <span class="font-semibold text-gray-700 dark:text-gray-200">count</span>
+        </div>
+      </div>
+    </div>
+    <!-- Message Actions (Reply, React) -->
+    <div class="flex-shrink-0 flex items-center space-x-1 p-1 md:opacity-0 group-hover:opacity-100 transition-opacity mx-2">
+      <button @click="showReplyBanner = true" data-action="click->chat#replyMessage" data-chat-id="<%= chat.id %>" data-username="<%= (current_user.id == chat.user_id) ? "You" : chat.user.username %>" class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--background-clr-strong)]"><%= icon(icon: :reply_icon, options:{class: "text-xs text-[var(--txt-clr-muted)]"}) %></button>
+      <!-- Reactions selection --> <!-- TODO: Yet to implement -->
+      <div x-show="false" x-data="{ reactionsOpen: false }" @mouseleave="reactionsOpen = false" class="relative">
+        <button @click="reactionsOpen = !reactionsOpen" class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--background-clr-strong)]"><%= icon(icon: :face_smile_icon_regular, options:{class: "text-xs text-[var(--txt-clr-muted)]"}) %></button>
+        <div x-show="reactionsOpen" x-transition class="absolute bottom-full mb-2 flex space-x-1 bg-[var(--background-clr-clear)] shadow-lg rounded-full p-1">
+          <button @click="addReaction(message, '👍'); reactionsOpen = false" class="text-lg p-1 rounded-full hover:bg-[var(--background-clr-strong)]">👍</button>
+          <button @click="addReaction(message, '❤️'); reactionsOpen = false" class="text-lg p-1 rounded-full hover:bg-[var(--background-clr-strong)]">❤️</button>
+          <button @click="addReaction(message, '😂'); reactionsOpen = false" class="text-lg p-1 rounded-full hover:bg-[var(--background-clr-strong)]">😂</button>
+          <button @click="addReaction(message, '😮'); reactionsOpen = false" class="text-lg p-1 rounded-full hover:bg-[var(--background-clr-strong)]">😮</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

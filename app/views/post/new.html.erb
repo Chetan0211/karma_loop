@@ -136,7 +136,7 @@
           :class="{'cursor-not-allowed' : button_disable}"
         type="button"
         class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2 border border-[var(--border-clr-default)] shadow-sm text-sm font-medium rounded-md text-[var(--txt-clr-default)] bg-[var(--background-clr-clear)] hover:bg-[var(--background-clr-body)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-500)] transition duration-150 ease-in-out">
-            <i class="fa-solid fa-floppy-disk mr-2"></i>Save Draft
+            <%= icon(icon: :floppy_disk_icon, options:{class: "mr-2"}) %>Save Draft
           </button>
           <%= button_tag type: :submit,
           name: "status", 

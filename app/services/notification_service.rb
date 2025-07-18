@@ -32,7 +32,7 @@ class NotificationService
   end
 
   def deliver_later(recipients)
-    NotificationJob.perform_later(class_name: self.class.name,record: record, notification_type: notification_type, params: params, recipients: recipients)
+    NotificationJob.perform_later(class_name: self.class.name,record: record, notification_type: notification_type, params: params, recipients: recipients.pluck(:id), recipient_class: recipients.first.class.name)
   end
 
   def via_action_cable(notification)

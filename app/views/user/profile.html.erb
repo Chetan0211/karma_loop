@@ -53,7 +53,7 @@ x-init="footer_active_tab = 'profile'">
             <%= render partial: "shared/helpers/follow_request_button", locals:{user: @user} %>
           <% end %>
           <button class="flex-1 bg-[var(--background-clr-thick)] hover:bg-[var(--background-clr-strong)] text-[var(--txt-clr-default)] text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out border border-[var(--border-clr-default)]">
-            <i class="fa-regular fa-comment-dots"></i>
+            <%= icon(icon: :comment_dot_icon_regular) %>
             <span>Chat</span>
           </button>
         </div>
@@ -69,21 +69,21 @@ x-init="footer_active_tab = 'profile'">
             <button @click="activeTab = 'posts'" 
             :class="{ 'border-[var(--primary-500)] text-[var(--primary-600)]': activeTab === 'posts', 'border-transparent text-[var(--txt-clr-subtle)] hover:text-[var(--txt-clr-default)] hover:border-[var(--border-clr-default)]': activeTab !== 'posts' }" 
             class="flex-1 sm:flex-none whitespace-nowrap py-3 px-1 sm:px-1 border-b-2 font-medium text-sm transition-colors duration-150 ease-in-out focus:outline-none flex items-center justify-center">
-              <i class="fa-solid fa-list-alt sm:mr-2"></i>
+              <%= icon(icon: :list_alt_icon, options:{class: "sm:mr-2"}) %>
               <span class="hidden sm:inline">Posts (<%= @user.posts.count %>)</span>
             </button>
             <% if @user.id == current_user.id %>
               <button @click="activeTab = 'saved'" 
             :class="{ 'border-[var(--primary-500)] text-[var(--primary-600)]': activeTab === 'saved', 'border-transparent text-[var(--txt-clr-subtle)] hover:text-[var(--txt-clr-default)] hover:border-[var(--border-clr-default)]': activeTab !== 'saved' }" 
             class="flex-1 sm:flex-none whitespace-nowrap py-3 px-1 sm:px-1 border-b-2 font-medium text-sm transition-colors duration-150 ease-in-out focus:outline-none flex items-center justify-center">
-                <i class="fa-regular fa-bookmark sm:mr-2"></i>
+                <%= icon(icon: :save_icon, options:{class: " sm:mr-2"}) %>
                 <span class="hidden sm:inline">Saved</span>
               </button>
             <% end %>
             <button @click="activeTab = 'friends'" 
             :class="{ 'border-[var(--primary-500)] text-[var(--primary-600)]': activeTab === 'friends', 'border-transparent text-[var(--txt-clr-subtle)] hover:text-[var(--txt-clr-default)] hover:border-[var(--border-clr-default)]': activeTab !== 'friends' }" 
             class="flex-1 sm:flex-none whitespace-nowrap py-3 px-1 sm:px-1 border-b-2 font-medium text-sm transition-colors duration-150 ease-in-out focus:outline-none flex items-center justify-center">
-              <i class="fa-solid fa-user-group sm:mr-2"></i>
+              <%= icon(icon: :user_group_icon, options:{class: "sm:mr-2"}) %>
               <span class="hidden sm:inline">Friends</span>
             </button>
           </nav>
@@ -137,7 +137,7 @@ x-init="footer_active_tab = 'profile'">
               <%= render partial: "shared/helpers/follow_request_button", locals:{user: @user} %>
             <% end %>
             <button class="flex-1 bg-[var(--background-clr-thick)] hover:bg-[var(--background-clr-strong)] text-[var(--txt-clr-default)] text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out border border-[var(--border-clr-default)]">
-              <i class="fa-regular fa-comment-dots"></i>
+              <%= icon(icon: :comment_dot_icon_regular) %>
               <span>Chat</span>
             </button>
           </div>
@@ -147,7 +147,7 @@ x-init="footer_active_tab = 'profile'">
           <ul class="space-y-3">
             <li class="flex items-center space-x-3">
               <span class="h-6 w-6 rounded-full bg-blue-500 flex items-center justify-center">
-                <i class="fa-solid fa-users text-[var(--txt-clr-inverted)] text-xs"></i>
+                <%= icon(icon: :users_icon, options:{class: "text-[var(--txt-clr-inverted)] text-xs"}) %>
               </span>
               <a href="#" class="text-sm font-medium text-[var(--txt-clr-default)] hover:text-[var(--primary-600)] hover:underline">k/someCommunity</a>
             </li>

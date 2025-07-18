@@ -1,0 +1,7 @@
+<!--
+params used here:
+current_user
+-->
+<% current_user.all_chat_groups.each do |group| %>
+  <%= render partial: "chat/chat_group_tile", locals: { group: group, current_user: current_user } %>
+<% end %>

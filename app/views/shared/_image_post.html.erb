@@ -36,12 +36,12 @@ post: Model
             <button class="absolute top-1/2 -translate-y-1/2 left-2 bg-black/30 text-[var(--txt-clr-inverted)] p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out z-10"
             x-show="imageCount>1"
             @click="prevPost()">
-              <i class="fa-solid fa-chevron-left"></i>
+              <%= icon(icon: :chevron_left_icon) %>
             </button>
             <button class="absolute top-1/2 -translate-y-1/2 right-2 bg-black/30 text-[var(--txt-clr-inverted)] p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out z-10"
             x-show="imageCount>1"
             @click="nextPost()">
-              <i class="fa-solid fa-chevron-right"></i>
+              <%= icon(icon: :chevron_right_icon) %>
             </button>
             <div class="hidden absolute bottom-2 left-0 right-0 md:flex justify-center z-10" x-show="imageCount>1">
               <div class="flex justify-center rounded-xl py-2 hover:bg-black/30">
