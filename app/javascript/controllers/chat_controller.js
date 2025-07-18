@@ -300,6 +300,7 @@ export default class extends Controller {
     for (let ele of original_message.children) {
       ele.classList.add("text-xs")
       ele.classList.add("italic")
+      ele.classList.add("truncate")
     }
     reply_template.insertAdjacentHTML("beforeend", original_message.innerHTML);
     reply_template = reply_template.outerHTML;
