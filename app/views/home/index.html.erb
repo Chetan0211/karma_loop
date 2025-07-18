@@ -15,19 +15,25 @@
           <% end %>
           <%= link_to connections_path, class: "text-[var(--txt-clr-muted)] hover:bg-[var(--background-clr-thick)] hover:text-[var(--txt-clr-strong)] group flex items-center px-3 py-2 text-sm font-medium rounded-md" do %>
             <span class="h-8 w-8 overflow-hidden rounded-full bg-[var(--primary-100)] text-[var(--primary-600)] flex items-center justify-center mr-3">
-              <i class="fa-solid fa-user-group"></i>
+              <%= icon(icon: :user_group_icon) %>
             </span>
             Friends
           <% end %>
+          <%= link_to chat_index_path, class: "text-[var(--txt-clr-muted)] hover:bg-[var(--background-clr-thick)] hover:text-[var(--txt-clr-strong)] group flex items-center px-3 py-2 text-sm font-medium rounded-md" do %>
+            <span class="h-8 w-8 overflow-hidden rounded-full bg-[var(--primary-100)] text-[var(--primary-600)] flex items-center justify-center mr-3">
+              <%= icon(icon: :comment_dot_icon) %>
+            </span>
+            Chats
+          <% end %>
           <a href="#" class="text-[var(--txt-clr-muted)] hover:bg-[var(--background-clr-thick)] hover:text-[var(--txt-clr-strong)] group flex items-center px-3 py-2 text-sm font-medium rounded-md">
             <span class="h-8 w-8 overflow-hidden rounded-full bg-[var(--primary-100)] text-[var(--primary-600)] flex items-center justify-center mr-3">
-              <i class="fa-solid fa-users"></i>
+              <%= icon(icon: :users_icon) %>
             </span>
             Communities
           </a>
           <a href="#" class="text-[var(--txt-clr-muted)] hover:bg-[var(--background-clr-thick)] hover:text-[var(--txt-clr-strong)] group flex items-center px-3 py-2 text-sm font-medium rounded-md">
             <span class="h-8 w-8 overflow-hidden rounded-full bg-[var(--primary-100)] text-[var(--primary-600)] flex items-center justify-center mr-3">
-              <i class="fa-solid fa-bookmark"></i>
+              <%= icon(icon: :bookmark_icon) %>
             </span>
             Saved
           </a>

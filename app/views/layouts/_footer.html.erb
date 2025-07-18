@@ -5,7 +5,7 @@
     class:"flex flex-col items-center justify-center w-full h-full", 
     "@click"=>"footer_active_tab = 'home'",
     ":class" =>"{'text-[var(--primary-600)]' : footer_active_tab == 'home', 'text-[var(--txt-clr-subtle)]' : footer_active_tab != 'home'}" do %>
-      <i class="fa-solid fa-house-chimney text-xl"></i>
+      <%= icon(icon: :house_chimney_icon, options: {class: "text-xl"}) %>
       <span class="text-xs font-medium">Home</span>
     <% end %>
     <!-- Create -->
@@ -13,23 +13,23 @@
     class: "flex flex-col items-center justify-center w-full h-full",
     "@click"=>"footer_active_tab = 'create_post'",
     ":class"=>"{'text-[var(--primary-600)]' : footer_active_tab == 'create_post', 'text-[var(--txt-clr-subtle)]' : footer_active_tab != 'create_post'}" do %>
-      <i class="fa-solid fa-plus-circle text-xl"></i>
+      <%= icon(icon: :plus_circle_icon, options: {class: "text-xl"}) %>
       <span class="text-xs font-medium mt-0.5">Create</span>
     <% end %>
     <!-- Chat -->
-    <a href="#" 
-    class="flex flex-col items-center justify-center w-full h-full"
-    @click="footer_active_tab = 'chat'"
-    :class="{'text-[var(--primary-600)]' : footer_active_tab == 'chat', 'text-[var(--txt-clr-subtle)]' : footer_active_tab != 'chat'}">
-      <i class="fa-solid fa-comment-dots text-xl"></i>
+    <%= link_to chat_index_path(),
+    class: "flex flex-col items-center justify-center w-full h-full",
+    "@click"=>"footer_active_tab = 'chat'",
+    ":class"=>"{'text-[var(--primary-600)]' : footer_active_tab == 'chat', 'text-[var(--txt-clr-subtle)]' : footer_active_tab != 'chat'}" do %>
+      <%= icon(icon: :comment_dot_icon, options: {class: "text-xl"}) %>
       <span class="text-xs font-medium">Chat</span>
-    </a>
+    <% end %>
     <!-- Profile -->
     <%= link_to user_profile_path(id: current_user.id),
     class: "flex flex-col items-center justify-center w-full h-full",
     "@click"=>"footer_active_tab = 'profile'",
     ":class"=>"{'text-[var(--primary-600)]' : footer_active_tab == 'profile', 'text-[var(--txt-clr-subtle)]' : footer_active_tab != 'profile'}" do %>
-      <i class="fa-solid fa-user text-xl"></i>
+      <%= icon(icon: :user_icon, options: {class: "text-xl"}) %>
       <span class="text-xs font-medium">Profile</span>
     <% end %>
   </nav>

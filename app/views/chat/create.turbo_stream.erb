@@ -1,0 +1,13 @@
+<% if chat.user_id == current_user.id %>
+  <%= turbo_stream.replace temp_chat_id do %>
+    <%= render partial: "chat/chat_text", locals:{current_user: current_user, chat: chat} %>
+  <% end %>
+<% else %>
+  <%= turbo_stream.remove "empty_chat_window_#{group_id}" %>
+  <%= turbo_stream.append "chat_list_#{group_id}" do %>
+    <%= render partial: "chat/chat_text", locals:{current_user: current_user, chat: chat} %>
+  <% end %>
+<% end %>
+<%= turbo_stream.update "chat_group_list" do %>
+  <%= render partial: "chat/chat_group_list", locals:{current_user: current_user} %>
+<% end %>

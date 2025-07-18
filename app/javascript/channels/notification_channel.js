@@ -12,7 +12,8 @@ consumer.subscriptions.create("NotificationChannel", {
     // Called when the subscription is ready for use on the server\
     check_notification_access();
     allTabs.push(tabId);
-    coordinator.postMessage({ type: 'PING', id: tabId })
+    coordinator.postMessage({ type: 'PING', id: tabId });
+    recalculateRanks();
   },
 
   disconnected() {

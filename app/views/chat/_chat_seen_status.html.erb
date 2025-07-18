@@ -1,0 +1,14 @@
+<!--
+params used here:
+chat
+current_user
+-->
+<div id="chat_<%=chat.id%>_seen_status" class="flex items-center mt-1" :class="<%= current_user.id == chat.user_id %> ? 'justify-end':'justify-start'" x-data="{ status: '' }", x-init="<%= chat.all_read? %> ? status = 'read' : status = 'delivered'">
+  <p class="text-xs text-[var(--txt-clr-muted)] mr-1.5"><%=chat.created_at.strftime("%H:%M")%></p>
+  <div x-show="<%= chat.user.id === current_user.id %>">
+    <%= icon(icon: :clock_rotate_left_icon, options: {class: "text-[var(--txt-clr-muted)]", "x-show"=>"status === 'sending'"}) %>
+    <%= icon(icon: :circle_icon_regular, options: {class: "text-[var(--txt-clr-muted)]", "x-show"=>"status === 'sent'"}) %>
+    <%= icon(icon: :cricle_check_icon, options: {class: "text-[var(--txt-clr-muted)]", "x-show"=>"status === 'delivered'"}) %>
+    <%= icon(icon: :cricle_check_icon, options: {class: "text-[var(--link-clr)]", "x-show"=>"status === 'read'"}) %>
+  </div>
+</div>

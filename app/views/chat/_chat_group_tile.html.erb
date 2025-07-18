@@ -1,0 +1,43 @@
+<!--
+params used here
+current_user
+group
+
+alphine params:
+activeChat
+-->
+<% 
+member = group.type == "friend" ? group.members(current_user).first : nil 
+last_chat = group.chats.order(created_at: :asc).last
+%>
+<%= link_to chat_path(id: group.id), 
+data: { turbo_stream: true },
+class:"w-full text-left p-4 flex items-center space-x-4 hover:bg-[var(--background-clr-body)] transition-colors",
+":class"=>"{ 'bg-[var(--background-clr-strong)]': activeChat && activeChat === '#{group.id}' }",
+"@click"=>"activeChat = '#{group.id}'" do %>
+  <div class="relative flex-shrink-0">
+    <span class="h-12 w-12 rounded-full bg-[var(--background-clr-strong)] overflow-hidden flex items-center justify-center">
+      <% if group.type == "friend" %>
+        <% if member.profile_picture.attached? %>
+          <%= image_tag url_for(member.profile_picture) %>
+        <% else %>
+          <%= icon(icon: :user_icon, options: {class: "fa-fw text-[var(--txt-clr-subtle)]"}) %>
+        <% end %>
+      <% else %>
+      <% end %>
+      <!--Chat avatar goes here-->
+    </span>
+    <!--Need to show if a person is online or not-->
+    <span x-show="false" x-cloak class="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-500 ring-2 ring-[var(--background-clr-clear)]"></span>
+  </div>
+  <div class="flex-1 min-w-0">
+    <div class="flex justify-between items-center">
+      <p class="text-sm font-semibold text-[var(--txt-clr-strong)] truncate"><%= group.type == "friend" ? member.username : group.name %></p>
+      <p class="text-xs text-[var(--txt-clr-subtle)]"><%= last_chat.present? ? PostHelper.calculate_created_date(last_chat.created_at) : "" %></p>
+    </div>
+    <div class="flex justify-between items-center mt-1">
+      <p class="text-sm text-[var(--txt-clr-subtle)] truncate"><%= last_chat.present? ? last_chat.message : "" %></p>
+      <%# <span class="text-xs text-white bg-purple-600 rounded-full px-2 py-0.5">chat unread</span> %>
+    </div>
+  </div>
+<% end %>
