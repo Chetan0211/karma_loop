@@ -1,0 +1,14 @@
+<% if params[:page].present? %>
+  <%= turbo_stream.append "posts_list" do %>
+    <%= render partial: "fetch_posts", locals:{current_user: current_user, posts: @posts} %>
+  <% end %>
+  <turbo-stream action="update" method="morph" target="fetch_posts">
+    <template>
+      <% if @pagy.next %>
+        <div data-url="<%= root_path(page: @pagy.next) %>" ></div>
+      <% else %>
+        <div data-eof="true"></div>
+      <% end %>
+    </template>
+  </turbo-stream>
+<% end %>

@@ -1,0 +1,14 @@
+<% if params[:page].present? %>
+  <%= turbo_stream.append "chat_group_list" do %>
+    <%= render partial: "chat_group_list", locals:{current_user: current_user, chats: @chats, page: @pagy} %>
+  <% end %>
+  <turbo-stream action="update" method="morph" target="fetch_groups">
+    <template>
+      <% if @pagy.next %>
+        <div data-url="<%= chat_index_path(page: @pagy.next) %>" ></div>
+      <% else %>
+        <div data-eof="true"></div>
+      <% end %>
+    </template>
+  </turbo-stream>
+<% end %>

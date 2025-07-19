@@ -31,6 +31,16 @@ export default class extends Controller {
       });
     });
 
+    this.fetchNewMessageObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const element = entry.target;
+          this.fetchMessages(element.firstElementChild);
+        }
+      });
+    });
+
+
     this.element.querySelectorAll('.chat-message').forEach(message => {
       if (message.dataset.chatRead === 'false') {
         this.addUnreadMessageBar(message);
@@ -51,6 +61,9 @@ export default class extends Controller {
 
 
     this.observer.observe(chat_list, { childList: true });
+
+    let fetch_new_message_element = document.querySelector(`#fetch_chat_messages_${group}`);
+    this.fetchNewMessageObserver.observe(fetch_new_message_element);
   }
 
   initializeAlphineElements() {
@@ -327,5 +340,26 @@ export default class extends Controller {
 
     let form_reply_field = document.getElementById("new_chat_reply_to_id");
     form_reply_field.value = null;
+  }
+
+  fetchMessages(event) {
+    let url = event.dataset.url;
+    if (!event.dataset.eof) {
+      let loader = document.querySelector("#fetch_chat_loader");
+      loader.classList.remove("hidden");
+      let scroll_area = document.querySelector("#chat_scroll_area");
+      const oldScrollHeight = scroll_area.scrollHeight;
+
+      fetch(url, { method: 'GET', headers: { 'Accept': 'text/vnd.turbo-stream.html' } })
+        .then(response => response.text())
+        .then(html => {
+          Turbo.renderStreamMessage(html)
+          loader.classList.add("hidden");
+          requestAnimationFrame(() => {
+            const newScrollHeight = scroll_area.scrollHeight;
+            scroll_area.scrollTop = newScrollHeight - oldScrollHeight;
+          })
+        })
+    }
   }
 }

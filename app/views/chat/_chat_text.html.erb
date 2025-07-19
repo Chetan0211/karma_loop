@@ -8,11 +8,11 @@ chat
   <div class="group flex max-w-full items-center" :class="<%= current_user.id == chat.user_id %> ? 'flex-row-reverse' : 'flex-row'">
     <!-- Message Bubble -->
     <div class="max-w-[80%] lg:max-w-md message-bubble">
-      <div class="px-4 py-2 overflow-hidden rounded-2xl" :class="<%= current_user.id == chat.user_id %> ? 'bg-[var(--primary-600)] text-[var(--txt-clr-default)] rounded-br-none' : 'bg-[var(--background-clr-strong)] text-[var(--txt-clr-default)] rounded-bl-none'">
+      <div class="px-4 py-2 overflow-hidden rounded-2xl" :class="<%= current_user.id == chat.user_id %> ? 'bg-[var(--background-clr-clear)] text-[var(--txt-clr-default)] rounded-br-none' : 'bg-[var(--background-clr-strong)] text-[var(--txt-clr-default)] rounded-bl-none'">
         <!-- ** MODIFIED: Quoted Reply UI ** -->
         <% if chat.reply_to.present? %>
-          <div x-show="<%= chat.reply_to.present? %>" class="reply-container max-h-32 overflow-hidden mb-2 p-2 rounded-md border-l-4" :class="<%= current_user.id == chat.reply_to.user.id %> ? 'bg-[var(--primary-500)]' : 'bg-[var(--background-clr-strong)] border-[var(--border-clr-thick)]'">
-            <p class="text-xs font-semibold" :class="<%= current_user.id == chat.reply_to.user.id %> ? 'text-[var(--primary-100)]' : 'text-[var(--primary-500)]'"><%= (current_user.id == chat.reply_to.user.id) ? "You" : chat.reply_to.user.username %></p>
+          <div x-show="<%= chat.reply_to.present? %>" class="reply-container max-h-32 overflow-hidden mb-2 p-2 rounded-md border-l-4" :class="<%= current_user.id == chat.user_id %> ? 'bg-[var(--background-clr-strong)]' : 'bg-[var(--background-clr-clear)] border-[var(--border-clr-thick)]'">
+            <p class="text-xs font-semibold text-[var(--primary-500)]"><%= (current_user.id == chat.reply_to.user.id) ? "You" : chat.reply_to.user.username %></p>
             <% if chat.reply_to.attachments.present? %>
               <% chat.reply_to.attachments.each do |attachment| %>
                 <div class="flex items-center p-3 bg-[var(--background-clr-thick)] rounded-lg border border-[var(--border-clr-default)]"
@@ -38,7 +38,7 @@ chat
                 </div>
               <% end %>
             <% end %>
-            <p class="text-xs italic truncate" :class="<%= current_user.id == chat.reply_to.user.id %> ? 'text-[var(--primary-200)]' : 'text-[var(--txt-clr-muted)]'"><%= chat.reply_to.message %></p>
+            <p class="text-xs italic truncate text-[var(--txt-clr-muted)]"><%= chat.reply_to.message %></p>
           </div>
         <% end %>
         <!-- Main Message Text -->

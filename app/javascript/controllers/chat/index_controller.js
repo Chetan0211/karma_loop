@@ -1,31 +1,28 @@
 import { Controller } from "@hotwired/stimulus"
-import { parentLikeToggle } from "../../helpers/post_helper";
 
-// Connects to data-controller="home--index"
+// Connects to data-controller="chat--index"
 export default class extends Controller {
   connect() {
-    parentLikeToggle();
-    this.setupFetchPosts();
+    this.setupFetchGroups();
   }
-
-  setupFetchPosts() {
+  setupFetchGroups() {
     this.fetchNewMessageObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const element = entry.target;
-          this.fetchPosts(element.firstElementChild);
+          this.fetchGroups(element.firstElementChild);
         }
       });
     });
 
-    let fetch_posts = document.querySelector("#fetch_posts");
-    this.fetchNewMessageObserver.observe(fetch_posts);
+    let fetch_groups = document.querySelector("#fetch_groups");
+    this.fetchNewMessageObserver.observe(fetch_groups);
   }
 
-  fetchPosts(element) {
+  fetchGroups(element) {
     let url = element.dataset.url;
     if (!element.dataset.eof) {
-      let loader = document.querySelector("#fetch_posts_loader");
+      let loader = document.querySelector("#fetch_groups_loader");
       loader.classList.remove("hidden");
 
       fetch(url, { method: 'GET', headers: { 'Accept': 'text/vnd.turbo-stream.html' } })

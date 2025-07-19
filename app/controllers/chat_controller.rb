@@ -3,6 +3,11 @@ class ChatController < ApplicationController
   before_action :authenticate_user!
 
   def index
+    @pagy, @groups = pagy(current_user.all_chat_groups)
+    respond_to do |format|
+      format.html
+      format.turbo_stream
+    end
   end
 
   def create
@@ -53,7 +58,7 @@ class ChatController < ApplicationController
   def show
     @group = Group.find(params[:id])
     can?(:read, @group)
-    @chats = @group.chats.includes(:user, :reply_to).order(created_at: :asc)
+    @pagy, @chats = pagy(@group.chats.includes(:user, :reply_to).order(created_at: :desc))
     respond_to do |format|
       format.turbo_stream
     end

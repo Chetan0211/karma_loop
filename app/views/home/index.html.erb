@@ -40,11 +40,21 @@
         </nav>
       </div>
     </div>
-    <div class="md:col-span-2 space-y-4">
+    <div class="md:col-span-2">
       <% if @posts.present? %>
-        <% @posts.each do |post| %>
-          <%= render "shared/post", post: post %>
-        <% end %>
+        <div id="posts_list" class="space-y-4">
+          <%= render partial: "fetch_posts", locals: {posts: @posts, current_user: current_user} %>
+        </div>
+        <div id="fetch_posts">
+          <% if @pagy.next %>
+            <div data-url="<%= root_path(page: @pagy.next) %>" ></div>
+          <% else %>
+            <div data-eof="true"></div>
+          <% end %>
+        </div>
+        <div id="fetch_posts_loader" x-transition class="flex items-center justify-center hidden">
+          <div class="w-10 h-10 border-4 border-[var(--border-clr-default)] border-t-transparent rounded-full animate-spin"></div>
+        </div>
       <% else %>
         <div x-transition class="bg-[var(--background-clr-clear)] rounded-md shadow-sm p-8 text-center">
           <div class="max-w-md mx-auto">

@@ -1,0 +1,8 @@
+<!--
+params used here:
+posts
+current_user
+-->
+<% posts.each do |post| %>
+  <%= render partial: "shared/post", locals: {post: post, current_user: current_user} %>
+<% end %>

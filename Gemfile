@@ -92,3 +92,5 @@ gem "dotenv-rails", "~> 3.1"
 gem "searchkick", '~> 5.0'
 gem 'elasticsearch', '~> 8.0'
 gem "cancancan", "~> 3.6"
+
+gem "pagy", "~> 9.3"

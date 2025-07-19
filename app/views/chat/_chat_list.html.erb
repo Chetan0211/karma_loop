@@ -3,11 +3,11 @@ params to use here:
 chats
 current_user
 -->
-<% chats.group_by{ |c| c.created_at.to_date }.each do |date, chats_on_day| %>
+<% chats.group_by{ |c| c.created_at.to_date }.reverse_each do |date, chats_on_day| %>
   <div class="flex justify-center my-4 date-separator" data-date="<%= date %>">
     <span class="bg-[var(--background-clr-strong)] text-[var(--txt-clr-muted)] text-xs font-semibold px-3 py-1 rounded-full"><%= format_date_separator(date) %></span>
   </div>
-  <% chats_on_day.each do |chat| %>
+  <% chats_on_day.reverse_each do |chat| %>
     <%= render partial: "chat_text", locals: { chat: chat } %>
   <% end %>
 <% end %>

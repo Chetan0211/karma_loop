@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  include Pagy::Backend
+  
   before_action :set_current
   around_action :set_time_zone
 

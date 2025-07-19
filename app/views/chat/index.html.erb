@@ -1,6 +1,7 @@
 <div
   class="h-[calc(100dvh-8rem)] md:h-[calc(100dvh-4rem)]"
   x-init="footer_active_tab = 'chat'"
+  data-controller="chat--index"
   x-data="{
   activeChat: null,
   replyingToMessage: null,
@@ -22,9 +23,21 @@
           </div>
         </div>
         <!-- Chat List Items -->
-        <div id="chat_group_list" class="flex-grow overflow-y-auto custom-scrollbar">
+        <div class="flex-grow overflow-y-auto custom-scrollbar">
           <!-- Chat group list goes here(removed the template here)-->
-          <%= render partial: "chat_group_list" %>
+          <div id="chat_group_list">
+            <%= render partial: "chat_group_list" %>
+          </div>
+          <div id="fetch_groups">
+            <% if @pagy.next %>
+              <div data-url="<%= chat_index_path(page: @pagy.next) %>" ></div>
+            <% else %>
+              <div data-eof="true"></div>
+            <% end %>
+          </div>
+          <div id="fetch_groups_loader" x-transition class="flex items-center justify-center hidden">
+            <div class="w-10 h-10 border-4 border-[var(--border-clr-default)] border-t-transparent rounded-full animate-spin"></div>
+          </div>
         </div>
       </div>
       <!-- Right Column: Active Chat Window -->
