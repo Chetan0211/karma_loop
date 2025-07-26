@@ -16,3 +16,4 @@ pin "@rails/actioncable", to: "actioncable.esm.js"
 pin_all_from "app/javascript/channels", under: "channels"
 pin "date-fns", to: "https://ga.jspm.io/npm:date-fns@4.1.0/index.js"
 pin "date-fns/", to: "https://ga.jspm.io/npm:date-fns@4.1.0/"
+pin "openpgp" # @6.2.0

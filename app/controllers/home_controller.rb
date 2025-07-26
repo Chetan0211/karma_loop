@@ -3,9 +3,14 @@ class HomeController < ApplicationController
   def index
     @user = current_user
     @pagy, @posts = pagy(Post.accessible_by(current_ability, :read, strategy: :subquery).order(created_at: :desc))
-    respond_to do |format|
-      format.html
-      format.turbo_stream
+    if params[:page]
+      respond_to do |format|
+        format.turbo_stream
+      end
+    else
+      respond_to do |format|
+        format.html
+      end
     end
   end
 end

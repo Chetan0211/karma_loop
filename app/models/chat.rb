@@ -22,7 +22,7 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Chat < ApplicationRecord
-  has_many_attached :attachments
+  has_many_attached :attachments, dependent: :destroy
 
   belongs_to :group
   belongs_to :user
