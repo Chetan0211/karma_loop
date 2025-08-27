@@ -1,7 +1,7 @@
 require 'sidekiq/web'
 
 Rails.application.routes.draw do
-  devise_for :users, controllers:{registrations: 'users/registrations', sessions: 'users/sessions'}
+  devise_for :users, controllers:{registrations: 'users/registrations', sessions: 'users/sessions', passwords: 'users/passwords'}
   mount Sidekiq::Web => '/sidekiq'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -10,6 +10,8 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   # user routes
+  patch "save_keys" => "user#save_keys", as: :save_keys
+  get "secure_key" => "user#secure_key", as: :secure_key
   get "profile/:id" => "user#profile", as: :user_profile
   post "update_profile_picture/:id" => "user#update_profile_picture", as: :update_profile_picture
   patch "update_profile/:id" => "user#update_profile", as: :update_profile

@@ -15,17 +15,22 @@ class Users::RegistrationsController < Devise::RegistrationsController
     if result.success?
       self.resource = result[:model]
       if self.resource.save
-        sign_up(resource_name, resource)
-        respond_with resource, location: after_sign_up_path_for(resource)
+        respond_to do |format|
+          format.json { render json: { success: true, redirect_url: secure_key_path } }
+        end
       else
         clean_up_passwords(self.resource)
         set_minimum_password_length
-        respond_with resource
+        respond_to do |format|
+          format.json { render json: { success: false, redirect_url: new_user_registration_path, error: resource.errors.full_messages.join(", ") }, status: :unprocessable_entity }
+        end
       end
     else
-      flash[:errors] = result['contract.default'].errors
+      flash[:error] = result['contract.default'].errors.full_messages.join(", ")
       flash[:signup_params] = user_params
-      redirect_to new_user_registration_path
+      respond_to do |format|
+        format.json { render json: { success: false, redirect_url: new_user_registration_path, error: flash[:error] }, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -78,6 +83,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
   private
 
   def user_params
-    params.require(:user).permit(:username, :dob, :email, :password, :password_confirmation)
+    params.require(:user).permit(:username, :dob, :email, :password, :password_confirmation, :public_key, :encrypted_key)
   end
 end

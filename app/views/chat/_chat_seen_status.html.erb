@@ -8,7 +8,7 @@ current_user
   <div x-show="<%= chat.user.id === current_user.id %>">
     <%= icon(icon: :clock_rotate_left_icon, options: {class: "text-[var(--txt-clr-muted)]", "x-show"=>"status === 'sending'"}) %>
     <%= icon(icon: :circle_icon_regular, options: {class: "text-[var(--txt-clr-muted)]", "x-show"=>"status === 'sent'"}) %>
-    <%= icon(icon: :cricle_check_icon, options: {class: "text-[var(--txt-clr-muted)]", "x-show"=>"status === 'delivered'"}) %>
-    <%= icon(icon: :cricle_check_icon, options: {class: "text-[var(--link-clr)]", "x-show"=>"status === 'read'"}) %>
+    <%= icon(icon: :circle_check_icon, options: {class: "text-[var(--txt-clr-muted)]", "x-show"=>"status === 'delivered'"}) %>
+    <%= icon(icon: :circle_check_icon, options: {class: "text-[var(--link-clr)]", "x-show"=>"status === 'read'"}) %>
   </div>
 </div>

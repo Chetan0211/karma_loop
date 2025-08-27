@@ -19,7 +19,9 @@ export default class extends Controller {
     });
 
     let fetch_posts = document.querySelector("#fetch_posts");
-    this.fetchNewMessageObserver.observe(fetch_posts);
+    if (fetch_posts) {
+      this.fetchNewMessageObserver.observe(fetch_posts);
+    }
   }
 
   fetchPosts(element) {

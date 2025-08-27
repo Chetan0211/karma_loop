@@ -43,7 +43,6 @@ chats
       <div class="w-10 h-10 border-4 border-[var(--border-clr-default)] border-t-transparent rounded-full animate-spin"></div>
     </div>
     <div id="chat_list_<%= group.id %>" class="space-y-2 h-full">
-      <%# TODO: render _chat_list here and add unique id to the top div %>
       <% if chats.present? %>
         <%= render partial: "chat/chat_list", locals: { chats: chats } %>
       <% else %>

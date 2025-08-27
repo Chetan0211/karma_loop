@@ -10,7 +10,7 @@ export default class CryptoHelper {
       });
       return { publicKey, privateKey };
     } catch (error) {
-      console.error("Error generating keys:", error);
+      //console.error("Error generating keys:", error);
       return null;
     }
   }
@@ -24,7 +24,7 @@ export default class CryptoHelper {
       });
       return encryptedKey.armor();
     } catch (error) {
-      console.error("Error encrypting private key:", error);
+      //console.error("Error encrypting private key:", error);
       return null;
     }
   }
@@ -38,7 +38,7 @@ export default class CryptoHelper {
       });
       return decryptedKeyObject.armor();
     } catch (error) {
-      console.error("Error decrypting private key (check password):", error);
+      //console.error("Error decrypting private key (check password):", error);
       return null;
     }
   }
@@ -57,7 +57,7 @@ export default class CryptoHelper {
       });
       return encryptedMessage;
     } catch (error) {
-      console.error("Error encrypting message:", error);
+      //console.error("Error encrypting message:", error);
       return null;
     }
   }
@@ -72,7 +72,7 @@ export default class CryptoHelper {
       });
       return decryptedText;
     } catch (error) {
-      console.error("Error decrypting message:", error);
+      //console.error("Error decrypting message:", error);
       return null;
     }
   }
@@ -115,5 +115,87 @@ export default class CryptoHelper {
       console.error("Error decrypting file:", error);
       return null;
     }
+  }
+
+  static async sessionEncryptPrivateKey(privateKey, sessionKey) {
+    const cryptoKey = await this.getCryptoKey(sessionKey);
+    // Encode privateKey as Uint8Array
+    const encoder = new TextEncoder();
+    const data = encoder.encode(privateKey);
+    // Generate random IV
+    const iv = window.crypto.getRandomValues(new Uint8Array(12));
+    // Encrypt
+    const encrypted = await window.crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv },
+      cryptoKey,
+      data
+    );
+
+    return {
+      iv: btoa(String.fromCharCode(...iv)),
+      encrypted: btoa(String.fromCharCode(...new Uint8Array(encrypted)))
+    };
+  }
+
+  static async sessionDecryptPrivateKey(encryptedObj, sessionKey) {
+    const cryptoKey = await this.getCryptoKey(sessionKey);
+
+    // Decode IV and encrypted data from base64
+    const iv = Uint8Array.from(atob(encryptedObj.iv), c => c.charCodeAt(0));
+    const encryptedData = Uint8Array.from(atob(encryptedObj.encrypted), c => c.charCodeAt(0));
+    // Decrypt
+    const decrypted = await window.crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv },
+      cryptoKey,
+      encryptedData
+    );
+    // Decode to string
+    const decoder = new TextDecoder();
+    return decoder.decode(decrypted);
+  }
+
+  static generateRescueKey(length = 16) {
+    const array = new Uint8Array(length / 2); // 2 hex chars per byte
+    window.crypto.getRandomValues(array);
+    return (Array.from(array, b => b.toString(16).padStart(2, '0')).join('')).toUpperCase();
+  }
+
+  static async getCryptoKey(sessionKey) {
+    // Convert sessionKey hex to Uint8Array
+    const keyBytes = new Uint8Array(sessionKey.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+    // Import sessionKey as CryptoKey
+    const cryptoKey = await window.crypto.subtle.importKey(
+      'raw',
+      keyBytes,
+      { name: 'AES-GCM' },
+      false,
+      ['encrypt']
+    );
+    return cryptoKey;
+  }
+
+  static async createSessionHashKey() {
+    // Generate random bytes for the session key
+    const randomBytes = window.crypto.getRandomValues(new Uint8Array(32));
+    // Hash the random bytes using SHA-256
+    const hashBuffer = await window.crypto.subtle.digest('SHA-256', randomBytes);
+    // Convert hash buffer to hex string
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    this.storeSessionHashKey(hashHex);
+    return hashHex;
+  }
+
+  static fetchSessionHashKey() {
+    const sessionHashKey = window.sessionStorage.getItem('sessionHashKey');
+    return sessionHashKey;
+  }
+
+  static storeSessionHashKey(sessionHashKey) {
+    window.sessionStorage.setItem('sessionHashKey', sessionHashKey);
+  }
+
+  static clearSessionHashKey() {
+    window.sessionStorage.removeItem('sessionHashKey');
   }
 }

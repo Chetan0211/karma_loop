@@ -10,8 +10,23 @@ class Users::SessionsController < Devise::SessionsController
 
   # POST /resource/sign_in
   def create
-    super
-    cookies.encrypted[:kloop_session_user_id] = { value: current_user.id } if current_user
+    respond_to do |format|
+      format.html { super }
+      format.json do
+        resource = warden.authenticate(auth_options)
+        if resource
+          sign_in(resource_name, resource)
+          cookies.encrypted[:kloop_session_user_id] = { value: current_user.id }
+          render json: { success: true, 
+          redirect_url: root_path, 
+          user_key: resource.encrypted_key,
+          encrypted_key: resource.encrypted_key }, status: :ok
+        else
+          flash[:error] = "Invalid email or password"
+          render json: { success: false, error: "Invalid email or password", redirect_url: new_user_session_path }, status: :unprocessable_entity
+        end
+      end
+    end
   end
 
   # DELETE /resource/sign_out

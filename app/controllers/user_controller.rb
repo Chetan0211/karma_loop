@@ -1,5 +1,19 @@
 class UserController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:secure_key, :save_keys]
+
+  def secure_key
+  end
+
+  def save_keys
+    result = User::SaveKeys.call({user_id: params[:user_id], public_key: params[:public_key], encrypted_key: params[:encrypted_key]})
+
+    if result.success?
+      render json: { success: true, message: "Keys saved successfully" }, status: :no_content
+    else
+      flash[:error] = "Failed to save keys"
+      render json: { success: false, errors: result['contract.default'].errors.full_messages }, status: :unprocessable_entity
+    end
+  end
 
   def profile
     @user = User.includes(:posts, :comments).find(params[:id])
@@ -33,6 +47,7 @@ class UserController < ApplicationController
       if current_user.update_with_password(password: params[:new_password], password_confirmation: params[:confirm_new_password], current_password: params[:current_password])
         bypass_sign_in(current_user)
         render json: { message: "Password updated successfully" }, status: :no_content
+        return
       else
         render json: current_user.errors, status: :unprocessable_entity
         return

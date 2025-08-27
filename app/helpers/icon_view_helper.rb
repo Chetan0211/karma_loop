@@ -134,7 +134,7 @@ module IconViewHelper
     tag.i(class: "fa-regular fa-circle #{classes.strip}",**options.except(:class))
   end
 
-  def cricle_check_icon(options={})
+  def circle_check_icon(options={})
     classes = options.fetch(:class,"")
     tag.i(class: "fa-solid fa-circle-check #{classes.strip}",**options.except(:class))
   end
@@ -264,9 +264,19 @@ module IconViewHelper
     tag.i(class: "fa-solid fa-chevron-right #{classes.strip}",**options.except(:class))
   end
 
+  def key_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-key #{classes.strip}",**options.except(:class))
+  end
+
   def list_alt_icon(options={})
     classes = options.fetch(:class,"")
     tag.i(class: "fa-solid fa-list-alt #{classes.strip}",**options.except(:class))
+  end
+
+  def copy_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-copy #{classes.strip}",**options.except(:class))
   end
 
   def icon(icon:, options:{})

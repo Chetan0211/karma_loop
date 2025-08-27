@@ -4,6 +4,8 @@ class User::Contract::Create < ApplicationContract
   property :password_confirmation, virtual: true
   property :email
   property :dob
+  property :encrypted_key
+  property :public_key
 
   validates :username, presence:{message: "Username can't be blank."}, format:{
     with: /\A\w+\z/,
@@ -27,6 +29,8 @@ class User::Contract::Create < ApplicationContract
 
   validates :dob, presence:{message: "Date of birth can't be blank."}
 
+  validates :public_key, presence: {message: "Internal server error"}
+  validates :encrypted_key, presence: {message: "Internal server error"}
 
   private
 
