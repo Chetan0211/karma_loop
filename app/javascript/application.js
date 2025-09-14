@@ -13,13 +13,17 @@ import Alpine from 'alpinejs'
 window.Alpine = Alpine
 Alpine.start()
 
+import KeyManager from "./key_manager"
+
+window.KeyManager = KeyManager;
+
 import shaka from 'shaka-player';
 
 // Un-comment to test crypto helper in console
-// import CryptoHelper from "./helpers/crypto_helper";
+import CryptoHelper from "./helpers/crypto_helper";
 // import * as openpgp from "openpgp";
 // window.openpgp = openpgp;
-// window.ch = CryptoHelper;
+window.ch = CryptoHelper;
 
 function initializeVideoPlayer() {
   shaka.polyfill.installAll();

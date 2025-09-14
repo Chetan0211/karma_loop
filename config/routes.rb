@@ -28,7 +28,9 @@ Rails.application.routes.draw do
   
   resources :admin, only: [:index]
 
+  #chat
   resources :chat, only: [:index, :create, :show]
+  get "show_active_chat_tab/:id" => "chat#show_active_chat_tab", as: :show_active_chat_tab
   get "message_read" => "chat#message_read", as: :message_read
   post "create_message_reaction" => "chat#create_message_reaction", as: :create_message_reaction
 

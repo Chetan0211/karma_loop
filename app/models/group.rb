@@ -37,4 +37,8 @@ class Group < ApplicationRecord
   def members(current_user)
     User.includes(group_users: :group).where(group_users:{group_id: self.id}).where.not(group_users:{user_id: current_user.id})
   end
+
+  def public_keys
+    User.includes(group_users: :group).where(group_users:{group_id: self.id}).pluck(:public_key)
+  end
 end

@@ -55,12 +55,56 @@ class ChatController < ApplicationController
     end
   end
 
+  def show_active_chat_tab
+    @group = Group.find(params[:id])
+    can?(:read, @group)
+    respond_to do |format|
+      format.turbo_stream
+    end
+  end
+
   def show
     @group = Group.find(params[:id])
     can?(:read, @group)
-    @pagy, @chats = pagy(@group.chats.includes(:user, :reply_to).order(created_at: :desc))
+    @pagy, @chats = pagy(@group.chats.includes(:group, :user, reply_to: :user).order(created_at: :desc))
+
+    #Broadcasting turbo stream update
+    Turbo::StreamsChannel.broadcast_update_to(
+      "ui_#{current_user.id}",
+      target: "fetch_chat_messages_#{@group.id}",
+      partial: "chat/next_page_link",
+      locals: { group: @group, pagy: @pagy }
+    )
+
+    chats_data = @chats.map do |chat|
+      # Get the base JSON structure for the chat
+      chat.as_json(
+        include: {
+          reply_to: { include: { user: { only: [:id, :username, :email] } }, methods: :attachments_data },
+          group: { only: [:id, :name] },
+          user: { only: [:id, :name, :email] }
+        },
+        methods: :attachments_data
+      ).merge(
+        'chat_read' => chat.user_read?(current_user),
+        'all_read' => chat.all_read?
+      )
+    end
     respond_to do |format|
-      format.turbo_stream
+      format.json do 
+        render json: {
+          pagy: {
+            next: @pagy.next,
+            prev: @pagy.prev
+          },
+          current_user: {
+            id: current_user.id,
+            username: current_user.username,
+            email: current_user.email
+          },
+          chats: chats_data
+        }
+      end
     end
   end
 

@@ -10,7 +10,7 @@ activeChat
 member = group.type == "friend" ? group.members(current_user).first : nil 
 last_chat = group.chats.order(created_at: :asc).last
 %>
-<%= link_to chat_path(id: group.id), 
+<%= link_to show_active_chat_tab_path(id: group.id), 
 data: { turbo_stream: true },
 class:"w-full text-left p-4 flex items-center space-x-4 hover:bg-[var(--background-clr-body)] transition-colors",
 ":class"=>"{ 'bg-[var(--background-clr-strong)]': activeChat && activeChat === '#{group.id}' }",

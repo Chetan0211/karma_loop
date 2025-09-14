@@ -93,7 +93,7 @@ export default class CryptoHelper {
 
       return encryptedFile;
     } catch (error) {
-      console.error("Error encrypting file:", error);
+      //console.error("Error encrypting file:", error);
       return null;
     }
   }
@@ -112,7 +112,7 @@ export default class CryptoHelper {
 
       return decryptedFile;
     } catch (error) {
-      console.error("Error decrypting file:", error);
+      //console.error("Error decrypting file:", error);
       return null;
     }
   }
@@ -169,7 +169,7 @@ export default class CryptoHelper {
       keyBytes,
       { name: 'AES-GCM' },
       false,
-      ['encrypt']
+      ['encrypt', 'decrypt']
     );
     return cryptoKey;
   }
@@ -187,8 +187,7 @@ export default class CryptoHelper {
   }
 
   static fetchSessionHashKey() {
-    const sessionHashKey = window.sessionStorage.getItem('sessionHashKey');
-    return sessionHashKey;
+    return window.sessionStorage.getItem('sessionHashKey');
   }
 
   static storeSessionHashKey(sessionHashKey) {
@@ -197,5 +196,13 @@ export default class CryptoHelper {
 
   static clearSessionHashKey() {
     window.sessionStorage.removeItem('sessionHashKey');
+  }
+
+  static fetchEncryptedPrivateKey() {
+    return window.localStorage["pkey"];
+  }
+
+  static setEncryptedPrivateKey(encryptedPrivateKey) {
+    window.localStorage["pkey"] = encryptedPrivateKey;
   }
 }

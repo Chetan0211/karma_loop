@@ -19,11 +19,12 @@ export default class extends Controller {
       body: new FormData(form)
     })
       .then(response => response.json())
-      .then(data => {
+      .then(async data => {
         if (data.success) {
           let userKey = data.user_key;
           if (userKey) {
-            this.decodeAndStoreKey(userKey, form);
+            let keys = JSON.parse(userKey);
+            await this.decodeAndStoreKey(keys.passwordPKey, form);
           }
         }
         if (data.redirect_url) {
@@ -39,9 +40,10 @@ export default class extends Controller {
     const pass = form.querySelector("#user_password").value;
     const pKey = await CryptoHelper.decryptPrivateKey(userKey, pass);
     if (pKey) {
+      sessionStorage.setItem("checkPrivateKey", pKey);
       const sessionHashKey = await CryptoHelper.createSessionHashKey();
       const encryptSessionPKey = await CryptoHelper.sessionEncryptPrivateKey(pKey, sessionHashKey);
-      window.localStorage["pkey"] = JSON.stringify(encryptSessionPKey);
+      CryptoHelper.setEncryptedPrivateKey(JSON.stringify(encryptSessionPKey));
     }
   }
 }

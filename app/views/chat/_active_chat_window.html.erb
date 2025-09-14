@@ -2,10 +2,10 @@
 params used here:
 group
 current_user
-chats
 -->
+<%# TODO: member will throw error when we are showing th group. Need to fix it. %>
 <% member = group.type == "friend" ? group.members(current_user).first : nil %>
-<div class="flex flex-col h-full" data-controller="chat" x-data="chat" data-group-id="<%= group.id %>">
+<div class="flex flex-col h-full" data-controller="chat" x-data="chatAlpine" data-group-id="<%= group.id %>">
   <!-- Active Chat Header -->
   <div class="p-4 border-b border-[var(--border-clr-subtle)] bg-[var(--background-clr-clear)] flex items-center space-x-4 flex-shrink-0">
     <button @click="activeChat = null" class="text-[var(--txt-clr-subtle)] md:hidden">
@@ -33,24 +33,13 @@ chats
   <!-- Chat Messages Area -->
   <div x-ref="chatArea" id="chat_scroll_area" class="bg-[var(--background-clr-body)] flex-grow p-4 sm:p-6 overflow-y-auto overflow-x-hidden custom-scrollbar">
     <div id="fetch_chat_messages_<%= group.id %>">
-      <% if page.next %>
-        <div data-url="<%= chat_path(id: group.id, page: page.next) %>" ></div>
-      <% else %>
-        <div data-eof="true"></div>
-      <% end %>
+      <div data-url="<%= chat_path(id: group.id, page: 1) %>" ></div>
     </div>
     <div id="fetch_chat_loader" x-transition class="flex items-center justify-center hidden">
       <div class="w-10 h-10 border-4 border-[var(--border-clr-default)] border-t-transparent rounded-full animate-spin"></div>
     </div>
     <div id="chat_list_<%= group.id %>" class="space-y-2 h-full">
-      <% if chats.present? %>
-        <%= render partial: "chat/chat_list", locals: { chats: chats } %>
-      <% else %>
-        <div id="empty_chat_window_<%= group.id %>" class="flex flex-col flex-grow items-center justify-center h-full w-full text-center text-[var(--txt-clr-subtle)]">
-          <%= icon(icon: :comments_icon_regular, options:{class: "fa-4x mb-4"}) %>
-          <h3 class="text-lg font-medium">Start a conversion</h3>
-        </div>
-      <% end %>
+      <!-- We will add the chats here -->
     </div>
   </div>
   <!-- Message Input Form -->
@@ -66,7 +55,8 @@ chats
     "x-ref"=>"chat_form",
     data:{
       action: "turbo:submit-end->chat#reset",
-      group_id: group.id
+      group_id: group.id,
+      chat_pub_keys: group.public_keys.to_json
     }, 
     class: "flex items-center space-x-3" do |f| %>
       <div @click.away="attachmentMenuOpen = false" class="relative -ml-3">
@@ -302,5 +292,124 @@ chats
   <div class="reply-container mb-2 p-2 max-h-32 overflow-hidden rounded-md border-l-4" :class="{{CURRENT_USER}} ? 'bg-[var(--background-clr-strong)]' : 'bg-[var(--background-clr-strong)] border-[var(--border-clr-thick)]'">
     <p class="text-xs font-semibold text-[var(--primary-500)]">{{USER_NAME}}</p>
     <!--Message goes here-->
+  </div>
+</template>
+
+<!-- Templates for messaging -->
+<template data-chat-target="chat_message_main_template">
+  <!--
+  params that we are using and has to be changed are:
+  CHAT_ID
+  CHAT_USER_ID
+  CHAT_CREATED_AT_to_date
+  CHAT_READ
+  CURRENT_USER_ID
+  CHAT_DATA_USERNAME = {{CURRENT_USER_ID}} == {{CHAT_USER_ID}} ? 'You' : {{CHAT_USER_USERNAME}}
+  
+  -->
+  <div id="{{CHAT_ID}}" class="flex max-w-full items-center chat-message" :class="'{{CURRENT_USER_ID}}' == '{{CHAT_USER_ID}}' ? 'justify-end' : 'justify-start'" data-date="{{CHAT_CREATED_AT_to_date}}" data-chat-read="{{CHAT_READ}}" data-read-url="<%= message_read_path(chat_id: 'CHAT_ID') %>" >
+    <div class="group flex max-w-full items-center" :class="'{{CURRENT_USER_ID}}' == '{{CHAT_USER_ID}}' ? 'flex-row-reverse' : 'flex-row'">
+      <!-- Message Bubble -->
+      <div class="max-w-[80%] lg:max-w-md message-bubble">
+        <div class="px-4 py-2 overflow-hidden rounded-2xl" :class="'{{CURRENT_USER_ID}}' == '{{CHAT_USER_ID}}' ? 'bg-[var(--background-clr-clear)] text-[var(--txt-clr-default)] rounded-br-none' : 'bg-[var(--background-clr-strong)] text-[var(--txt-clr-default)] rounded-bl-none'">
+          <!-- ** MODIFIED: Quoted Reply UI ** -->
+          {{CHAT_MESSAGE_REPLY_TEMPLATE}}
+          <!-- Main Message Text -->
+          {{CHAT_MESSAGE_ATTACHMENTS_TEMPLATE}}
+          <p class="text-sm break-words">{{CHAT_MESSAGE}}</p>
+          {{CHAT_SEEN_STATUS_TEMPLATE}}
+        </div>
+        <!-- Reactions Display --> <!-- TODO: Yet to implement -->
+        <div x-show="false" class="flex space-x-1 mt-1" :class="'{{CURRENT_USER_ID}}' == '{{CHAT_USER_ID}}' ? 'justify-end' : 'justify-start'">
+          <div class="bg-gray-200 dark:bg-gray-600 rounded-full px-2 py-0.5 text-xs flex items-center">
+            <span class="mr-1">emoji</span>
+            <span class="font-semibold text-gray-700 dark:text-gray-200">count</span>
+          </div>
+        </div>
+      </div>
+      <!-- Message Actions (Reply, React) -->
+      <div class="flex-shrink-0 flex items-center space-x-1 p-1 md:opacity-0 group-hover:opacity-100 transition-opacity mx-2">
+        <button @click="showReplyBanner = true" data-action="click->chat#replyMessage" data-chat-id="{{CHAT_ID}}" data-username="{{CHAT_DATA_USERNAME}}" class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--background-clr-strong)]"><%= icon(icon: :reply_icon, options:{class: "text-xs text-[var(--txt-clr-muted)]"}) %></button>
+        <!-- Reactions selection --> <!-- TODO: Yet to implement -->
+        <div x-show="false" x-data="{ reactionsOpen: false }" @mouseleave="reactionsOpen = false" class="relative">
+          <button @click="reactionsOpen = !reactionsOpen" class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--background-clr-strong)]"><%= icon(icon: :face_smile_icon_regular, options:{class: "text-xs text-[var(--txt-clr-muted)]"}) %></button>
+          <div x-show="reactionsOpen" x-transition class="absolute bottom-full mb-2 flex space-x-1 bg-[var(--background-clr-clear)] shadow-lg rounded-full p-1">
+            <button @click="addReaction(message, '👍'); reactionsOpen = false" class="text-lg p-1 rounded-full hover:bg-[var(--background-clr-strong)]">👍</button>
+            <button @click="addReaction(message, '❤️'); reactionsOpen = false" class="text-lg p-1 rounded-full hover:bg-[var(--background-clr-strong)]">❤️</button>
+            <button @click="addReaction(message, '😂'); reactionsOpen = false" class="text-lg p-1 rounded-full hover:bg-[var(--background-clr-strong)]">😂</button>
+            <button @click="addReaction(message, '😮'); reactionsOpen = false" class="text-lg p-1 rounded-full hover:bg-[var(--background-clr-strong)]">😮</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<template data-chat-target="chat_message_reply_to_present_template">
+  <!--
+  CHAT_REPLY_TO_USERNAME = {{CURRENT_USER_ID}} == {{CHAT_REPLY_TO_USER_ID}} ? "You" : chat.reply_to.user.username
+  -->
+  <div x-show="{{CHAT_REPLY_TO_PRESENT}}" class="reply-container max-h-32 overflow-hidden mb-2 p-2 rounded-md border-l-4" :class="'{{CURRENT_USER_ID}}' == '{{CHAT_USER_ID}}' ? 'bg-[var(--background-clr-strong)]' : 'bg-[var(--background-clr-clear)] border-[var(--border-clr-thick)]'">
+    <p class="text-xs font-semibold text-[var(--primary-500)]">{{CHAT_REPLY_TO_USERNAME}}</p>
+    {{CHAT_REPLY_TO_ATTACHMENTS}}
+    <p class="text-xs italic truncate text-[var(--txt-clr-muted)]">{{CHAT_REPLY_TO_MESSAGE}}</p>
+  </div>
+</template>
+<template data-chat-target="chat_message_attachments_template">
+  <!--
+  ATTACHMENT_TEMPLATE = Need to choose attachment is Image, Video or a file.
+  -->
+  <div class="flex items-center p-3 bg-[var(--background-clr-thick)] rounded-lg border border-[var(--border-clr-default)]"
+    data-action="click->chat#attachmentViewer"
+    data-turbo="false"
+    data-file-format="{{ATTACHMENT_CONTENT_TYPE}}" 
+    data-url="{{ATTACHMENT_URL}}">
+    <div class="flex-shrink-0">
+      {{ATTACHMENT_TEMPLATE}}
+    </div>
+    <div class="ml-4 flex-grow overflow-hidden">
+      <p class="text-sm font-medium text-[var(--txt-clr-default)] truncate">{{ATTACHMENT_FILENAME}}</p>
+      <p class="text-xs text-[var(--txt-clr-default)]">{{ATTACHMENT_BYTE_SIZE}}</p>
+    </div>
+  </div>
+</template>
+<template data-chat-target="chat_message_attachment_image_template">
+  <img class="w-12 h-12 object-cover rounded-md" src="{{ATTACHMENT_URL}}" alt="File thumbnail">
+</template>
+<template data-chat-target="chat_message_attachment_video_template">
+  <video src="{{ATTACHMENT_URL}}" class="w-12 h-12 object-cover rounded-md"></video>
+</template>
+<template data-chat-target="chat_message_attachment_file_template">
+  <div class="w-12 h-12 flex flex-col items-center justify-center text-center p-2">
+    <%= icon(icon: :file_pdf_icon, options:{class: "text-red-500 text-4xl"}) %>
+  </div>
+</template>
+<template data-chat-target="chat_seen_status_template">
+  <!--
+  CHAT_ALL_READ = chat.all_read? (true/false)
+  CHAT_CREATED_AT = chat.created_at.strftime("%H:%M")
+  -->
+  <div id="chat_{{CHAT_ID}}_seen_status" class="flex items-center mt-1" :class="'{{CURRENT_USER_ID}}' == '{{CHAT_USER_ID}}' ? 'justify-end':'justify-start'" x-data="{ status: '' }", x-init="'{{CHAT_ALL_READ}}' ? status = 'read' : status = 'delivered'">
+    <p class="text-xs text-[var(--txt-clr-muted)] mr-1.5">{{CHAT_CREATED_AT}}</p>
+    <div x-show="'{{CURRENT_USER_ID}}' == '{{CHAT_USER_ID}}'">
+      <%= icon(icon: :clock_rotate_left_icon, options: {class: "text-[var(--txt-clr-muted)]", "x-show"=>"status === 'sending'"}) %>
+      <%= icon(icon: :circle_icon_regular, options: {class: "text-[var(--txt-clr-muted)]", "x-show"=>"status === 'sent'"}) %>
+      <%= icon(icon: :circle_check_icon, options: {class: "text-[var(--txt-clr-muted)]", "x-show"=>"status === 'delivered'"}) %>
+      <%= icon(icon: :circle_check_icon, options: {class: "text-[var(--link-clr)]", "x-show"=>"status === 'read'"}) %>
+    </div>
+  </div>
+</template>
+<template data-chat-target="empty_chat_window_template">
+  <div class="hidden md:flex flex-col items-center justify-center h-full text-center text-[var(--txt-clr-subtle)]">
+    <%= icon(icon: :comments_icon_regular, options:{class: "fa-4x mb-4"}) %>
+    <h3 class="text-lg font-medium">Select a chat to start messaging</h3>
+  </div>
+</template>
+<template data-chat-target="chat_date_seperator">
+  <!--
+  DATE
+  FORMATTED_DATE
+  -->
+  <div class="flex justify-center my-4 date-separator" data-date="{{DATE}}">
+    <span class="bg-[var(--background-clr-strong)] text-[var(--txt-clr-muted)] text-xs font-semibold px-3 py-1 rounded-full">{{FORMATTED_DATE}}</span>
   </div>
 </template>
