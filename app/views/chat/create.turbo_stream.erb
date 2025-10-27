@@ -1,12 +1,18 @@
 <% if chat.user_id == current_user.id %>
-  <%= turbo_stream.replace temp_chat_id do %>
-    <%= render partial: "chat/chat_text", locals:{current_user: current_user, chat: chat} %>
-  <% end %>
+  <%
+    ActionCable.server.broadcast(
+      "chat_channel_#{current_user.id}",
+      { action: "new_chat", chat: chat, current_user_id: current_user.id, group_id: group_id }
+    )
+  %>
 <% else %>
   <%= turbo_stream.remove "empty_chat_window_#{group_id}" %>
-  <%= turbo_stream.append "chat_list_#{group_id}" do %>
-    <%= render partial: "chat/chat_text", locals:{current_user: current_user, chat: chat} %>
-  <% end %>
+  <%
+    ActionCable.server.broadcast(
+      "chat_channel_#{chat.user_id}",
+      { action: "new_chat", chat: chat, current_user_id: current_user.id, group_id: group_id }
+    )
+  %>
 <% end %>
 <%= turbo_stream.update "chat_group_list" do %>
   <%= render partial: "chat/chat_group_list", locals:{current_user: current_user} %>

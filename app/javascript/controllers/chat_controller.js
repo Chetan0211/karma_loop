@@ -3,6 +3,7 @@ import { add, format, isToday, isYesterday } from 'date-fns'
 import CryptoHelper from "../helpers/crypto_helper"
 import KeyManager from "../key_manager"
 import { formatDateSeparator } from "../helpers/chat_helper"
+import consumer from "../channels/consumer"
 
 // Connects to data-controller="chat"
 export default class extends Controller {
@@ -71,6 +72,16 @@ export default class extends Controller {
 
     let fetch_new_message_element = document.querySelector(`#fetch_chat_messages_${group}`);
     this.fetchNewMessageObserver.observe(fetch_new_message_element);
+
+    this.chatChannel = consumer.subscriptions.create("ChatChannel", {
+      connected() { 
+        console.log("Connected to ChatChannel");
+      },
+      received(data) {
+        // Handle incoming chat messages
+        console.log("Received chat message:", data);
+      }
+    });
   }
 
   // addUnreadMessageBar(node) {
