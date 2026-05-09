@@ -206,6 +206,16 @@ current_user
     </div>
   </div>
 </div>
+
+<!-- Template for sent message -->
+<!--
+params to be passed to template:
+CHAT_ID
+DATE
+MESSAGE_REPLY
+MESSAGE
+MESSAGE_TIME
+-->
 <template data-chat-form-target="chat_sent_template">
   <div id="{{CHAT_ID}}" class="group max-w-full relative flex justify-end" x-init="$dispatch('new_chat_component:ready')" x-data="{message_attachments:[]}" x-on:set-attachments.self="message_attachments = $event.detail.attachments" data-date="{{DATE}}" data-chat-read="true">
     <!-- Message Bubble -->
@@ -273,16 +283,22 @@ current_user
     </div>
   </div>
 </template>
+
+<!-- Template for chat date -->
 <template data-chat-target="chat_date">
   <div class="flex justify-center my-4 date-separator" data-date="{{DATE}}">
     <span class="bg-[var(--background-clr-strong)] text-[var(--txt-clr-muted)] text-xs font-semibold px-3 py-1 rounded-full">{{FORMATED_DATE}}</span>
   </div>
 </template>
+
+<!-- Template for chat unread bar -->
 <template data-chat-target="chat_unread_bar">
   <div class="flex justify-center my-4 chat-unread-separator">
     <span class="bg-[var(--background-clr-strong)] text-[var(--txt-clr-muted)] text-xs font-semibold px-3 py-1 rounded-full">Unread Messages</span>
   </div>
 </template>
+
+<!-- Template for reply -->
 <template data-chat-target="chat_reply_template">
   <!-- 
   Uses params:
@@ -344,6 +360,8 @@ current_user
     </div>
   </div>
 </template>
+
+<!-- Template for reply to present -->
 <template data-chat-target="chat_message_reply_to_present_template">
   <!--
   CHAT_REPLY_TO_USERNAME = {{CURRENT_USER_ID}} == {{CHAT_REPLY_TO_USER_ID}} ? "You" : chat.reply_to.user.username
@@ -354,6 +372,8 @@ current_user
     <p class="text-xs italic truncate text-[var(--txt-clr-muted)]">{{CHAT_REPLY_TO_MESSAGE}}</p>
   </div>
 </template>
+
+<!-- Template for attachments -->
 <template data-chat-target="chat_message_attachments_template">
   <!--
   ATTACHMENT_TEMPLATE = Need to choose attachment is Image, Video or a file.
@@ -372,17 +392,25 @@ current_user
     </div>
   </div>
 </template>
+
+<!-- Template for attachment image -->
 <template data-chat-target="chat_message_attachment_image_template">
   <img class="w-12 h-12 object-cover rounded-md" src="{{ATTACHMENT_URL}}" alt="File thumbnail">
 </template>
+
+<!-- Template for attachment video -->
 <template data-chat-target="chat_message_attachment_video_template">
   <video src="{{ATTACHMENT_URL}}" class="w-12 h-12 object-cover rounded-md"></video>
 </template>
+
+<!-- Template for attachment file -->
 <template data-chat-target="chat_message_attachment_file_template">
   <div class="w-12 h-12 flex flex-col items-center justify-center text-center p-2">
     <%= icon(icon: :file_pdf_icon, options:{class: "text-red-500 text-4xl"}) %>
   </div>
 </template>
+
+<!-- Template for seen status -->
 <template data-chat-target="chat_seen_status_template">
   <!--
   CHAT_ALL_READ = chat.all_read? (true/false)
@@ -398,12 +426,16 @@ current_user
     </div>
   </div>
 </template>
+
+<!-- Template for empty chat window -->
 <template data-chat-target="empty_chat_window_template">
   <div class="hidden md:flex flex-col items-center justify-center h-full text-center text-[var(--txt-clr-subtle)]">
     <%= icon(icon: :comments_icon_regular, options:{class: "fa-4x mb-4"}) %>
     <h3 class="text-lg font-medium">Select a chat to start messaging</h3>
   </div>
 </template>
+
+<!-- Template for date separator -->
 <template data-chat-target="chat_date_seperator">
   <!--
   DATE

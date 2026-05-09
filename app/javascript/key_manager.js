@@ -20,7 +20,16 @@ const KeyManager = {
   },
 
   logoutUser() {
-    //Logout user and redirect to login page.
+    fetch("/users/sign_out", {
+      method: "DELETE",
+      headers: {
+        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+      }
+    }).then(() => {
+      CryptoHelper.clearSessionHashKey();
+      CryptoHelper.setEncryptedPrivateKey("");
+      window.location.href = "/users/sign_in";
+    });
   }
 }
 

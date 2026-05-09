@@ -8,6 +8,7 @@ import consumer from "../channels/consumer"
 // Connects to data-controller="chat"
 export default class extends Controller {
   async connect() {
+    this.initializeAlphineElements()
     KeyManager.initialize();
     this.privateKey = await KeyManager.getPrivateKey();
     if (!this.privateKey) { 
@@ -49,12 +50,12 @@ export default class extends Controller {
     });
 
 
-    // this.element.querySelectorAll('.chat-message').forEach(message => {
-    //   if (message.dataset.chatRead === 'false') {
-    //     this.addUnreadMessageBar(message);
-    //     this.visibilityObserver.observe(message);
-    //   }
-    // });
+    this.element.querySelectorAll('.chat-message').forEach(message => {
+      if (message.dataset.chatRead === 'false') {
+        this.addUnreadMessageBar(message);
+        this.visibilityObserver.observe(message);
+      }
+    });
 
     let group = this.element.dataset.groupId;
     let chat_list = document.querySelector(`#chat_list_${group}`);
@@ -72,27 +73,81 @@ export default class extends Controller {
 
     let fetch_new_message_element = document.querySelector(`#fetch_chat_messages_${group}`);
     this.fetchNewMessageObserver.observe(fetch_new_message_element);
-
-    this.chatChannel = consumer.subscriptions.create("ChatChannel", {
-      connected() { 
-        console.log("Connected to ChatChannel");
-      },
-      received(data) {
-        // Handle incoming chat messages
-        console.log("Received chat message:", data);
-      }
-    });
   }
 
-  // addUnreadMessageBar(node) {
-  //   let templateElement = document.querySelector('[data-chat-target="chat_unread_bar"]').content.cloneNode(true);
-  //   let newTemplate = templateElement.firstElementChild.outerHTML;
-  //   let group_id = chat_form.dataset.groupId;
-  //   let chat_list = document.querySelector(`#chat_list_${group_id}`);
-  //   if (chat_list.querySelector(".chat-unread-separator") == null) {
-  //     node.insertAdjacentHTML('beforebegin', newTemplate);
-  //   }
-  // }
+  initializeAlphineElements() {
+    window.Alpine.data('chat', () => ({
+      isAttachmentModalOpen: false,
+      attachmentMenuOpen: false,
+      showAttachmentMenu: false,
+      showAttachmentData: null,
+      showReplyBanner: false,
+      isUploading: false,
+      uploadProgress: 0,
+      attachments: [],
+      init() {
+        this.$nextTick(() => {
+          let video_input = document.getElementById("new_chat_attachments");
+          video_input.addEventListener('direct-upload:initialize', () => {
+            // this triggers after initialization
+            this.isUploading = true;
+          });
+
+          video_input.addEventListener('direct-upload:start', () => {
+          });
+
+          video_input.addEventListener('direct-upload:end', () => {
+            this.isAttachmentModalOpen = false;
+            this.attachments = [];
+            this.isUploading = false;
+          });
+
+          video_input.addEventListener('direct-upload:error', () => {
+            this.isAttachmentModalOpen = false;
+            this.attachments = [];
+            this.isUploading = false;
+          });
+
+          video_input.addEventListener('direct-upload:progress', (e) => {
+            this.uploadProgress = Math.round(e.detail.progress);
+          });
+        });
+      },
+      sendMessage() {
+        const dataTransfer = new DataTransfer();
+        for (let file of this.$refs.imageInput.files) {
+          dataTransfer.items.add(file);
+        }
+        for (let file of this.$refs.videoInput.files) {
+          dataTransfer.items.add(file);
+        }
+        for (let file of this.$refs.documentInput.files) {
+          dataTransfer.items.add(file);
+        }
+        this.$refs.chat_attachments.files = dataTransfer.files;
+        this.$refs.chat_form_submit_button.click();
+      },
+      selectedAttachments(event) {
+        for (let file of event.target.files) {
+          this.attachments.push(file);
+        }
+        this.isAttachmentModalOpen = true;
+      },
+      removeAttachment(index) {
+        this.attachments.splice(index, 1);
+      }
+    }));
+  }
+
+  addUnreadMessageBar(node) {
+    let templateElement = document.querySelector('[data-chat-target="chat_unread_bar"]').content.cloneNode(true);
+    let newTemplate = templateElement.firstElementChild.outerHTML;
+    let group_id = chat_form.dataset.groupId;
+    let chat_list = document.querySelector(`#chat_list_${group_id}`);
+    if (chat_list.querySelector(".chat-unread-separator") == null) {
+      node.insertAdjacentHTML('beforebegin', newTemplate);
+    }
+  }
 
   markMessageAsRead(node) {
     node.dataset.chatRead = "true";
@@ -185,7 +240,7 @@ export default class extends Controller {
 
     //Send request to server by submitting the request
     chat_form.requestSubmit();
-    this.scrollToBottom();
+    this.scrollToBottom(); 
   }
 
   reset(event) {
@@ -304,113 +359,16 @@ export default class extends Controller {
       let scroll_area = document.querySelector("#chat_scroll_area");
       const oldScrollHeight = scroll_area.scrollHeight;
 
-      fetch(url, { method: 'GET', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' } })
-        .then(response => {
-          return response.json()
-        })
-        .then(data => {
-          this.constructMessages(data);
+      fetch(url, { method: 'GET', headers: { 'Accept': 'text/vnd.turbo-stream.html' } })
+        .then(response => response.text())
+        .then(html => {
+          Turbo.renderStreamMessage(html)
           loader.classList.add("hidden");
+          requestAnimationFrame(() => {
+            const newScrollHeight = scroll_area.scrollHeight;
+            scroll_area.scrollTop = newScrollHeight - oldScrollHeight;
+          })
         })
     }
-  }
-
-  async constructMessages(responseData) {
-    let pagy = responseData.pagy;
-    const chat_form = document.querySelector("#chat_form");
-    const group_id = chat_form.dataset.groupId;
-    const chat_list_div = document.querySelector(`#chat_list_${group_id}`);
-    let current_user = responseData.current_user;
-    let chats = null;
-    let lastUnreadMessageId = null;
-    if (responseData.chats != null || responseData.chats != '') {
-      chats = responseData.chats;
-    }
-    let messages = document.createElement('div');
-    for (let chat of chats) {
-      if (chat.chat_read == false) {
-        lastUnreadMessageId = chat.id;
-      }      
-      let chatDate = new Date(chat.created_at);
-      if (chat_list_div.querySelector(`.date-separator[data-date="${chatDate.toISOString().slice(0, 10)}"]`) == null) { 
-
-      }
-      let mainMessageTemplate = await this.constructMainMessage(chat, current_user);
-      messages.insertAdjacentHTML('afterbegin', mainMessageTemplate);
-    }
-
-    //Setting up unread message bar
-    if (lastUnreadMessageId != null) {
-      if (chat_list_div.querySelector(".chat-unread-separator") != null) {
-        chat_list_div.removeChild(chat_list_div.querySelector(".chat-unread-separator"));
-      }
-      let templateElement = document.querySelector('[data-chat-target="chat_unread_bar"]').content.cloneNode(true);
-      let newTemplate = templateElement.firstElementChild.outerHTML;
-      let lastUnreadMessage = messages.querySelector(`#${lastUnreadMessageId}`);
-      lastUnreadMessage.insertAdjacentHTML('beforebegin', newTemplate);
-    }
-    chat_list_div.insertAdjacentHTML('afterbegin', messages.innerHTML);
-  }
-
-  async constructMainMessage(chat, current_user) {
-    let mainMessageTemplateElement = document.querySelector('[data-chat-target="chat_message_main_template"]').content.cloneNode(true);
-    let mainMessageTemplate = mainMessageTemplateElement.firstElementChild.outerHTML;
-    let replyMessageTemplate = null;
-    let attachmentsTemplate = null;
-    let decryptedMessage = null;
-    if (chat.message != null && chat.message != "") { 
-      decryptedMessage = await CryptoHelper.decryptMessage(this.privateKey, JSON.parse(chat.message));
-    }
-    if (chat.reply_to) {
-      replyMessageTemplate = this.constructReplyMessage(chat, current_user);
-    }
-    // Temporarily disbling the attachments
-    if (chat.attachments_data && chat.attachments_data.length > 0 && false) { 
-      attachmentsTemplate = this.constructAttachmentsMessage(chat, current_user);
-    }
-
-    let seenStatusTemplate = this.constructSeenStatus(chat, current_user);
-
-    mainMessageTemplate = mainMessageTemplate
-      .replace("{{CHAT_MESSAGE_REPLY_TEMPLATE}}", replyMessageTemplate == null ? "" : replyMessageTemplate)
-      .replace("{{CHAT_MESSAGE_ATTACHMENTS_TEMPLATE}}", attachmentsTemplate == null ? "" : attachmentsTemplate)
-      .replace("{{CHAT_SEEN_STATUS_TEMPLATE}}", seenStatusTemplate)
-    mainMessageTemplate = mainMessageTemplate
-      .replaceAll("{{CHAT_ID}}", chat.id)
-      .replaceAll("{{CURRENT_USER_ID}}", current_user.id)
-      .replaceAll("{{CHAT_USER_ID}}", chat.user_id)
-      .replaceAll("{{CHAT_CREATED_AT_to_date}}", new Date(chat.created_at))
-      .replaceAll("{{CHAT_READ}}", chat.chat_read)
-      .replaceAll("chat_id=CHAT_ID", `chat_id=${chat.id}`)
-      .replaceAll("{{CHAT_MESSAGE}}", decryptedMessage)
-      .replaceAll("{{CHAT_DATA_USERNAME}}", chat.user_id == current_user.id ? 'You' : chat.user.username);
-    
-    return mainMessageTemplate;
-  }
-
-  constructReplyMessage(chat, current_user) { 
-    let replyMessageTemplateElement = document.querySelector('[data-chat-target="chat_message_reply_to_present_template"]').content.cloneNode(true);
-    let replyMessageTemplate = replyMessageTemplateElement.firstElementChild.outerHTML;
-
-    replyMessageTemplate = replyMessageTemplate
-      .replaceAll("{{CHAT_REPLY_TO_PRESENT}}", true)
-      .replaceAll("{{CHAT_REPLY_TO_USERNAME}}", current_user.id == chat.reply_to.user_id ? 'You' : chat.reply_to.user.username)
-      .replaceAll("{{CHAT_REPLY_TO_MESSAGE}}", chat.reply_to.message)
-  }
-
-  constructSeenStatus(chat, current_user) { 
-    let seenStatusTemplateElement = document.querySelector('[data-chat-target="chat_seen_status_template"]').content.cloneNode(true);
-    let seenStatusTemplate = seenStatusTemplateElement.firstElementChild.outerHTML;
-
-    const date = new Date(chat.created_at);
-
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-
-    seenStatusTemplate = seenStatusTemplate
-      .replace("{{CHAT_ALL_READ}}", chat.all_read)
-      .replace("{{CHAT_CREATED_AT}}", `${hours}:${minutes}`)
-    
-    return seenStatusTemplate;
   }
 }

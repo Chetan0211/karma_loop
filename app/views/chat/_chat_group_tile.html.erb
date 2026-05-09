@@ -10,7 +10,7 @@ activeChat
 member = group.type == "friend" ? group.members(current_user).first : nil 
 last_chat = group.chats.order(created_at: :asc).last
 %>
-<%= link_to show_active_chat_tab_path(id: group.id), 
+<%= link_to chat_path(id: group.id), 
 data: { turbo_stream: true },
 class:"w-full text-left p-4 flex items-center space-x-4 hover:bg-[var(--background-clr-body)] transition-colors",
 ":class"=>"{ 'bg-[var(--background-clr-strong)]': activeChat && activeChat === '#{group.id}' }",
@@ -36,7 +36,16 @@ class:"w-full text-left p-4 flex items-center space-x-4 hover:bg-[var(--backgrou
       <p class="text-xs text-[var(--txt-clr-subtle)]"><%= last_chat.present? ? PostHelper.calculate_created_date(last_chat.created_at) : "" %></p>
     </div>
     <div class="flex justify-between items-center mt-1">
-      <p class="text-sm text-[var(--txt-clr-subtle)] truncate"><%= last_chat.present? ? last_chat.message : "" %></p>
+      <% if last_chat.present? %>
+        <p class="text-sm text-[var(--txt-clr-subtle)] truncate"
+           data-controller="message-decryption"
+           data-encrypted-message="<%= last_chat.message %>"
+           data-decryption-target="placeholder">
+        </p>
+      <% else %>
+        <p class="text-sm text-[var(--txt-clr-subtle)] truncate">Start Conversation</p>
+      <% end %>
+      
       <%# <span class="text-xs text-white bg-purple-600 rounded-full px-2 py-0.5">chat unread</span> %>
     </div>
   </div>
