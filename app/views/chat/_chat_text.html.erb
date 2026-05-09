@@ -40,9 +40,9 @@ chat
             <% end %>
             <p class="text-xs italic truncate text-[var(--txt-clr-muted)]"
                data-controller="message-decryption"
-               data-encrypted-message="<%= chat.reply_to.encrypted_message %>"
+               data-encrypted-message="<%= chat.reply_to.message %>"
                data-decryption-target="placeholder">
-              <div>decrypting...</div>
+              decrypting...
             </p>
           </div>
         <% end %>
