@@ -28,6 +28,7 @@ export default class extends Controller {
           }
         }
         if (data.redirect_url) {
+          data.redirect_url = data.redirect_url.replace(/\.json$/, '');
           window.location.href = data.redirect_url;
         }
       })
