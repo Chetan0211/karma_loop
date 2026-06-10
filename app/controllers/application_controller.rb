@@ -11,8 +11,10 @@ class ApplicationController < ActionController::Base
 
   private
   def set_current
-    Current.user = current_user
-    Current.ability = Ability.new(current_user) if current_user
+    if current_user
+      Current.user = current_user
+      Current.ability = Ability.new(current_user)
+    end
   end
 
 
