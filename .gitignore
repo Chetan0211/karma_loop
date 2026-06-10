@@ -12,7 +12,7 @@
 !/.env*.erb
 
 ## Ignore byebug command history file.
-.byebug_history
+/.byebug_history
 
 # Ignore all logfiles and tempfiles.
 /log/*

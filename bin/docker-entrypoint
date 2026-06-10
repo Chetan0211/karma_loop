@@ -1,8 +1,16 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
-if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
-  ./bin/rails db:prepare
+if [ -f /rails/tmp/pids/server.pid ]; then
+  rm -f /rails/tmp/pids/server.pid
 fi
+
+# if ! bundle check > /dev/null 2>&1; then
+#   echo "==> Missing gems detected! Automatically installing dependencies..."
+#   bundle install
+# else
+#   echo "==> All gems are up to date!"
+# fi
+
+./bin/rails db:prepare
 
 exec "${@}"
