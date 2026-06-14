@@ -31,8 +31,8 @@ test:
 
 production:
   <<: *default
-  username: <%= ENV['POSTGRES_USER'] %>
+  username: chetan
   password: <%= ENV['POSTGRES_PASSWORD'] %>
-  database: <%= ENV['POSTGRES_DB'] %>
+  database: karma_loop_production
   host: <%= ENV['DB_HOST'] %>
   port: 5432
