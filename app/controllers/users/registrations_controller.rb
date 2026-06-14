@@ -17,12 +17,14 @@ class Users::RegistrationsController < Devise::RegistrationsController
       if self.resource.save
         respond_to do |format|
           format.json { render json: { success: true, redirect_url: secure_key_path } }
+          format.html { redirect_to secure_key_path, notice: "Welcome! You have signed up successfully." }
         end
       else
         clean_up_passwords(self.resource)
         set_minimum_password_length
         respond_to do |format|
           format.json { render json: { success: false, redirect_url: new_user_registration_path, error: resource.errors.full_messages.join(", ") }, status: :unprocessable_entity }
+          format.html { render action: :new, alert: resource.errors.full_messages.join(", ") }
         end
       end
     else
@@ -30,6 +32,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       flash[:signup_params] = user_params
       respond_to do |format|
         format.json { render json: { success: false, redirect_url: new_user_registration_path, error: flash[:error] }, status: :unprocessable_entity }
+        format.html { render action: :new, alert: flash[:error] }
       end
     end
   end
