@@ -18,6 +18,8 @@ proxy:
   app_port: 3000
   run:
     http_port: 8080
+  hosts:
+    - kloop.chetan0211.org
 
 ssh:
   user: chetan
