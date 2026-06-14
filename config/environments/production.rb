@@ -95,6 +95,6 @@ Rails.application.configure do
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
   config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
-  config.hosts << "kloop.chetan0211.org"
+  config.hosts << "kloop.chetan0211.org"  
   config.hosts << ->(host) { host.start_with?("172.") || host.include?("localhost") || host.include?("127.0.0.1") || host.match?(/\A[0-9a-f]{12}(:\d+)?\z/) }
 end
