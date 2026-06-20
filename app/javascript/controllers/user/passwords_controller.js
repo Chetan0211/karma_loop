@@ -45,13 +45,16 @@ export default class extends Controller {
 
     let url = new URL(form.action);
     url.searchParams.append('skip_secure_key', skipKeyCheckbox);
+    let fromData = new FormData(form);
+    const dataObject = Object.fromEntries(formData.entries());
     fetch(url.href, {
       method: "PUT",
       headers: {
+        "Content-Type": "application/json",
         "Accept": "application/json",
         "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
       },
-      body: new FormData(form)
+      body: JSON.stringify(dataObject)
     })
     .then(response => {
       return response.json()

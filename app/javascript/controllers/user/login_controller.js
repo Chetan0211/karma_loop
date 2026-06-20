@@ -9,14 +9,17 @@ export default class extends Controller {
   submit(event) { 
     event.preventDefault();
     const form = event.target;
+    const formData = new FormData(form);
+    const dataObject = Object.fromEntries(formData.entries());
 
-    fetch(form.action + ".json", {
+    fetch(form.action, {
       method: "POST",
       headers: {
+        "Content-Type": "application/json",
         "Accept": "application/json",
         "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
       },
-      body: new FormData(form)
+      body: JSON.stringify(dataObject)
     })
       .then(response => response.json())
       .then(async data => {
