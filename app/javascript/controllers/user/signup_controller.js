@@ -17,7 +17,7 @@ export default class extends Controller {
     form.querySelector("#user_public_key").value = publicKey;
     form.querySelector("#user_encrypted_key").value = JSON.stringify(encryptedPKey);
 
-    fetch(form.action, {
+    fetch(form.action + ".json", {
       method: "POST",
       headers: {
         "Accept": "application/json",

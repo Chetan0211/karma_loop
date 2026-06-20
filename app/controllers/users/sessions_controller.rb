@@ -21,10 +21,7 @@ class Users::SessionsController < Devise::SessionsController
           user_key: resource.encrypted_key}, status: :ok
         else
           flash[:error] = "Invalid email or password"
-          respond_to do |format|
-            format.html { redirect_to new_user_session_path, alert: "Invalid email or password" }
-            format.json { render json: { success: false, error: "Invalid email or password", redirect_url: new_user_session_path }, status: :unprocessable_entity }
-          end
+          render json: { success: false, error: "Invalid email or password", redirect_url: new_user_session_path }, status: :unprocessable_entity
         end
       end
     end

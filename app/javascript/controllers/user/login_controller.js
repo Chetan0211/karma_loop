@@ -10,7 +10,7 @@ export default class extends Controller {
     event.preventDefault();
     const form = event.target;
 
-    fetch(form.action, {
+    fetch(form.action + ".json", {
       method: "POST",
       headers: {
         "Accept": "application/json",
