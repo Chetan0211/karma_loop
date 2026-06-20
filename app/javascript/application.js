@@ -15,7 +15,7 @@ Alpine.start()
 
 // import KeyManager from "./key_manager"
 
-window.KeyManager = KeyManager;
+// window.KeyManager = KeyManager;
 
 import shaka from 'shaka-player';
 
