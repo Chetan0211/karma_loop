@@ -10,8 +10,8 @@ class Users::SessionsController < Devise::SessionsController
 
   # POST /resource/sign_in
   def create
-    Rails.logger.debug "[REQUEST] Path: #{request.path}, format: #{request.format}, Header: #{request.headers.inspect}"
-    Rails.logger.debug "[LOGIN PARAMS] #{params.inspect}"
+    Rails.logger.info "[REQUEST] Path: #{request.path}, format: #{request.format}, Header: #{request.headers.inspect}"
+    Rails.logger.info "[LOGIN PARAMS] #{params.inspect}"
     respond_to do |format|
       format.json do
         resource = warden.authenticate(auth_options)
