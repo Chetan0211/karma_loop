@@ -67,9 +67,9 @@ accessories:
 
 env:
   clear:
-    DB_HOST: kamal-db
-    REDIS_URL: redis://kamal-redis:6379/0
-    ELASTICSEARCH_URL: http://kamal-elasticsearch:9200
+    DB_HOST: karma_loop-db
+    REDIS_URL: redis://karma_loop-redis:6379/0
+    ELASTICSEARCH_URL: http://karma_loop-elasticsearch:9200
   secret:
     - RAILS_MASTER_KEY
     - POSTGRES_PASSWORD
