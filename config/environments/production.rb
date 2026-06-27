@@ -71,7 +71,19 @@ Rails.application.configure do
   # config.active_job.queue_adapter = :resque
   # config.active_job.queue_name_prefix = "karma_loop_production"
 
-  config.action_mailer.perform_caching = false
+  config.action_mailer.perform_caching = true
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address:              ENV['BREVO_SMTP_SERVER']  ,
+    port:                 ENV['BREVO_SMTP_PORT'],
+    domain:               ENV['BREVO_DOMAIN'],
+    user_name:            ENV['BREVO_SMTP_USER_NAME'],
+    password:             ENV['BREVO_SMTP_PASSWORD'],
+    authentication:       :login,
+    enable_starttls_auto: true
+  }
+  config.action_mailer.default_url_options = { host: 'kloop.chetan0211.org' }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
