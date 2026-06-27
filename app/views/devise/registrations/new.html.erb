@@ -21,8 +21,8 @@
             placeholder:"Choose a username", 
             value: flash[:signup_params]&.dig("username"),
             class: "appearance-none rounded-md relative block w-full px-3 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] placeholder-[var(--txt-clr-subtle)] text-[var(--txt-clr-strong)] focus:outline-none focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] focus:z-10 sm:text-sm transition duration-150 ease-in-out" %>
-          <% if flash[:error]&.dig("username").present?%>
-            <p class="mt-1 text-xs text-red-600"><%= flash[:error]["username"].first %></p>
+          <% if flash[:error_details]&.dig("username").present?%>
+            <p class="mt-1 text-xs text-red-600"><%= flash[:error_details]["username"].first %></p>
           <% end %>
         </div>
         <div class="mb-4">
@@ -33,8 +33,8 @@
             placeholder: "you@example.com", 
             value: flash[:signup_params]&.dig("email"),
             class: "appearance-none rounded-md relative block w-full px-3 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] placeholder-[var(--txt-clr-subtle)] text-[var(--txt-clr-strong)] focus:outline-none focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] focus:z-10 sm:text-sm transition duration-150 ease-in-out" %>
-          <% if flash[:error]&.dig("email").present?%>
-            <p class="mt-1 text-xs text-red-600"><%= flash[:error]["email"].first %></p>
+          <% if flash[:error_details]&.dig("email").present?%>
+            <p class="mt-1 text-xs text-red-600"><%= flash[:error_details]["email"].first %></p>
           <% end %>
         </div>
         <div class="mb-4">
@@ -45,8 +45,8 @@
             max: Date.today, 
             value: flash[:signup_params]&.dig("dob"),
             class: "appearance-none rounded-md relative block w-full px-3 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] placeholder-[var(--txt-clr-subtle)] text-[var(--txt-clr-strong)] focus:outline-none focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] focus:z-10 sm:text-sm transition duration-150 ease-in-out" %>
-          <% if flash[:error]&.dig("dob").present?%>
-            <p class="mt-1 text-xs text-red-600"><%= flash[:error]["dob"].first %></p>
+          <% if flash[:error_details]&.dig("dob").present?%>
+            <p class="mt-1 text-xs text-red-600"><%= flash[:error_details]["dob"].first %></p>
           <% end %>
         </div>
         <div class="mb-4">
@@ -56,8 +56,8 @@
             placeholder:"Create a password",
             value: flash[:signup_params]&.dig("password"),
             class: "appearance-none rounded-md relative block w-full px-3 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] placeholder-[var(--txt-clr-subtle)] text-[var(--txt-clr-strong)] focus:outline-none focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] focus:z-10 sm:text-sm transition duration-150 ease-in-out" %>
-          <% if flash[:error]&.dig("password").present?%>
-            <p class="mt-1 text-xs text-red-600"><%= flash[:error]["password"].first %></p>
+          <% if flash[:error_details]&.dig("password").present?%>
+            <p class="mt-1 text-xs text-red-600"><%= flash[:error_details]["password"].first %></p>
           <% end %>
         </div>
         <div class="mb-6">
@@ -67,8 +67,8 @@
             placeholder: "Confirm your password", 
             value: flash[:signup_params]&.dig("password_confirmation"),
             class: "appearance-none rounded-md relative block w-full px-3 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] placeholder-[var(--txt-clr-subtle)] text-[var(--txt-clr-strong)] focus:outline-none focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] focus:z-10 sm:text-sm transition duration-150 ease-in-out" %>
-          <% if flash[:error]&.dig("password_confirmation").present?%>
-            <p class="mt-1 text-xs text-red-600"><%= flash[:error]["password_confirmation"].first %></p>
+          <% if flash[:error_details]&.dig("password_confirmation").present?%>
+            <p class="mt-1 text-xs text-red-600"><%= flash[:error_details]["password_confirmation"].first %></p>
           <% end %>
         </div>
       </div>
