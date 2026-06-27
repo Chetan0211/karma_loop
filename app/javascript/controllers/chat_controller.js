@@ -167,10 +167,11 @@ export default class extends Controller {
     let chat_form = document.querySelector("#chat_form");
     let temp_chat_id_element = chat_form.querySelector("#new_chat_temporary_chat_id");
     let message_element = chat_form.querySelector("#new_chat_message");
+    let temp_message_element = chat_form.querySelector("#new_chat_temp_message");
     let attachments_element = chat_form.querySelector("#new_chat_attachments");
     let chat_pub_keys = JSON.parse(chat_form.dataset.chatPubKeys);
     if (temp_chat_id_element.value == "" || temp_chat_id_element.value == null) {
-      let message = message_element.value;
+      let message = temp_message_element.value;
       let attachments = [];
       for (let file of attachments_element.files) {
 
@@ -228,9 +229,10 @@ export default class extends Controller {
       }
     }
     //Encrypt the chats and attachments
-    if (message_element.value != "") {
-      let encryptedMessage = await CryptoHelper.encryptMessage(chat_pub_keys, message_element.value);
-      chat_form.querySelector("#new_chat_message").value = JSON.stringify(encryptedMessage);
+    if (temp_message_element.value != "") {
+      let encryptedMessage = await CryptoHelper.encryptMessage(chat_pub_keys, temp_message_element.value);
+      message_element.value = JSON.stringify(encryptedMessage);
+      temp_message_element.value = "";
     }
     if (attachments_element.files.length > 0) {
       // Need to encrypt attachments

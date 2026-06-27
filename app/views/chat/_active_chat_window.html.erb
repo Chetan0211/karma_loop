@@ -75,8 +75,9 @@ current_user
       <%= f.hidden_field :group_id, value: group.id %>
       <%= f.hidden_field :temporary_chat_id, value: nil %>
       <%= f.hidden_field :reply_to_id, value: nil %>
+      <%= f.hidden_field :message, value: nil %>
       <%= f.file_field :attachments, id:"new_chat_attachments", accept: "image/*, video/*,.pdf,.doc,.docx,.txt", multiple: true, direct_upload: true, class: "hidden", "x-ref"=>"chat_attachments" %>
-      <%= f.text_field :message, autocomplete: "off", class:"w-full px-4 py-2 border border-[var(--border-clr-default)] rounded-full text-sm bg-[var(--background-clr-thick)] focus:ring-[var(--primary-500)] focus:border-[var(--primary-500] focus:border-[var(--primary-500)]", placeholder:"Type a message..." %>
+      <%= f.text_field :temp_message, autocomplete: "off", class:"w-full px-4 py-2 border border-[var(--border-clr-default)] rounded-full text-sm bg-[var(--background-clr-thick)] focus:ring-[var(--primary-500)] focus:border-[var(--primary-500] focus:border-[var(--primary-500)]", placeholder:"Type a message..." %>
       <%= f.button class:"bg-[var(--primary-600)] text-white rounded-full h-10 w-10 flex-shrink-0 hover:bg-[var(--primary-700)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-2",
       "x-ref"=>"chat_form_submit_button",
       "@click"=>"showReplyBanner=false",
