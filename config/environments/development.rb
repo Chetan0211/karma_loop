@@ -50,23 +50,23 @@ Rails.application.configure do
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = true
-
+  config.action_mailer.perform_deliveries = true
   config.action_mailer.perform_caching = false
 
-  # config.action_mailer.delivery_method = :smtp
-  config.action_mailer.delivery_method = :letter_opener
+  config.action_mailer.delivery_method = :smtp
+  # config.action_mailer.delivery_method = :letter_opener
 
-  # config.action_mailer.smtp_settings = {
-  #   address:              'smtp.sendgrid.net',
-  #   port:                 587,
-  #   domain:               'example.com',
-  #   user_name:            'apikey', # This is the string "apikey", not your SendGrid username
-  #   password:             Rails.application.credentials.sendgrid[:api_key], # Your SendGrid API key
-  #   authentication:       'plain',
-  #   enable_starttls_auto: true
-  # }
+  config.action_mailer.smtp_settings = {
+    address:              ENV['BREVO_SMTP_SERVER']  ,
+    port:                 ENV['BREVO_SMTP_PORT'],
+    domain:               ENV['BREVO_DOMAIN'],
+    user_name:            ENV['BREVO_SMTP_USER_NAME'],
+    password:             ENV['BREVO_SMTP_PASSWORD'],
+    authentication:       :login,
+    enable_starttls_auto: true
+  }
 
-  config.action_mailer.perform_deliveries = true
+  
 
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 
