@@ -12,7 +12,7 @@
 #  index_content_categories_on_category  (category) UNIQUE
 #
 class ContentCategory < ApplicationRecord
-  searchkick
+  searchkick callbacks: :async
   has_many :posts
 
   def search_data

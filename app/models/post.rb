@@ -28,7 +28,7 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Post < ApplicationRecord
-  searchkick word_start: [:post_title, :post_description]
+  searchkick word_start: [:post_title, :post_description], callbacks: :async
   CONTENT_TYPE = %w[blog images video].freeze
   STATUS = %w[published video_process failed drafted archived deleted].freeze
   SCOPE = %w[public private].freeze

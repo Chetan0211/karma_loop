@@ -26,8 +26,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
         end
       end
     else
-      flash[:error] = result['contract.default'].errors.full_messages.join(", ")
+      flash[:error] = "Please correct the errors below and try again."
       flash[:signup_params] = user_params
+      flash[:error_details] = result['contract.default'].errors.to_hash
+      puts
       respond_to do |format|
         format.json { render json: { success: false, redirect_url: new_user_registration_path, error: flash[:error] }, status: :unprocessable_entity }
       end

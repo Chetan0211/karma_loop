@@ -36,7 +36,7 @@
 class User < ApplicationRecord
   SCOPE = %w[public private].freeze
 
-  searchkick word_start: [:username, :name]
+  searchkick word_start: [:username, :name], callbacks: :async
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   has_many :notifications, as: :recipient
