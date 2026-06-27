@@ -48,7 +48,6 @@ export default class extends Controller {
     fetch(url.href, {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json",
         "Accept": "application/json",
         "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
       },
