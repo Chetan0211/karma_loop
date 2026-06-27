@@ -75,7 +75,7 @@ Rails.application.configure do
   config.action_mailer.perform_deliveries = true
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address:              ENV['BREVO_SMTP_SERVER']  ,
+    address:              ENV['BREVO_SMTP_SERVER'],
     port:                 ENV['BREVO_SMTP_PORT'],
     domain:               ENV['BREVO_DOMAIN'],
     user_name:            ENV['BREVO_SMTP_USER_NAME'],
