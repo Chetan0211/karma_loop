@@ -13,6 +13,4 @@ fi
 
 ./bin/rails db:prepare
 
-bundle exec rails searchkick:create_indexes
-
 exec "${@}"
