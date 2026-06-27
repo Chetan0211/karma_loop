@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_02_045543) do
+ActiveRecord::Schema[7.1].define(version: 2026_06_27_151052) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -192,7 +192,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_02_045543) do
     t.datetime "deleted_at"
     t.string "display_name", limit: 30, null: false
     t.string "bio", limit: 200
-    t.string "scope", default: "public", null: false
+    t.string "scope", default: "private", null: false
     t.string "encrypted_key", null: false
     t.string "public_key", null: false
     t.datetime "last_key_reset_at"
