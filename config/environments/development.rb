@@ -1,6 +1,12 @@
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
+  # Turn on below once to make assets work like in production
+  # config.assets.compile = false
+  # config.assets.digest = true
+  # config.assets.debug = false
+  
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   # In the development environment your application's code is reloaded any time

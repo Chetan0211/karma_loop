@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import Cropper from "cropperjs";
-import { parentLikeToggle } from "../../helpers/post_helper";
+import { parentLikeToggle } from "helpers/post_helper";
 
 // Connects to data-controller="user--profile"
 export default class extends Controller {

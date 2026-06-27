@@ -13,7 +13,10 @@ pin "alpine-turbo-drive-adapter" # @2.2.0
 pin "@rails/activestorage", to: "@rails--activestorage.js" # @8.0.200
 pin "shaka-player", to: "shaka-player.ui.js"
 pin "@rails/actioncable", to: "actioncable.esm.js"
-# pin_all_from "app/javascript/channels", under: "channels"
-# pin_all_from "app/javascript/helpers", under: "helpers"
+pin_all_from "app/javascript/channels", under: "channels"
+pin_all_from "app/javascript/helpers", under: "helpers"
 pin "date-fns", to: "date-fns.js"
 pin "openpgp" # @6.2.0
+pin "browser_notifications", to: "browser_notifications.js"
+pin "key_manager", to: "key_manager.js"
+pin "site_settings", to: "site_settings.js"

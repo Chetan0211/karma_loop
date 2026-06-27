@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import CryptoHelper from "../../helpers/crypto_helper"
+import CryptoHelper from "helpers/crypto_helper"
 
 // Connects to data-controller="user--signup"
 export default class extends Controller {
@@ -17,9 +17,6 @@ export default class extends Controller {
     form.querySelector("#user_public_key").value = publicKey;
     form.querySelector("#user_encrypted_key").value = JSON.stringify(encryptedPKey);
 
-    let formData = new FormData(form);
-    let dataObject = Object.fromEntries(formData.entries());
-
     fetch(form.action + ".json", {
       method: "POST",
       headers: {
@@ -27,7 +24,7 @@ export default class extends Controller {
         "Accept": "application/json",
         "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
       },
-      body: JSON.stringify(dataObject)
+      body: new FormData(form)
     })
       .then(response => {
         return response.json()

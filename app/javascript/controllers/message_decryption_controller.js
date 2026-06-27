@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
-import CryptoHelper from "../helpers/crypto_helper"
-import KeyManager from "../key_manager"
+import CryptoHelper from "helpers/crypto_helper"
+import KeyManager from "key_manager"
 
 // Connects to data-controller="message-decryption"
 export default class extends Controller { 

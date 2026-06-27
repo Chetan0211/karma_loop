@@ -1,5 +1,5 @@
-import CryptoHelper from "./helpers/crypto_helper"
-import KeyManager from "./key_manager"
+import CryptoHelper from "helpers/crypto_helper"
+import KeyManager from "key_manager"
 
 export function check_notification_access() {
   if (Notification.permission !== "granted" || Notification.permission !== "denied") {

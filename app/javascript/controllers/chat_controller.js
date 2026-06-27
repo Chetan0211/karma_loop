@@ -1,9 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
 import { add, format, isToday, isYesterday } from 'date-fns'
-import CryptoHelper from "../helpers/crypto_helper"
-import KeyManager from "../key_manager"
-import { formatDateSeparator } from "../helpers/chat_helper"
-import consumer from "../channels/consumer"
+import CryptoHelper from "helpers/crypto_helper"
+import KeyManager from "key_manager"
+import { formatDateSeparator } from "helpers/chat_helper"
+import consumer from "channels/consumer"
 
 // Connects to data-controller="chat"
 export default class extends Controller {

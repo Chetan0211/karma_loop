@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import CryptoHelper from "../../helpers/crypto_helper"
+import CryptoHelper from "helpers/crypto_helper"
 
 // Connects to data-controller="user--passwords"
 export default class extends Controller {
@@ -45,8 +45,6 @@ export default class extends Controller {
 
     let url = new URL(form.action);
     url.searchParams.append('skip_secure_key', skipKeyCheckbox);
-    let fromData = new FormData(form);
-    const dataObject = Object.fromEntries(formData.entries());
     fetch(url.href, {
       method: "PUT",
       headers: {
@@ -54,7 +52,7 @@ export default class extends Controller {
         "Accept": "application/json",
         "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
       },
-      body: JSON.stringify(dataObject)
+      body: new FormData(form)
     })
     .then(response => {
       return response.json()

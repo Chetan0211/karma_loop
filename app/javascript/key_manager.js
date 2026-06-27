@@ -1,4 +1,4 @@
-import CryptoHelper from "./helpers/crypto_helper";
+import CryptoHelper from "helpers/crypto_helper";
 
 let privateKeypromise = null;
 
