@@ -1,6 +1,7 @@
 // Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
 import "@hotwired/turbo-rails"
 import "controllers"
+import "channels"
 
 import "trix"
 import "@rails/actiontext"
@@ -13,7 +14,17 @@ import Alpine from 'alpinejs'
 window.Alpine = Alpine
 Alpine.start()
 
+// import KeyManager from "./key_manager"
+
+// window.KeyManager = KeyManager;
+
 import shaka from 'shaka-player';
+
+// Un-comment to test crypto helper in console
+import CryptoHelper from "helpers/crypto_helper";
+// import * as openpgp from "openpgp";
+// window.openpgp = openpgp;
+// window.ch = CryptoHelper;
 
 function initializeVideoPlayer() {
   shaka.polyfill.installAll();
@@ -117,7 +128,7 @@ function videoInteractionObserver() {
 
 // document.addEventListener('DOMContentLoaded', getThemeMode);
 
-document.addEventListener('turbo:load', initializeVideoPlayer);import "./channels"
+document.addEventListener('turbo:load', initializeVideoPlayer);
 
 document.addEventListener("DOMContentLoaded", () => {
   const timeZoneCookie = "time_zone";

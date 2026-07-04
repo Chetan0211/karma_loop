@@ -38,7 +38,12 @@ chat
                 </div>
               <% end %>
             <% end %>
-            <p class="text-xs italic truncate text-[var(--txt-clr-muted)]"><%= chat.reply_to.message %></p>
+            <p class="text-xs italic truncate text-[var(--txt-clr-muted)]"
+               data-controller="message-decryption"
+               data-encrypted-message="<%= chat.reply_to.message %>"
+               data-decryption-target="placeholder">
+              decrypting...
+            </p>
           </div>
         <% end %>
         <!-- Main Message Text -->
@@ -67,7 +72,12 @@ chat
             </div>
           <% end %>
         <% end %>
-        <p class="text-sm break-words"><%= chat.message %></p>
+        <p class="text-sm break-words"
+           data-controller="message-decryption"
+           data-encrypted-message="<%= chat.message %>"
+           data-decryption-target="placeholder">
+          decrypting...
+        </p>
         <%= render partial: "chat/chat_seen_status", locals:{chat: chat, current_user: current_user} %>
       </div>
       <!-- Reactions Display --> <!-- TODO: Yet to implement -->

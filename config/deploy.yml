@@ -1,0 +1,87 @@
+# Name of your application. Used to uniquely configure containers.
+service: karma_loop
+
+# Name of the container image.
+image: chetan0211/karma_loop
+
+# Deploy to these servers.
+servers:
+  web:
+    hosts:
+      - <%= ENV["SERVER_IP"] %>
+  job:
+    hosts:
+      - <%= ENV["SERVER_IP"] %>
+    cmd: bundle exec sidekiq
+
+proxy:
+  app_port: 3000
+  run:
+    http_port: 8080
+  hosts:
+    - kloop.chetan0211.org
+
+ssh:
+  user: chetan
+  port: 54321
+  keys: ["~/.ssh/id_rsa_home_server"]
+
+registry:
+  server: ghcr.io
+  username: Chetan0211
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+builder:
+  arch: amd64
+  local: true
+
+accessories:
+  db:
+    image: postgres:15
+    host: <%= ENV["DB_HOST_IP"] %>
+    port: 5432
+    env:
+      clear:
+        POSTGRES_USER: chetan
+        POSTGRES_DB: <%= ENV["POSTGRES_DB"] %>
+      secret:
+        - POSTGRES_PASSWORD
+    volumes:
+      - /home/chetan/project_data/karma_loop/db_data:/var/lib/postgresql/data
+  redis:
+    image: redis:7
+    host: <%= ENV["REDIS_HOST_IP"] %>
+    port: 6379
+  elasticsearch:
+    image: elasticsearch:8.11.0
+    host: <%= ENV["ELASTICSEARCH_HOST_IP"] %>
+    port: 9200
+    env:
+      clear:
+        discovery.type: single-node
+        xpack.security.enabled: "false"
+        xpack.security.http.ssl.enabled: "false"
+    volumes:
+      - /home/chetan/project_data/karma_loop/es_data:/usr/share/elasticsearch/dat
+
+env:
+  clear:
+    DB_HOST: karma_loop-db
+    REDIS_URL: redis://karma_loop-redis:6379/0
+    ELASTICSEARCH_URL: http://karma_loop-elasticsearch:9200
+  secret:
+    - RAILS_MASTER_KEY
+    - POSTGRES_PASSWORD
+    - SECRET_KEY_BASE
+    - CLOUDFLARE_R2_ENDPOINT
+    - CLOUDFLARE_R2_ACCESS_KEY_ID
+    - CLOUDFLARE_R2_SECRET_ACCESS_KEY
+    - CLOUDFLARE_R2_BUCKET_NAME
+    - CLOUDFLARE_R2_BUCKET_PUB_ENDPOINT
+    - BREVO_SMTP_SERVER
+    - BREVO_SMTP_PORT
+    - BREVO_DOMAIN
+    - BREVO_SMTP_USER_NAME
+    - BREVO_SMTP_PASSWORD
+  

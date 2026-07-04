@@ -33,4 +33,8 @@ export default class extends Controller {
         })
     }
   }
+
+  fetchChat(element) {
+    // On clicking the message we need to fetch the chat of that particular user or group.
+  }
 }

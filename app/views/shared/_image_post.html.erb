@@ -61,8 +61,7 @@ post: Model
               <%= post.description %>
           </div>
 
-          <div class="flex items-center space-x-2 sm:space-x-4 text-xs font-medium text-[var(--txt-clr-subtle)]">
-            <div] border-t border-b py-2 my-4">
+          <div class="flex items-center space-x-2 sm:space-x-4 text-xs font-medium text-[var(--txt-clr-subtle)] border-t border-b py-2 my-4">
             <div id="reaction_div_parent_<%= post.id %>" class="flex items-center space-x-1 p-1 rounded <%= post.current_user_reaction(current_user.id) %>">
               <div>
                 <%= link_to post_reaction_path(post_id: post.id, reaction:"like"), 

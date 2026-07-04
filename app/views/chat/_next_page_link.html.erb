@@ -1,0 +1,5 @@
+<% if pagy.next %>
+  <div data-url="<%= chat_path(id: group.id, page: pagy.next) %>" ></div>
+<% else %>
+  <div data-eof="true"></div>
+<% end %>

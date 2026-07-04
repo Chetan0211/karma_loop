@@ -1,5 +1,5 @@
-import consumer from "./consumer"
-import { check_notification_access, show_notification } from "../browser_notifications"
+import consumer from "channels/consumer"
+import { check_notification_access, show_notification } from "browser_notifications"
 
 const coordinator = new BroadcastChannel('tab_rank_coordinator');
 window.coordinator = coordinator;

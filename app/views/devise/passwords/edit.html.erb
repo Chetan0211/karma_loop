@@ -1,25 +1,66 @@
-<h2>Change your password</h2>
-
-<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
-  <%= f.hidden_field :reset_password_token %>
-
-  <div class="field">
-    <%= f.label :password, "New password" %><br />
-    <% if @minimum_password_length %>
-      <em>(<%= @minimum_password_length %> characters minimum)</em><br />
-    <% end %>
-    <%= f.password_field :password, autofocus: true, autocomplete: "new-password" %>
-  </div>
-
-  <div class="field">
-    <%= f.label :password_confirmation, "Confirm new password" %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Change my password" %>
-  </div>
+<% content_for :page_javascript do %>
+  <%= javascript_include_tag "alpine/user/passwords", "data-turbo-track": "reload" %>
 <% end %>
-
-<%= render "devise/shared/links" %>
+<div class="bg-[var(--background-clr-body)] flex items-center justify-center min-h-screen" data-controller="user--passwords" data-username="<%= @user.username %>" data-email="<%= @user.email %>" x-data="passwordReset">
+  <div class="bg-[var(--background-clr-clear)] p-8 rounded-lg shadow-md w-full max-w-md mx-4 sm:mx-auto">
+    <h2 class="text-2xl font-bold text-center text-[var(--txt-clr-strong)] mb-8">Change your password</h2>
+    <%= form_for(resource, as: resource_name, url: password_path(resource_name), html:{method: :put}, data:{action: "submit->user--passwords#submit"}) do |f| %>
+      <%= f.hidden_field :reset_password_token %>
+      <%= f.hidden_field :public_key, value: @user.public_key %>
+      <%= f.hidden_field :encrypted_key, value: @user.encrypted_key %>
+      <div class="mb-4">
+        <%= f.label :password, 
+          class:"block text-sm font-medium text-[var(--txt-clr-default)] mb-1" %>
+        <%= f.password_field :password, 
+          autofocus: true, 
+          placeholder:"Enter password",
+          required: true,
+          class:"w-full px-4 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent transition duration-150 ease-in-out" %>
+      </div>
+      <div class="mb-4">
+        <%= f.label :password_confirmation, class:"block text-sm font-medium text-[var(--txt-clr-default)] mb-1" %>
+        <%= f.password_field :password_confirmation, 
+          required: true,
+          placeholder: "Re-enter your password",
+          class:"w-full px-4 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent transition duration-150 ease-in-out" %>
+      </div>
+      <div class="mb-4" x-show="!skip">
+        <label for="secureKeyInput" class="block text-sm font-medium text-[var(--txt-clr-default)] mb-1">Secure Key</label>
+        <input 
+          type="text" 
+          id="secureKeyInput" 
+          name="secure-key" 
+          placeholder="xxxx-xxxx-xxxx-xxxx" 
+          maxlength="19" 
+          class="w-full px-4 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent transition duration-150 ease-in-out" 
+          autocomplete="off"
+          x-model="secureKey"
+          @input="formatKey"
+          :disabled="skip"/>
+      </div>
+      <div class="mb-6 text-center">
+            <div class="flex items-center justify-start">
+                <input 
+                    type="checkbox" 
+                    id="skipKeyCheckbox" 
+                    class="h-4 w-4 text-[var(--primary-600)] bg-[var(--background-clr-thick)] border-[var(--border-clr-default)] rounded focus:ring-[var(--primary-500)] focus:ring-2"
+                    x-model="skip"
+                >
+                <label for="skipKeyCheckbox" class="ml-2 text-sm font-medium text-[var(--txt-clr-muted)]">I don't have a secure key.</label>
+            </div>
+            <p 
+                id="skipWarningText"
+                x-cloak 
+                class="text-red-500 text-sm mt-2"
+                x-show="skip"
+                x-transition
+            >
+                Without this key, you may <strong class="font-semibold">lose all your chat history permanently.</strong>
+            </p>
+        </div>
+      <div class="actions">
+        <%= f.submit "Change my password", class:"w-full bg-[var(--primary-600)] hover:bg-[var(--primary-700)] text-[var(--primary-inverted)] font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-2 transition duration-150 ease-in-out" %>
+      </div>
+    <% end %>
+  </div>
+</div>

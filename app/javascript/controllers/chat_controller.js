@@ -1,10 +1,19 @@
 import { Controller } from "@hotwired/stimulus"
 import { add, format, isToday, isYesterday } from 'date-fns'
+import CryptoHelper from "helpers/crypto_helper"
+import KeyManager from "key_manager"
+import { formatDateSeparator } from "helpers/chat_helper"
+import consumer from "channels/consumer"
 
 // Connects to data-controller="chat"
 export default class extends Controller {
-  connect() {
+  async connect() {
     this.initializeAlphineElements()
+    KeyManager.initialize();
+    this.privateKey = await KeyManager.getPrivateKey();
+    if (!this.privateKey) { 
+      KeyManager.logoutUser();
+    }
     this.observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         // For every node that was added...
@@ -153,14 +162,16 @@ export default class extends Controller {
     }
   }
 
-  append(event) {
+  async append(event) {
     event.preventDefault();
     let chat_form = document.querySelector("#chat_form");
     let temp_chat_id_element = chat_form.querySelector("#new_chat_temporary_chat_id");
     let message_element = chat_form.querySelector("#new_chat_message");
+    let temp_message_element = chat_form.querySelector("#new_chat_temp_message");
     let attachments_element = chat_form.querySelector("#new_chat_attachments");
+    let chat_pub_keys = JSON.parse(chat_form.dataset.chatPubKeys);
     if (temp_chat_id_element.value == "" || temp_chat_id_element.value == null) {
-      let message = message_element.value;
+      let message = temp_message_element.value;
       let attachments = [];
       for (let file of attachments_element.files) {
 
@@ -174,7 +185,7 @@ export default class extends Controller {
       let templateElement = document.querySelector('[data-chat-form-target="chat_sent_template"]').content.cloneNode(true);
       let newTemplate = templateElement.firstElementChild.outerHTML;
       let group_id = chat_form.dataset.groupId;
-      let temp_id = `${group_id}_temp_chat_id_${Date.now()}`;
+      let temp_id = `temp_chat_id_${group_id}_${Date.now()}`;
       temp_chat_id_element.value = temp_id;
       let now = new Date();
       let reply_message = document.getElementById("form_replying_to").innerHTML;
@@ -217,9 +228,21 @@ export default class extends Controller {
         chat_list.querySelector(".chat-unread-separator").remove();
       }
     }
+    //Encrypt the chats and attachments
+    if (temp_message_element.value != "") {
+      let encryptedMessage = await CryptoHelper.encryptMessage(chat_pub_keys, temp_message_element.value);
+      message_element.value = JSON.stringify(encryptedMessage);
+      temp_message_element.value = "";
+    }
+    if (attachments_element.files.length > 0) {
+      // Need to encrypt attachments
+      // const encryptedAttachments = await this.encryptAttachments(attachments_element.files, chat_pub_keys);
+      // attachments_element.value = JSON.stringify(encryptedAttachments);
+    }
+
     //Send request to server by submitting the request
     chat_form.requestSubmit();
-    this.scrollToBottom();
+    this.scrollToBottom(); 
   }
 
   reset(event) {
@@ -259,7 +282,7 @@ export default class extends Controller {
   }
 
   checkDateSeperatorOnMessage(node) {
-    const date = new Date().toISOString().slice(0, 10);
+    const date = node.dataset.date;
     const separatorExists = document.querySelector(`.date-separator[data-date="${date}"]`);
     if (!separatorExists) {
       let newTemplate = this.getDateSeperatorTemplate(date);
@@ -273,21 +296,9 @@ export default class extends Controller {
 
     newTemplate = newTemplate
       .replace("{{DATE}}", date)
-      .replace("{{FORMATED_DATE}}", this.formatDateSeparator(date));
+      .replace("{{FORMATED_DATE}}", formatDateSeparator(date));
 
     return newTemplate;
-  }
-
-  formatDateSeparator(date) {
-    if (isToday(date)) {
-      return "Today";
-    }
-
-    if (isYesterday(date)) {
-      return "Yesterday";
-    }
-
-    return format(date, 'MMMM d, yyyy');
   }
 
   replyMessage(event) {

@@ -37,7 +37,7 @@ Rails.application.configure do
   # config.action_dispatch.x_sendfile_header = "X-Accel-Redirect" # for NGINX
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  config.active_storage.service = :cloudflare_r2
 
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil
@@ -71,7 +71,19 @@ Rails.application.configure do
   # config.active_job.queue_adapter = :resque
   # config.active_job.queue_name_prefix = "karma_loop_production"
 
-  config.action_mailer.perform_caching = false
+  config.action_mailer.perform_caching = true
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address:              ENV['BREVO_SMTP_SERVER'],
+    port:                 ENV['BREVO_SMTP_PORT'],
+    domain:               ENV['BREVO_DOMAIN'],
+    user_name:            ENV['BREVO_SMTP_USER_NAME'],
+    password:             ENV['BREVO_SMTP_PASSWORD'],
+    authentication:       :login,
+    enable_starttls_auto: true
+  }
+  config.action_mailer.default_url_options = { host: 'kloop.chetan0211.org' }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
@@ -94,4 +106,7 @@ Rails.application.configure do
   # ]
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+  config.hosts << "kloop.chetan0211.org"  
+  config.hosts << ->(host) { host.start_with?("172.") || host.include?("localhost") || host.include?("127.0.0.1") || host.match?(/\A[0-9a-f]{12}(:\d+)?\z/) }
 end

@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { parentLikeToggle } from "../../helpers/post_helper";
+import { parentLikeToggle } from "helpers/post_helper";
 
 // Connects to data-controller="home--index"
 export default class extends Controller {
@@ -19,7 +19,9 @@ export default class extends Controller {
     });
 
     let fetch_posts = document.querySelector("#fetch_posts");
-    this.fetchNewMessageObserver.observe(fetch_posts);
+    if (fetch_posts) {
+      this.fetchNewMessageObserver.observe(fetch_posts);
+    }
   }
 
   fetchPosts(element) {

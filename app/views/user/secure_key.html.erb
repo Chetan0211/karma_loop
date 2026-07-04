@@ -1,0 +1,55 @@
+<div class="flex items-center justify-center min-h-screen p-4">
+  <div class="w-full max-w-md bg-[var(--background-clr-clear)] rounded-2xl shadow-lg p-6 md:p-8 text-center">
+    <!-- Icon -->
+    <div class="mx-auto flex items-center justify-center h-16 w-16 bg-[var(--primary-200)] rounded-full mb-6">
+      <%= icon(icon: :key_icon, options:{class:"text-xl text-[var(--primary-600)]"}) %>
+    </div>
+
+    <!-- Heading -->
+    <h1 class="text-2xl md:text-3xl font-bold text-[var(--txt-clr-strong)] mb-2">Save Your Secure Key</h1>
+    <p class="text-[var(--txt-clr-default)] mb-6">This is the one and only time you will see this key. Please save it somewhere safe.</p>
+
+    <!-- Secure Key Display -->
+    <div class="flex items-center w-full bg-[var(--background-clr-strong)] rounded-lg p-4 mb-4" x-data="skey">
+      <div class="flex w-full justify-between align-center">
+        <code id="secureKey" x-text="secureKey" class="text-lg font-mono text-[var(--txt-clr-thick)] break-all">
+          <!-- Secure key will be generated here -->
+        </code>
+      </div>
+      <button id="copyButton" x-cloak @click="copyToClipboard" class=" p-2 text-[var(--txt-clr-muted)] hover:bg-[var(--txt-clr-thick)] rounded-md transition-colors" title="Copy to clipboard">
+        <%= icon(icon: :copy_icon, options:{"x-show": "!copyClick"}) %>
+        <%= icon(icon: :circle_check_icon, options:{"x-show": "copyClick"}) %>
+      </button>
+    </div>
+
+    <!-- Warning Message -->
+    <div class="bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-400 dark:border-yellow-500 text-yellow-800 dark:text-yellow-300 p-4 rounded-r-lg text-left text-sm mb-8">
+      <p class="font-semibold">Important:</p>
+      <p>If you lose your password and this secure key, you will <strong class="font-bold">permanently lose access</strong> to your chats. We cannot recover them for you.</p>
+    </div>
+
+    <!-- Action Button -->
+    <%= link_to "Okay, I've Saved It", user_session_path, class:"w-full bg-[var(--primary-600)] hover:bg-[var(--primary-700)] text-white font-bold py-3 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-opacity-50"  %>
+  </div>
+</div>
+<script>
+  document.addEventListener("alpine:init", () => {
+    window.Alpine.data("skey", () => ({
+      copyClick: false,
+      secureKey: "",
+      init(){
+        let skey = sessionStorage.getItem("rescueKey");
+        this.secureKey =skey.match(/.{1,4}/g).join('-').toUpperCase();
+        sessionStorage.removeItem("rescueKey");
+      },
+      copyToClipboard() {
+        navigator.clipboard.writeText(this.secureKey).then(() => {
+          this.copyClick = true;
+          setTimeout(() => {
+            this.copyClick = false;
+          }, 2000);
+        });
+      }
+    }));
+  });
+</script>

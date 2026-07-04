@@ -11,12 +11,15 @@
 #  display_name           :string(30)       not null
 #  dob                    :datetime         not null
 #  email                  :string           default(""), not null
+#  encrypted_key          :string           not null
 #  encrypted_password     :string           default(""), not null
 #  is_admin               :boolean          default(FALSE), not null
+#  last_key_reset_at      :datetime
+#  public_key             :string           not null
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string
-#  scope                  :string           default("public"), not null
+#  scope                  :string           default("private"), not null
 #  unconfirmed_email      :string
 #  username               :string           not null
 #  created_at             :datetime         not null

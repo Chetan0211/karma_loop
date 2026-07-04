@@ -1,6 +1,12 @@
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
+  # Turn on below once to make assets work like in production
+  # config.assets.compile = false
+  # config.assets.digest = true
+  # config.assets.debug = false
+  
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   # In the development environment your application's code is reloaded any time
@@ -34,6 +40,7 @@ Rails.application.configure do
   end
 
   config.action_controller.default_url_options = { host: 'localhost', port: 3000 }
+  Rails.application.routes.default_url_options = { host: 'localhost', port: 3000 }
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
@@ -43,23 +50,23 @@ Rails.application.configure do
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = true
-
+  config.action_mailer.perform_deliveries = true
   config.action_mailer.perform_caching = false
 
-  # config.action_mailer.delivery_method = :smtp
-  config.action_mailer.delivery_method = :letter_opener
+  config.action_mailer.delivery_method = :smtp
+  # config.action_mailer.delivery_method = :letter_opener
 
-  # config.action_mailer.smtp_settings = {
-  #   address:              'smtp.sendgrid.net',
-  #   port:                 587,
-  #   domain:               'example.com',
-  #   user_name:            'apikey', # This is the string "apikey", not your SendGrid username
-  #   password:             Rails.application.credentials.sendgrid[:api_key], # Your SendGrid API key
-  #   authentication:       'plain',
-  #   enable_starttls_auto: true
-  # }
+  config.action_mailer.smtp_settings = {
+    address:              ENV['BREVO_SMTP_SERVER']  ,
+    port:                 ENV['BREVO_SMTP_PORT'],
+    domain:               ENV['BREVO_DOMAIN'],
+    user_name:            ENV['BREVO_SMTP_USER_NAME'],
+    password:             ENV['BREVO_SMTP_PASSWORD'],
+    authentication:       :login,
+    enable_starttls_auto: true
+  }
 
-  config.action_mailer.perform_deliveries = true
+  
 
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 
