@@ -9,6 +9,7 @@ class Friend::RespondRequest < Trailblazer::Operation
     result[:to] = User.find(params[:to])
     result[:status] = params[:status]
     result[:group_user] = result[:to].group_users.includes(:group).where(group:{id: result[:from].group_users.pluck(:group_id), type: "friend"}).first
+    return false if result[:group_user].nil?
     result[:group] = result[:group_user].group
   end
 

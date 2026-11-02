@@ -52,6 +52,15 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :confirmable
 
+  # Auto-confirm new users in development so no confirmation email is needed.
+  before_create :skip_confirmation!, if: -> { Rails.env.development? }
+
+  # Send Devise emails (confirmation, password reset) through Sidekiq so SMTP
+  # failures don't break the request and get retried.
+  def send_devise_notification(notification, *args)
+    devise_mailer.send(notification, self, *args).deliver_later
+  end
+
   has_many :posts, dependent: :destroy
   has_many :comments, dependent: :destroy, inverse_of: :commenter
 

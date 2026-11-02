@@ -3,10 +3,11 @@ class Ability::User
   def initialize(user)
     can :manage, User, id: user.id
     can :read, User
-    can :read_posts, User, scope: :public
+    can :read_posts, User, scope: "public"
     can :read_posts, User, id: user.all_following.pluck(:id)
     can :request_friend, User
     cannot :request_friend, User, id: user.blocked_from_users.pluck(:id)
+    cannot :request_friend, User, id: user.id
 
     can :manage, Group, id: get_user_groups(user)
   end

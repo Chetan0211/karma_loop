@@ -70,7 +70,7 @@ x-init="footer_active_tab = 'profile'">
             :class="{ 'border-[var(--primary-500)] text-[var(--primary-600)]': activeTab === 'posts', 'border-transparent text-[var(--txt-clr-subtle)] hover:text-[var(--txt-clr-default)] hover:border-[var(--border-clr-default)]': activeTab !== 'posts' }" 
             class="flex-1 sm:flex-none whitespace-nowrap py-3 px-1 sm:px-1 border-b-2 font-medium text-sm transition-colors duration-150 ease-in-out focus:outline-none flex items-center justify-center">
               <%= icon(icon: :list_alt_icon, options:{class: "sm:mr-2"}) %>
-              <span class="hidden sm:inline">Posts (<%= @user.posts.count %>)</span>
+              <span class="hidden sm:inline">Posts (<%= @user.posts.where(status: "published", deleted_at: nil).count %>)</span>
             </button>
             <% if @user.id == current_user.id %>
               <button @click="activeTab = 'saved'" 
@@ -118,7 +118,7 @@ x-init="footer_active_tab = 'profile'">
             </div>
             <div class="flex justify-between">
               <span class="font-medium text-[var(--txt-clr-muted)]">Post Karma</span>
-              <span class="font-semibold text-[var(--txt-clr-thick)]"><%= number_to_k(@user.posts.count) %></span>
+              <span class="font-semibold text-[var(--txt-clr-thick)]"><%= number_to_k(@user.posts.where(status: "published", deleted_at: nil).count) %></span>
             </div>
             <div class="flex justify-between">
               <span class="font-medium text-[var(--txt-clr-muted)]">Comment Karma</span>

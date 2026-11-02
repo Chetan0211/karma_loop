@@ -1,5 +1,7 @@
 # Temporary controller to run background jobs manually
 class BackgroundController < ApplicationController
+  before_action :authenticate_user!, :require_admin!
+
   def video_transcode
     posts = Post.where(content_type: "video", status: "video_process")
     posts.each do |post|

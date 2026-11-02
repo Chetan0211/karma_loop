@@ -41,7 +41,6 @@ export default class extends Controller {
     const pass = form.querySelector("#user_password").value;
     const pKey = await CryptoHelper.decryptPrivateKey(userKey, pass);
     if (pKey) {
-      sessionStorage.setItem("checkPrivateKey", pKey);
       const sessionHashKey = await CryptoHelper.createSessionHashKey();
       const encryptSessionPKey = await CryptoHelper.sessionEncryptPrivateKey(pKey, sessionHashKey);
       CryptoHelper.setEncryptedPrivateKey(JSON.stringify(encryptSessionPKey));

@@ -10,17 +10,32 @@
     <p class="text-[var(--txt-clr-default)] mb-6">This is the one and only time you will see this key. Please save it somewhere safe.</p>
 
     <!-- Secure Key Display -->
-    <div class="flex items-center w-full bg-[var(--background-clr-strong)] rounded-lg p-4 mb-4" x-data="skey">
-      <div class="flex w-full justify-between align-center">
-        <code id="secureKey" x-text="secureKey" class="text-lg font-mono text-[var(--txt-clr-thick)] break-all">
-          <!-- Secure key will be generated here -->
-        </code>
+    <div x-data="skey">
+      <div x-show="secureKey" class="flex items-center w-full bg-[var(--background-clr-strong)] rounded-lg p-4 mb-4">
+        <div class="flex w-full justify-between align-center">
+          <code id="secureKey" x-text="secureKey" class="text-lg font-mono text-[var(--txt-clr-thick)] break-all">
+            <!-- Secure key will be generated here -->
+          </code>
+        </div>
+        <button id="copyButton" x-cloak @click="copyToClipboard" class=" p-2 text-[var(--txt-clr-muted)] hover:bg-[var(--txt-clr-thick)] rounded-md transition-colors" title="Copy to clipboard">
+          <%= icon(icon: :copy_icon, options:{"x-show": "!copyClick"}) %>
+          <%= icon(icon: :circle_check_icon, options:{"x-show": "copyClick"}) %>
+        </button>
       </div>
-      <button id="copyButton" x-cloak @click="copyToClipboard" class=" p-2 text-[var(--txt-clr-muted)] hover:bg-[var(--txt-clr-thick)] rounded-md transition-colors" title="Copy to clipboard">
-        <%= icon(icon: :copy_icon, options:{"x-show": "!copyClick"}) %>
-        <%= icon(icon: :circle_check_icon, options:{"x-show": "copyClick"}) %>
-      </button>
+
+      <!-- Shown when the key is no longer available (page refreshed or opened directly) -->
+      <div x-show="!secureKey" x-cloak class="bg-[var(--background-clr-strong)] rounded-lg p-4 mb-4 text-sm text-[var(--txt-clr-default)]">
+        Your secure key has already been shown and is no longer available. If you didn't save it, you can set a new one when resetting your password.
+      </div>
     </div>
+
+    <% if flash[:signed_up] %>
+      <!-- Confirmation Email Message -->
+      <div class="bg-[var(--background-clr-strong)] border-l-4 border-[var(--primary-500)] p-4 rounded-r-lg text-left text-sm text-[var(--txt-clr-default)] mb-4">
+        <p class="font-semibold">Confirm your email</p>
+        <p>Check your email for the confirmation link. If it doesn't arrive within 10 minutes, please <%= link_to "send the confirmation email again", new_user_confirmation_path, class: "font-medium text-[var(--primary-600)] hover:underline" %>.</p>
+      </div>
+    <% end %>
 
     <!-- Warning Message -->
     <div class="bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-400 dark:border-yellow-500 text-yellow-800 dark:text-yellow-300 p-4 rounded-r-lg text-left text-sm mb-8">
@@ -32,14 +47,15 @@
     <%= link_to "Okay, I've Saved It", user_session_path, class:"w-full bg-[var(--primary-600)] hover:bg-[var(--primary-700)] text-white font-bold py-3 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-opacity-50"  %>
   </div>
 </div>
-<script>
+<script nonce="<%= content_security_policy_nonce %>">
   document.addEventListener("alpine:init", () => {
     window.Alpine.data("skey", () => ({
       copyClick: false,
       secureKey: "",
       init(){
         let skey = sessionStorage.getItem("rescueKey");
-        this.secureKey =skey.match(/.{1,4}/g).join('-').toUpperCase();
+        if (!skey) return;
+        this.secureKey = skey.match(/.{1,4}/g).join('-').toUpperCase();
         sessionStorage.removeItem("rescueKey");
       },
       copyToClipboard() {

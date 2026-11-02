@@ -1,0 +1,61 @@
+name: Dynamic Multi-Environment Deployment (Kamal)
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - 'KAR-*'
+
+jobs:
+  deploy:
+    name: Build and deploy using kamal
+    runs-on: ubuntu-latest
+    environment: >-
+      ${{ github.ref_name == 'main' && 'production' || 
+          github.ref_name == 'staging' && 'staging' || 
+          'development' }}
+    
+    env:
+      SERVER_IP: ${{ secrets.SERVER_IP }}
+      DB_HOST_IP: ${{ secrets.DB_HOST_IP }}
+      REDIS_HOST_IP: ${{ secrets.REDIS_HOST_IP }}
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      - name: Install ruby runtime
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundle-cache: true
+      - name: Install Kamal command line tool
+        run: gem install kamal
+      - name: Initialize SSH Agent with Deployment Key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Initialize docker buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Execute kamal automation deployment engine
+        env:
+          KAMAL_REGISTRY_PASSWORD: ${{ secrets.GHCR_TOKEN }}
+          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+          CLOUDFLARE_R2_ENDPOINT: ${{ secrets.CLOUDFLARE_R2_ENDPOINT }}
+          CLOUDFLARE_R2_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
+          CLOUDFLARE_R2_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET_ACCESS_KEY }}
+          CLOUDFLARE_R2_BUCKET_NAME: ${{ secrets.CLOUDFLARE_R2_BUCKET_NAME }}
+          CLOUDFLARE_R2_BUCKET_PUB_ENDPOINT: ${{ secrets.CLOUDFLARE_R2_BUCKET_PUB_ENDPOINT }}
+          DB_HOST_IP: ${{ secrets.DB_HOST_IP }}
+          REDIS_HOST_IP: ${{ secrets.REDIS_HOST_IP }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
+          ELASTICSEARCH_URL: ${{ secrets.ELASTICSEARCH_URL }}
+
+        run: |
+          kamal deploy
+    

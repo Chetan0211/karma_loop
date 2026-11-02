@@ -101,3 +101,5 @@ gem "cancancan", "~> 3.6"
 gem "redis-session-store", "~> 0.11.6"
 
 gem "pagy", "~> 9.3"
+
+gem "rack-attack", "~> 6.8"

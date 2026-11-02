@@ -14,7 +14,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
     result = User::Create.call(params: user_params)
     if result.success?
       self.resource = result[:model]
-      if self.resource.save
+      if save_resource
+        flash[:signed_up] = true unless resource.confirmed?
         respond_to do |format|
           format.json { render json: { success: true, redirect_url: secure_key_path } }
         end
@@ -83,6 +84,19 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
   
   private
+
+  # Devise queues the confirmation email in an after_commit callback, so a
+  # failure there (e.g. Redis down) raises after the user is already saved.
+  # Treat that as a success so the user still reaches the secure key page;
+  # they can resend the confirmation email later.
+  def save_resource
+    resource.save
+  rescue StandardError => e
+    raise unless resource.persisted?
+
+    Rails.logger.error("Signup confirmation email failed for user #{resource.id}: #{e.class}: #{e.message}")
+    true
+  end
 
   def user_params
     params.require(:user).permit(:username, :dob, :email, :password, :password_confirmation, :public_key, :encrypted_key)

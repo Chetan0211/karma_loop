@@ -4,14 +4,15 @@ current_user:
 user: 
 -->
 <% temp_ability = Ability.new(current_user) %>
+<% visible_posts = Post.accessible_by(temp_ability, :read).where(user_id: user.id, deleted_at: nil).order(updated_at: :desc) %>
 <% if temp_ability.can?(:read_posts, user) %>
-  <% unless user.posts.present? %>
+  <% unless visible_posts.present? %>
     <div x-transition class="bg-[var(--background-clr-clear)] rounded-b-md shadow-sm text-center p-12">
       <%= icon(icon: :inbox_icon, options:{class:"fa-3x text-[var(--txt-clr-muted)]"}) %>
       <p class="mt-4 text-sm font-medium text-[var(--txt-clr-subtle)]">This user hasn't posted anything yet.</p>
     </div>
   <% else %>
-    <% user.posts.order(updated_at: :desc).each do |post| %>
+    <% visible_posts.each do |post| %>
       <%= render "shared/post",post: post, current_user: current_user %>
     <% end %>
   <% end %>

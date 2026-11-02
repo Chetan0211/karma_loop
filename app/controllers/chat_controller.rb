@@ -12,7 +12,7 @@ class ChatController < ApplicationController
 
   def create
     new_chat_params = chat_params
-    can?(:write, Group.find(new_chat_params[:group_id]))
+    authorize! :write, Group.find(new_chat_params[:group_id])
     temporary_chat_id = new_chat_params[:temporary_chat_id]
     new_chat_params[:user_id] = current_user.id
     result = Chat::Create.call(temp_chat_id: temporary_chat_id, chat_params: new_chat_params.except(:temporary_chat_id))
@@ -25,6 +25,8 @@ class ChatController < ApplicationController
   end
 
   def message_read
+    chat = Chat.find(params[:chat_id])
+    authorize! :read, chat.group
     message_interaction_params = {
       chat_id: params[:chat_id],
       user_id: current_user.id,
@@ -33,9 +35,8 @@ class ChatController < ApplicationController
 
     result = MessageInteraction::Create.call(params: message_interaction_params)
     if result.success?
-      group = Chat.find(params[:chat_id]).group
+      group = chat.group
       users = User.includes(:group_users).where(group_users:{group_id: group.id})
-      chat = Chat.find(params[:chat_id])
       message_read_stream(group, users, chat)
       head :ok
     else
@@ -45,6 +46,7 @@ class ChatController < ApplicationController
 
   def create_message_reaction
     interaction_params = message_interaction_params
+    authorize! :read, Chat.find(interaction_params[:chat_id]).group
     interaction_params[:user_id] = current_user.id
     result = MessageInteraction::Create.call(params: interaction_params)
     if result.success?
@@ -57,7 +59,7 @@ class ChatController < ApplicationController
 
   def show
     @group = Group.find(params[:id])
-    can?(:read, @group)
+    authorize! :read, @group
     @pagy, @chats = pagy(@group.chats.includes(:user, :reply_to).order(created_at: :desc))
     respond_to do |format|
       format.turbo_stream

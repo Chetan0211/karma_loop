@@ -24,6 +24,8 @@ class Comment < ApplicationRecord
 
   has_many :comments_reactions, dependent: :destroy
 
+  validate :parent_on_same_post
+
   scope :with_comment, -> {
     joins("INNER JOIN action_text_rich_texts ON action_text_rich_texts.record_type = 'Comment' AND action_text_rich_texts.record_id = comments.id AND action_text_rich_texts.name = 'comment'").select("*")
   }
@@ -38,5 +40,11 @@ class Comment < ApplicationRecord
 
   def dislikes
     CommentsReaction.where(comment_id: id, post_id: post_id, reaction: 'dislike').count
+  end
+
+  private
+
+  def parent_on_same_post
+    errors.add(:parent_id, "is invalid") if parent.present? && parent.post_id != post_id
   end
 end

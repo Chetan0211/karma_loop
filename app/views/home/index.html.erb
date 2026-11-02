@@ -95,7 +95,7 @@
     </div>
   </div>
 </div>
-<script>
+<script nonce="<%= content_security_policy_nonce %>">
   function scrollGallery(button, direction) {
       const galleryContainer = button.closest('.relative').querySelector('.overflow-x-auto');
       if (galleryContainer) {

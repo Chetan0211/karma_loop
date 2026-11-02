@@ -2,10 +2,10 @@
   <div class="bg-[var(--background-clr-clear)] p-8 rounded-lg shadow-md w-full max-w-md space-y-8">
     <div>
       <h2 class="mt-6 text-center text-3xl font-extrabold text-[var(--txt-clr-strong)]">
-        Forgot Your Password?
+        Resend Confirmation Email
       </h2>
       <p class="mt-2 text-center text-sm text-[var(--txt-clr-default)]">
-        No problem! Enter your email address below and we'll send you a link to reset it.
+        Didn't get the confirmation email? Enter your email address below and we'll send it again.
       </p>
     </div>
     <%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post, class:"mt-8 space-y-6" }) do |f| %>
