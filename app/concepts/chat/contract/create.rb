@@ -1,5 +1,6 @@
 class Chat::Contract::Create < ApplicationContract
   property :message
+  property :attachments_manifest
   property :group_id
   property :user_id
   property :reply_to_id

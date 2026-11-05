@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { add, format, isToday, isYesterday } from 'date-fns'
 import CryptoHelper from "helpers/crypto_helper"
 import KeyManager from "key_manager"
-import { formatDateSeparator } from "helpers/chat_helper"
+import { formatDateSeparator, createAttachmentThumbnail } from "helpers/chat_helper"
 import consumer from "channels/consumer"
 
 // Connects to data-controller="chat"
@@ -162,6 +162,19 @@ export default class extends Controller {
     }
   }
 
+  // Show the scroll-to-latest button once the user has scrolled up away from the newest messages
+  toggleScrollToLatest() {
+    let scroll_area = document.querySelector("#chat_scroll_area");
+    let button = document.querySelector("#scroll_to_latest_button");
+    let distanceFromBottom = scroll_area.scrollHeight - scroll_area.scrollTop - scroll_area.clientHeight;
+    button.classList.toggle("hidden", distanceFromBottom < 200);
+  }
+
+  scrollToLatest() {
+    let scroll_area = document.querySelector("#chat_scroll_area");
+    scroll_area.scrollTo({ top: scroll_area.scrollHeight, behavior: "smooth" });
+  }
+
   async append(event) {
     event.preventDefault();
     let chat_form = document.querySelector("#chat_form");
@@ -234,10 +247,21 @@ export default class extends Controller {
       message_element.value = JSON.stringify(encryptedMessage);
       temp_message_element.value = "";
     }
-    if (attachments_element.files.length > 0) {
-      // Need to encrypt attachments
-      // const encryptedAttachments = await this.encryptAttachments(attachments_element.files, chat_pub_keys);
-      // attachments_element.value = JSON.stringify(encryptedAttachments);
+    // After uploading, ActiveStorage clicks submit again with the file input disabled.
+    // Only encrypt on the first pass so the manifest keeps matching the uploaded blobs.
+    if (attachments_element.files.length > 0 && !attachments_element.disabled) {
+      let manifest_element = chat_form.querySelector("#new_chat_attachments_manifest");
+      let encrypted_files = new DataTransfer();
+      let manifest = [];
+      for (let file of attachments_element.files) {
+        let { file: encrypted_file, metadata } = await CryptoHelper.encryptAttachment(file);
+        metadata.thumbnail = await createAttachmentThumbnail(file);
+        encrypted_files.items.add(encrypted_file);
+        manifest.push(metadata);
+      }
+      attachments_element.files = encrypted_files.files;
+      let encryptedManifest = await CryptoHelper.encryptMessage(chat_pub_keys, JSON.stringify(manifest));
+      manifest_element.value = JSON.stringify(encryptedManifest);
     }
 
     //Send request to server by submitting the request
@@ -250,11 +274,15 @@ export default class extends Controller {
     let temp_chat_id_element = chat_form.querySelector("#new_chat_temporary_chat_id");
     let message_element = chat_form.querySelector("#new_chat_message");
     let attachments_element = chat_form.querySelector("#new_chat_attachments");
+    let manifest_element = chat_form.querySelector("#new_chat_attachments_manifest");
     let cleanup_attachments = chat_form.querySelectorAll('input[type="hidden"][name="new_chat[attachments][]"]');
 
     message_element.value = "";
+    manifest_element.value = "";
     temp_chat_id_element.value = "";
     attachments_element.value = "";
+    // ActiveStorage leaves the input disabled after a direct upload, which would drop the next attachments
+    attachments_element.disabled = false;
 
     cleanup_attachments.forEach(element => {
       element.remove();
@@ -270,6 +298,19 @@ export default class extends Controller {
     }
     let show_attachment = document.querySelector("#show_attachment");
     show_attachment.dispatchEvent(new CustomEvent('set-show-attachment-data', { detail: { data: data, showMenu: true } }))
+  }
+
+  // Clicking a quoted reply jumps to the original message, if it's loaded
+  scrollToMessage(event) {
+    let message = document.getElementById(event.currentTarget.dataset.replyToId);
+    if (!message) return;
+
+    message.scrollIntoView({ behavior: "smooth", block: "center" });
+    let bubble = message.querySelector(".message-bubble") || message;
+    bubble.animate(
+      [{ outline: "2px solid var(--primary-500)", outlineOffset: "2px", borderRadius: "1rem" }, { outline: "2px solid transparent", outlineOffset: "2px", borderRadius: "1rem" }],
+      { duration: 1500, easing: "ease-out" }
+    );
   }
 
   appendDate(chat_list) {

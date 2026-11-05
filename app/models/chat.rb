@@ -2,13 +2,14 @@
 #
 # Table name: chats
 #
-#  id          :uuid             not null, primary key
-#  message     :text             not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  group_id    :uuid             not null
-#  reply_to_id :uuid
-#  user_id     :uuid             not null
+#  id                   :uuid             not null, primary key
+#  attachments_manifest :text
+#  message              :text             not null
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  group_id             :uuid             not null
+#  reply_to_id          :uuid
+#  user_id              :uuid             not null
 #
 # Indexes
 #
@@ -35,17 +36,5 @@ class Chat < ApplicationRecord
   end
   def user_read?(user)
     message_interactions.where(user_id: user.id).present?
-  end
-  def attachments_data
-    return unless attachments.attached?
-
-    attachments.map do |attachment|
-      {
-        url: Rails.application.routes.url_helpers.rails_blob_url(attachment, only_path: false),
-        content_type: attachment.blob.content_type,
-        byte_size: attachment.blob.byte_size,
-        filename: attachment.blob.filename.to_s
-      }
-    end
   end
 end

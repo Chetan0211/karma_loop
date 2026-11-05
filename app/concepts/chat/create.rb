@@ -3,6 +3,7 @@ class Chat::Create < Trailblazer::Operation
   step Contract::Build(constant: Chat::Contract::Create)
   step Contract::Validate()
   step :validate_attachments_and_message
+  step :validate_attachments_encrypted
   step Contract::Persist()
   step :add_message_interaction
   step :send_notification
@@ -20,6 +21,19 @@ class Chat::Create < Trailblazer::Operation
     else
       true
     end
+  end
+
+  # Attachments are encrypted in the browser and uploaded as opaque binaries,
+  # so reject anything that arrives in plain form or without its key manifest.
+  def validate_attachments_encrypted(result, **)
+    attachments = result[:model].attachments
+    return true if attachments.blank?
+
+    if result[:model].attachments_manifest.blank? || attachments.any? { |attachment| attachment.blob.content_type != "application/octet-stream" }
+      result['contract.default'].errors.add(:attachments, "must be end-to-end encrypted.")
+      return false
+    end
+    true
   end
 
   def add_message_interaction(result, **)

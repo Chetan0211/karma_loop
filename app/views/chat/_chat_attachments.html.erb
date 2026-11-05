@@ -1,0 +1,68 @@
+<!--
+params used here:
+chat
+reply (optional, true inside a reply preview)
+-->
+<% reply = local_assigns.fetch(:reply, false) %>
+<% if chat.attachments_manifest.present? %>
+  <div data-controller="attachment-decryption" data-attachment-decryption-manifest-value="<%= chat.attachments_manifest %>">
+    <% chat.attachments.each do |attachment| %>
+      <div class="flex items-center p-3 bg-[var(--background-clr-thick)] rounded-lg border border-[var(--border-clr-default)]"
+      data-action="<%= 'click->attachment-decryption#open' unless reply %>"
+      data-attachment-decryption-target="attachment"
+      data-turbo="false"
+      data-attachment-id="<%= attachment.filename.to_s %>"
+      data-url="<%= url_for(attachment) %>">
+        <div class="relative flex-shrink-0 w-12 h-12 flex items-center justify-center">
+          <img data-role="thumbnail" class="w-12 h-12 object-cover rounded-md hidden" alt="File thumbnail">
+          <span data-role="play-icon" class="absolute inset-0 flex items-center justify-center hidden">
+            <span class="w-6 h-6 rounded-full bg-black/50 flex items-center justify-center"><%= icon(icon: :play_icon, options:{class: "text-white text-xs"}) %></span>
+          </span>
+          <span data-role="image-icon" class="hidden"><%= icon(icon: :image_icon_regular, options:{class: "text-2xl text-[var(--txt-clr-muted)]"}) %></span>
+          <span data-role="video-icon" class="hidden"><%= icon(icon: :file_video_icon_regular, options:{class: "text-2xl text-[var(--txt-clr-muted)]"}) %></span>
+          <span data-role="file-icon" class="hidden"><%= icon(icon: :file_pdf_icon, options:{class: "text-red-500 text-4xl"}) %></span>
+          <span data-role="lock-icon"><%= icon(icon: :lock_icon, options:{class: "text-2xl text-[var(--txt-clr-muted)]"}) %></span>
+        </div>
+        <div class="ml-4 flex-grow overflow-hidden">
+          <p data-role="name" class="text-sm font-medium text-[var(--txt-clr-default)] truncate">decrypting...</p>
+          <p data-role="size" class="text-xs text-[var(--txt-clr-default)]"></p>
+        </div>
+        <% unless reply %>
+          <button type="button" data-action="click->attachment-decryption#downloadOne" title="Download" class="ml-3 flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-[var(--txt-clr-muted)] hover:bg-[var(--background-clr-strong)]">
+            <span class="sr-only">Download</span>
+            <%= icon(icon: :download_icon) %>
+          </button>
+        <% end %>
+      </div>
+    <% end %>
+    <% if chat.attachments.size > 1 && !reply %>
+      <button type="button" data-action="click->attachment-decryption#downloadAll" class="mt-2 inline-flex items-center gap-2 text-xs text-[var(--txt-clr-muted)] hover:text-[var(--txt-clr-default)]">
+        <%= icon(icon: :download_icon) %> Download all (<%= chat.attachments.size %>)
+      </button>
+    <% end %>
+  </div>
+<% else %>
+  <% chat.attachments.each do |attachment| %>
+    <div class="flex items-center p-3 bg-[var(--background-clr-thick)] rounded-lg border border-[var(--border-clr-default)]"
+    data-action="<%= 'click->chat#attachmentViewer' unless reply %>"
+    data-turbo="false"
+    data-file-format="<%= attachment.content_type %>"
+    data-url="<%= url_for(attachment) %>">
+      <div class="flex-shrink-0">
+        <% if attachment.content_type.include?("image") %>
+          <img class="w-12 h-12 object-cover rounded-md" src="<%= url_for(attachment) %>" alt="File thumbnail">
+        <% elsif attachment.content_type.include?("video") %>
+          <video src="<%= url_for(attachment) %>" class="w-12 h-12 object-cover rounded-md"></video>
+        <% else %>
+          <div class="w-12 h-12 flex flex-col items-center justify-center text-center p-2">
+            <%= icon(icon: :file_pdf_icon, options:{class: "text-red-500 text-4xl"}) %>
+          </div>
+        <% end %>
+      </div>
+      <div class="ml-4 flex-grow overflow-hidden">
+        <p class="text-sm font-medium text-[var(--txt-clr-default)] truncate"><%= attachment.filename.to_s %></p>
+        <p class="text-xs text-[var(--txt-clr-default)]"><%= number_to_human_size(attachment.byte_size) %></p>
+      </div>
+    </div>
+  <% end %>
+<% end %>

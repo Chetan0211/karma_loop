@@ -82,7 +82,7 @@ class ChatController < ApplicationController
   end
 
   def chat_params
-    permitted_params = params.require(:new_chat).permit(:message, :group_id, :reply_to_id, :temporary_chat_id, attachments: [])
+    permitted_params = params.require(:new_chat).permit(:message, :attachments_manifest, :group_id, :reply_to_id, :temporary_chat_id, attachments: [])
     permitted_params.tap do |whitelisted|
       # Use reject! to remove any blank items from the attachments array
       # The `&.` safe navigation operator prevents errors if `attachments` isn't present

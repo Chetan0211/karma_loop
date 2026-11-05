@@ -15,6 +15,8 @@ Rails.application.configure do
     policy.img_src         :self, :https, :data, :blob
     policy.media_src       :self, :https, :blob
     policy.worker_src      :self, :blob
+    # Decrypted chat PDFs are shown in an iframe from a blob: URL
+    policy.frame_src       :self, :blob
     # Alpine.js evaluates its directives with Function(), so it needs unsafe-eval
     policy.script_src      :self, :unsafe_eval
     policy.style_src       :self, :unsafe_inline

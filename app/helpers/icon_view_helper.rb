@@ -224,6 +224,16 @@ module IconViewHelper
     tag.i(class: "fa-solid fa-file-pdf #{classes.strip}",**options.except(:class))
   end
 
+  def download_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-download #{classes.strip}",**options.except(:class))
+  end
+
+  def play_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-play #{classes.strip}",**options.except(:class))
+  end
+
   def reply_icon(options={})
     classes = options.fetch(:class,"")
     tag.i(class: "fa-solid fa-reply #{classes.strip}",**options.except(:class))
@@ -262,6 +272,11 @@ module IconViewHelper
   def chevron_right_icon(options={})
     classes = options.fetch(:class,"")
     tag.i(class: "fa-solid fa-chevron-right #{classes.strip}",**options.except(:class))
+  end
+
+  def chevron_down_icon(options={})
+    classes = options.fetch(:class,"")
+    tag.i(class: "fa-solid fa-chevron-down #{classes.strip}",**options.except(:class))
   end
 
   def key_icon(options={})

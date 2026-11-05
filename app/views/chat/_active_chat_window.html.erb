@@ -31,16 +31,23 @@ current_user
     </div>
   </div>
   <!-- Chat Messages Area -->
-  <div x-ref="chatArea" id="chat_scroll_area" class="bg-[var(--background-clr-body)] flex-grow p-4 sm:p-6 overflow-y-auto overflow-x-hidden custom-scrollbar">
-    <div id="fetch_chat_messages_<%= group.id %>">
-      <div data-url="<%= chat_path(id: group.id, page: 1) %>" ></div>
+  <div class="relative flex-grow flex flex-col" style="min-height: 0;">
+    <div x-ref="chatArea" id="chat_scroll_area" data-action="scroll->chat#toggleScrollToLatest" class="bg-[var(--background-clr-body)] flex-grow p-4 sm:p-6 overflow-y-auto overflow-x-hidden custom-scrollbar">
+      <div id="fetch_chat_messages_<%= group.id %>">
+        <div data-url="<%= chat_path(id: group.id, page: 1) %>" ></div>
+      </div>
+      <div id="fetch_chat_loader" x-transition class="flex items-center justify-center hidden">
+        <div class="w-10 h-10 border-4 border-[var(--border-clr-default)] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+      <div id="chat_list_<%= group.id %>" class="space-y-2 h-full">
+        <!-- We will add the chats here -->
+      </div>
     </div>
-    <div id="fetch_chat_loader" x-transition class="flex items-center justify-center hidden">
-      <div class="w-10 h-10 border-4 border-[var(--border-clr-default)] border-t-transparent rounded-full animate-spin"></div>
-    </div>
-    <div id="chat_list_<%= group.id %>" class="space-y-2 h-full">
-      <!-- We will add the chats here -->
-    </div>
+    <!-- Scroll to latest messages -->
+    <button type="button" id="scroll_to_latest_button" data-action="click->chat#scrollToLatest" title="Scroll to latest messages" style="bottom: 1rem; right: 1.5rem;" class="hidden absolute w-10 h-10 flex items-center justify-center rounded-full shadow-lg bg-[var(--background-clr-clear)] border border-[var(--border-clr-subtle)] text-[var(--txt-clr-muted)] hover:text-[var(--txt-clr-default)]">
+      <span class="sr-only">Scroll to latest messages</span>
+      <%= icon(icon: :chevron_down_icon) %>
+    </button>
   </div>
   <!-- Message Input Form -->
   <div class="p-4 bg-[var(--background-clr-clear)] border-t border-[var(--border-clr-subtle)] flex-shrink-0">
@@ -76,8 +83,9 @@ current_user
       <%= f.hidden_field :temporary_chat_id, value: nil %>
       <%= f.hidden_field :reply_to_id, value: nil %>
       <%= f.hidden_field :message, value: nil %>
+      <%= f.hidden_field :attachments_manifest, value: nil %>
       <%= f.file_field :attachments, id:"new_chat_attachments", accept: "image/*, video/*,.pdf,.doc,.docx,.txt", multiple: true, direct_upload: true, class: "hidden", "x-ref"=>"chat_attachments" %>
-      <%= f.text_field :temp_message, autocomplete: "off", class:"w-full px-4 py-2 border border-[var(--border-clr-default)] rounded-full text-sm bg-[var(--background-clr-thick)] focus:ring-[var(--primary-500)] focus:border-[var(--primary-500] focus:border-[var(--primary-500)]", placeholder:"Type a message..." %>
+      <%= f.text_field :temp_message, "x-ref"=>"messageInput", autocomplete: "off", class:"w-full px-4 py-2 border border-[var(--border-clr-default)] rounded-full text-sm bg-[var(--background-clr-thick)] focus:ring-[var(--primary-500)] focus:border-[var(--primary-500] focus:border-[var(--primary-500)]", placeholder:"Type a message..." %>
       <%= f.button class:"bg-[var(--primary-600)] text-white rounded-full h-10 w-10 flex-shrink-0 hover:bg-[var(--primary-700)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-2",
       "x-ref"=>"chat_form_submit_button",
       "@click"=>"showReplyBanner=false",
@@ -89,7 +97,7 @@ current_user
   <div
   x-show="isAttachmentModalOpen"
   style="display: none;"
-  @keydown.escape.window="isAttachmentModalOpen = false"
+  @keydown.escape.window="!isUploading && (previewIndex !== null ? previewIndex = null : closeAttachmentModal())"
   class="fixed inset-0 z-50 overflow-y-auto"
   aria-labelledby="attachment-modal-title"
   role="dialog"
@@ -104,31 +112,43 @@ current_user
       x-transition:leave="ease-in duration-200"
       x-transition:leave-start="opacity-100 scale-100"
       x-transition:leave-end="opacity-0 scale-95"
-      class="flex flex-col bg-[var(--background-clr-clear)] rounded-lg text-left shadow-xl transform transition-all m-4 w-full max-w-4xl h-[90vh]">
+      class="relative flex flex-col bg-[var(--background-clr-clear)] rounded-lg text-left shadow-xl transform transition-all m-4 w-full max-w-4xl h-[90vh]">
         <div class="p-4 border-b border-[var(--border-clr-strong)] flex justify-between items-center flex-shrink-0">
           <h3 class="text-lg font-medium text-[var(--txt-clr-strong)]" id="attachment-modal-title">Review Attachments</h3>
-          <button @click="isAttachmentModalOpen = false; attachments = []" class="text-[var(--txt-clr-lite)] hover:text-[var(--txt-clr-muted)]">
+          <button x-show="!isUploading" @click="closeAttachmentModal()" class="text-[var(--txt-clr-lite)] hover:text-[var(--txt-clr-muted)]">
             <span class="sr-only">Close</span>
             <%= icon(icon: :close_icon, options:{class: "text-xl"}) %>
           </button>
         </div>
         <div class="p-4 sm:p-6 flex-grow overflow-y-auto custom-scrollbar">
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            <template x-for="(file, index) in attachments" :key="index">
-              <div class="relative group aspect-square bg-[var(--background-clr-thick)] rounded-lg overflow-hidden">
-                <template x-if="file.type.startsWith('image/')">
-                  <img :src="URL.createObjectURL(file)" class="w-full h-full object-cover">
+            <template x-for="(attachment, index) in attachments" :key="attachment.url">
+              <div @click="previewIndex = index" class="relative group aspect-square bg-[var(--background-clr-thick)] rounded-lg overflow-hidden cursor-pointer">
+                <template x-if="attachment.kind === 'image'">
+                  <img :src="attachment.url" class="w-full h-full object-cover">
                 </template>
-                <template x-if="file.type.startsWith('video/')">
-                  <video :src="URL.createObjectURL(file)" class="w-full h-full object-cover"></video>
-                </template>
-                <template x-if="file.type === 'application/pdf'">
-                  <div class="w-full h-full flex flex-col items-center justify-center text-center p-2">
-                    <%= icon(icon: :file_pdf_icon, options:{class: "text-red-500 text-4xl"}) %>
-                    <p class="text-xs text-[var(--txt-clr-default)] mt-2 truncate" x-text="file.name"></p>
+                <template x-if="attachment.kind === 'video'">
+                  <div class="w-full h-full">
+                    <!-- #t=0.1 makes browsers render a frame instead of a blank box -->
+                    <video :src="attachment.url + '#t=0.1'" preload="metadata" muted playsinline class="w-full h-full object-cover"></video>
+                    <span class="absolute inset-0 flex items-center justify-center">
+                      <span class="w-10 h-10 rounded-full bg-black/50 flex items-center justify-center"><%= icon(icon: :play_icon, options:{class: "text-white"}) %></span>
+                    </span>
                   </div>
                 </template>
-                <button @click="removeAttachment(index)" class="absolute top-1 right-1 bg-[var(--background-clr-strong)] text-[var(--txt-clr-default)] rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">&times;</button>
+                <template x-if="attachment.kind === 'file'">
+                  <div class="w-full h-full flex flex-col items-center justify-center text-center p-2">
+                    <template x-if="attachment.file.type === 'application/pdf'">
+                      <%= icon(icon: :file_pdf_icon, options:{class: "text-red-500 text-4xl"}) %>
+                    </template>
+                    <template x-if="attachment.file.type !== 'application/pdf'">
+                      <%= icon(icon: :file_lines_icon_regular, options:{class: "text-[var(--txt-clr-muted)] text-4xl"}) %>
+                    </template>
+                    <p class="text-xs text-[var(--txt-clr-default)] mt-2 truncate w-full" x-text="attachment.file.name"></p>
+                  </div>
+                </template>
+                <span class="absolute bottom-1 left-1 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full" x-text="{ image: 'Image', video: 'Video', file: 'Document' }[attachment.kind]"></span>
+                <button x-show="!isUploading" @click.stop="removeAttachment(index)" class="absolute top-1 right-1 bg-[var(--background-clr-strong)] text-[var(--txt-clr-default)] rounded-full w-6 h-6 flex items-center justify-center md:opacity-0 group-hover:opacity-100 transition-opacity">&times;</button>
               </div>
             </template>
           </div>
@@ -142,13 +162,40 @@ current_user
             <div class="bg-[var(--primary-600)] h-2.5 rounded-full transition-all duration-300 ease-out" :style="`width: ${uploadProgress}%`"></div>
           </div>
         </div>
-        <div x-show="!isUploading" class="bg-[var(--background-clr-thick)] px-4 py-3 sm:px-6 flex flex-col sm:flex-row-reverse gap-3 flex-shrink-0">
-          <button @click="sendMessage()" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[var(--primary-600)] text-base font-medium text-[var(--white)] hover:bg-[var(--primary-700)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-500)] sm:w-auto sm:text-sm">
-            Send
-          </button>
-          <button @click="isAttachmentModalOpen = false; attachments = []" type="button" class="w-full inline-flex justify-center rounded-md border border-[var(--border-clr-default)] shadow-sm px-4 py-2 bg-[var(--background-clr-thick)] text-base font-medium text-[var(--txt-clr-default)] hover:bg-[var(--background-clr-strong)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--secondary-500)] sm:w-auto sm:text-sm">
-            Cancel
-          </button>
+        <div x-show="!isUploading" class="bg-[var(--background-clr-thick)] px-4 py-3 sm:px-6 flex flex-col sm:flex-row items-center gap-3 flex-shrink-0">
+          <input type="text" x-model="caption" @keydown.enter.prevent="sendMessage()" autocomplete="off" placeholder="Add a message..." class="w-full flex-grow px-4 py-2 border border-[var(--border-clr-default)] rounded-full text-sm bg-[var(--background-clr-clear)] focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)]">
+          <div class="w-full sm:w-auto flex flex-col sm:flex-row-reverse gap-3 flex-shrink-0">
+            <button @click="sendMessage()" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[var(--primary-600)] text-base font-medium text-[var(--white)] hover:bg-[var(--primary-700)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-500)] sm:w-auto sm:text-sm">
+              Send
+            </button>
+            <button @click="closeAttachmentModal()" type="button" class="w-full inline-flex justify-center rounded-md border border-[var(--border-clr-default)] shadow-sm px-4 py-2 bg-[var(--background-clr-thick)] text-base font-medium text-[var(--txt-clr-default)] hover:bg-[var(--background-clr-strong)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--secondary-500)] sm:w-auto sm:text-sm">
+              Cancel
+            </button>
+          </div>
+        </div>
+        <!-- Full size preview of one attachment -->
+        <div x-show="previewIndex !== null" x-cloak class="absolute inset-0 z-10 flex flex-col bg-[var(--background-clr-clear)] rounded-lg">
+          <div class="p-4 border-b border-[var(--border-clr-strong)] flex justify-between items-center flex-shrink-0">
+            <p class="text-sm font-medium text-[var(--txt-clr-strong)] truncate" x-text="attachments[previewIndex]?.file.name"></p>
+            <button @click="previewIndex = null" class="text-[var(--txt-clr-lite)] hover:text-[var(--txt-clr-muted)]">
+              <span class="sr-only">Close preview</span>
+              <%= icon(icon: :close_icon, options:{class: "text-xl"}) %>
+            </button>
+          </div>
+          <div class="p-4 sm:p-6 flex-grow overflow-hidden flex items-center justify-center">
+            <template x-if="attachments[previewIndex]?.kind === 'image'">
+              <img :src="attachments[previewIndex]?.url" class="w-full h-full object-contain">
+            </template>
+            <template x-if="attachments[previewIndex]?.kind === 'video'">
+              <video :src="attachments[previewIndex]?.url" controls playsinline class="w-full h-full object-contain"></video>
+            </template>
+            <template x-if="attachments[previewIndex]?.kind === 'file'">
+              <div class="flex flex-col items-center justify-center text-center">
+                <%= icon(icon: :file_lines_icon_regular, options:{class: "text-[var(--txt-clr-muted)] text-4xl"}) %>
+                <p class="text-sm text-[var(--txt-clr-default)] mt-2">Preview isn't available for this file type.</p>
+              </div>
+            </template>
+          </div>
         </div>
       </div>
     </div>
@@ -158,7 +205,7 @@ current_user
   x-show="showAttachmentMenu"
   x-on:set-show-attachment-data.self="showAttachmentMenu = $event.detail.showMenu; showAttachmentData = $event.detail.data; console.log('show Menu: ',$event.detail.showMenu)"
   x-cloak
-  @keydown.escape.window="showAttachmentMenu = false"
+  @keydown.escape.window="showAttachmentMenu = false; showAttachmentData = null"
   x-init="$watch('showAttachmentData', (value) => {
     if (value && value.type.startsWith('video/')) {
     $nextTick(() => {
@@ -181,24 +228,37 @@ current_user
       x-transition:leave-start="opacity-100 scale-100"
       x-transition:leave-end="opacity-0 scale-95"
       class="flex flex-col bg-[var(--background-clr-clear)] rounded-lg text-left shadow-xl transform transition-all w-full max-w-4xl h-[calc(100dvh-10rem)]">
-        <div class="p-4 border-b border-[var(--border-clr-strong)] flex justify-end items-center flex-shrink-0">
-          <button @click="showAttachmentMenu = false; showAttachmentData=null" class="text-[var(--txt-clr-lite)] hover:text-[var(--txt-clr-muted)]">
-            <span class="sr-only">Close</span>
-            <%= icon(icon: :close_icon, options:{class: "text-xl"}) %>
-          </button>
+        <div class="p-4 border-b border-[var(--border-clr-strong)] flex justify-between items-center gap-3 flex-shrink-0">
+          <p class="text-sm font-medium text-[var(--txt-clr-strong)] truncate" x-text="showAttachmentData?.name || ''"></p>
+          <div class="flex items-center gap-3 flex-shrink-0">
+            <button type="button" x-show="!!showAttachmentData?.download" @click="showAttachmentData.download()" title="Download" class="text-[var(--txt-clr-lite)] hover:text-[var(--txt-clr-muted)]">
+              <span class="sr-only">Download</span>
+              <%= icon(icon: :download_icon, options:{class: "text-xl"}) %>
+            </button>
+            <button @click="showAttachmentMenu = false; showAttachmentData=null" class="text-[var(--txt-clr-lite)] hover:text-[var(--txt-clr-muted)]">
+              <span class="sr-only">Close</span>
+              <%= icon(icon: :close_icon, options:{class: "text-xl"}) %>
+            </button>
+          </div>
         </div>
         <div class="p-4 sm:p-6 flex justify-center items-center flex-grow overflow-hidden">
-          <div class="relative aspect-square max-w-full max-h-full bg-[var(--background-clr-thick)] rounded-lg overflow-hidden">
+          <div class="relative w-full h-full rounded-lg overflow-hidden">
             <template x-if="showAttachmentData?.type?.startsWith('video/')">
-              <video :src="showAttachmentData?.url" x-ref="messageAttachVideoPlayer" controls class="w-full h-full object-cover"></video>
+              <video :src="showAttachmentData?.url" x-ref="messageAttachVideoPlayer" controls class="w-full h-full object-contain"></video>
             </template>
             <template x-if="showAttachmentData?.type?.startsWith('image/')">
-              <img :src="showAttachmentData?.url" class="w-full h-full object-cover">
+              <img :src="showAttachmentData?.url" class="w-full h-full object-contain">
             </template>
             <template x-if="showAttachmentData?.type === 'application/pdf'">
-              <div class="w-full h-full flex flex-col items-center justify-center text-center p-2">
-                <%= icon(icon: :file_pdf_icon, options:{class: "text-red-500 text-4xl"}) %>
-                <p class="text-xs text-[var(--txt-clr-default)] mt-2 truncate">File In Progress</p>
+              <iframe :src="showAttachmentData?.url" title="PDF preview" class="w-full h-full border-0 bg-white"></iframe>
+            </template>
+            <template x-if="showAttachmentData?.type && !showAttachmentData.type.startsWith('video/') && !showAttachmentData.type.startsWith('image/') && showAttachmentData.type !== 'application/pdf'">
+              <div class="w-full h-full flex flex-col items-center justify-center text-center gap-3 p-2">
+                <%= icon(icon: :file_lines_icon_regular, options:{class: "text-[var(--txt-clr-muted)] text-4xl"}) %>
+                <p class="text-sm text-[var(--txt-clr-default)]">Preview isn't available for this file type.</p>
+                <button type="button" x-show="!!showAttachmentData?.download" @click="showAttachmentData.download()" class="inline-flex items-center gap-2 rounded-md px-4 py-2 bg-[var(--primary-600)] text-sm font-medium text-[var(--white)] hover:bg-[var(--primary-700)]">
+                  <%= icon(icon: :download_icon) %> Download
+                </button>
               </div>
             </template>
           </div>
