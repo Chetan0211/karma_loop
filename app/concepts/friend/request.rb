@@ -23,10 +23,8 @@ class Friend::Request < Trailblazer::Operation
   end
   def follow_request(result, **)
     group_user = GroupUser.find_by(group_id: result[:group].id, user_id: result[:from].id)
-    if result[:to].scope == "public" && (group_user.status != "follower" || group_user.status != "requested")
-      group_user.update(status: "follower")
-    else
-      group_user.update(status: "requested")
+    unless group_user.status == "follower"
+      group_user.update(status: result[:to].scope == "public" ? "follower" : "requested")
     end
     result[:group_user] = group_user
   end

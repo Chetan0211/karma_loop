@@ -25,7 +25,7 @@ class PostController < ApplicationController
       post_params = blog_post_params
     end
     post_params[:user_id] = current_user.id
-    post_params[:status] = params[:status]
+    post_params[:status] = %w[published drafted].include?(params[:status]) ? params[:status] : "drafted"
     result = Post::Create.call(params: post_params)
     if result.success?
       flash[:success] = "Post is successfully created."
@@ -75,9 +75,10 @@ class PostController < ApplicationController
   def comment_reaction
     post = Post.find(params[:post_id])
     authorize! :read, post
+    comment = post.comments.find(params[:comment_id])
     reaction={
-      post_id: params[:post_id],
-      comment_id: params[:comment_id],
+      post_id: post.id,
+      comment_id: comment.id,
       user_id: current_user.id,
       reaction: params[:reaction]
     }

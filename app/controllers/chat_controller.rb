@@ -4,6 +4,8 @@ class ChatController < ApplicationController
 
   def index
     @pagy, @groups = pagy(current_user.all_chat_groups)
+    open_group = Group.find_by(id: params[:group_id]) if params[:group_id].present?
+    @open_group = open_group if open_group.present? && can?(:read, open_group)
     respond_to do |format|
       format.html
       format.turbo_stream
@@ -12,7 +14,7 @@ class ChatController < ApplicationController
 
   def create
     new_chat_params = chat_params
-    can?(:write, Group.find(new_chat_params[:group_id]))
+    authorize! :write, Group.find(new_chat_params[:group_id])
     temporary_chat_id = new_chat_params[:temporary_chat_id]
     new_chat_params[:user_id] = current_user.id
     result = Chat::Create.call(temp_chat_id: temporary_chat_id, chat_params: new_chat_params.except(:temporary_chat_id))
@@ -25,6 +27,8 @@ class ChatController < ApplicationController
   end
 
   def message_read
+    chat = Chat.find(params[:chat_id])
+    authorize! :read, chat.group
     message_interaction_params = {
       chat_id: params[:chat_id],
       user_id: current_user.id,
@@ -33,9 +37,8 @@ class ChatController < ApplicationController
 
     result = MessageInteraction::Create.call(params: message_interaction_params)
     if result.success?
-      group = Chat.find(params[:chat_id]).group
+      group = chat.group
       users = User.includes(:group_users).where(group_users:{group_id: group.id})
-      chat = Chat.find(params[:chat_id])
       message_read_stream(group, users, chat)
       head :ok
     else
@@ -45,9 +48,15 @@ class ChatController < ApplicationController
 
   def create_message_reaction
     interaction_params = message_interaction_params
+    chat = Chat.find(interaction_params[:chat_id])
+    authorize! :read, chat.group
     interaction_params[:user_id] = current_user.id
+    # Picking the reaction you already have removes it
+    current_reaction = chat.message_interactions.find_by(user_id: current_user.id)&.reaction
+    interaction_params[:reaction] = nil if current_reaction.present? && current_reaction == interaction_params[:reaction]
     result = MessageInteraction::Create.call(params: interaction_params)
     if result.success?
+      message_reaction_stream(chat)
       head :ok
     else
       head :internal_server_error
@@ -57,7 +66,7 @@ class ChatController < ApplicationController
 
   def show
     @group = Group.find(params[:id])
-    can?(:read, @group)
+    authorize! :read, @group
     @pagy, @chats = pagy(@group.chats.includes(:user, :reply_to).order(created_at: :desc))
     respond_to do |format|
       format.turbo_stream
@@ -79,8 +88,20 @@ class ChatController < ApplicationController
     end
   end
 
+  def message_reaction_stream(chat)
+    User.includes(:group_users).where(group_users:{group_id: chat.group_id}).each do |user|
+      Turbo::StreamsChannel.broadcast_action_to(
+        "ui_#{user.id}",
+        action: :replace,
+        target: "chat_#{chat.id}_reactions",
+        partial: "chat/chat_reactions",
+        locals: {current_user: user, chat: chat}
+      )
+    end
+  end
+
   def chat_params
-    permitted_params = params.require(:new_chat).permit(:message, :group_id, :reply_to_id, :temporary_chat_id, attachments: [])
+    permitted_params = params.require(:new_chat).permit(:message, :attachments_manifest, :group_id, :reply_to_id, :temporary_chat_id, attachments: [])
     permitted_params.tap do |whitelisted|
       # Use reject! to remove any blank items from the attachments array
       # The `&.` safe navigation operator prevents errors if `attachments` isn't present

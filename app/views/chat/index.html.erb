@@ -6,8 +6,9 @@
   class="h-[calc(100dvh-8rem)] md:h-[calc(100dvh-4rem)]"
   x-init="footer_active_tab = 'chat'"
   data-controller="chat--index"
+  <% if @open_group %>data-chat--index-open-chat-url-value="<%= chat_path(id: @open_group.id) %>"<% end %>
   x-data="{
-  activeChat: null,
+  activeChat: <%= @open_group ? "'#{@open_group.id}'" : "null" %>,
   replyingToMessage: null,
   }">
   <div class="w-full mx-auto h-full">

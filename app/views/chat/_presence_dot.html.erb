@@ -1,0 +1,7 @@
+<!--
+params used here:
+user
+online (optional, looked up when not given)
+-->
+<% online = local_assigns.fetch(:online) { Presence.online?(user) } %>
+<span id="presence_dot_<%= user.id %>" class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full ring-2 ring-[var(--background-clr-clear)] <%= online ? "bg-green-500" : "bg-red-500" %>"></span>

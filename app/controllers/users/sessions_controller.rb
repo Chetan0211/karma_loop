@@ -10,19 +10,16 @@ class Users::SessionsController < Devise::SessionsController
 
   # POST /resource/sign_in
   def create
-    Rails.logger.info "[REQUEST] Path: #{request.path}, format: #{request.format}, Header: #{request.headers.inspect}"
     respond_to do |format|
       format.json do
         resource = warden.authenticate(auth_options)
         if resource
           sign_in(resource_name, resource)
-          cookies.encrypted[:kloop_session_user_id] = { value: current_user.id }
           render json: { success: true, 
           redirect_url: root_path, 
           user_key: resource.encrypted_key}, status: :ok
         else
-          flash[:error] = "Invalid email or password"
-          render json: { success: false, error: "Invalid email or password", redirect_url: new_user_session_path }, status: :unprocessable_entity
+          render json: { success: false, error: "Invalid email or password" }, status: :unprocessable_entity
         end
       end
     end
@@ -30,8 +27,10 @@ class Users::SessionsController < Devise::SessionsController
 
   # DELETE /resource/sign_out
   def destroy
+    signed_out_user = current_user
     super
-    cookies.encrypted[:kloop_session] = nil if current_user == nil
+    cookies.delete(:kloop_session_user_id) # cleanup for sessions created before cable auth moved to warden
+    ActionCable.server.remote_connections.where(current_user: signed_out_user).disconnect if signed_out_user
   end
 
   # protected

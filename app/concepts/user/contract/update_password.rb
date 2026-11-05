@@ -1,7 +1,6 @@
 class User::Contract::UpdatePassword < ApplicationContract
   property :password
   property :password_confirmation, virtual: true
-  property :reset_password_token
   property :reset_password_sent_at
   property :public_key
   property :encrypted_key

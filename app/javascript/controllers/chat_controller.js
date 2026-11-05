@@ -2,7 +2,8 @@ import { Controller } from "@hotwired/stimulus"
 import { add, format, isToday, isYesterday } from 'date-fns'
 import CryptoHelper from "helpers/crypto_helper"
 import KeyManager from "key_manager"
-import { formatDateSeparator } from "helpers/chat_helper"
+import { formatDateSeparator, createAttachmentThumbnail, sendReaction } from "helpers/chat_helper"
+import { buildMediaMessage, parseMediaMessage, createMediaElement } from "helpers/media_message_helper"
 import consumer from "channels/consumer"
 
 // Connects to data-controller="chat"
@@ -15,6 +16,10 @@ export default class extends Controller {
       KeyManager.logoutUser();
     }
     this.observer = new MutationObserver((mutations) => {
+      // Older pages come with their own date headers, so a day split across two pages gets two
+      if (mutations.some(mutation => [...mutation.addedNodes].some(node => node.nodeType === 1 && node.matches(".date-separator")))) {
+        this.removeDuplicateDateSeparators();
+      }
       mutations.forEach((mutation) => {
         // For every node that was added...
         mutation.addedNodes.forEach((node) => {
@@ -149,6 +154,11 @@ export default class extends Controller {
     }
   }
 
+  react(event) {
+    const { url, chatId, reaction } = event.currentTarget.dataset;
+    sendReaction(url, chatId, reaction);
+  }
+
   markMessageAsRead(node) {
     node.dataset.chatRead = "true";
     let readUrl = node.dataset.readUrl;
@@ -160,6 +170,29 @@ export default class extends Controller {
     if ((scroll_area.scrollHeight - scroll_area.scrollTop) < 1000) {
       scroll_area.scrollTop = scroll_area.scrollHeight;
     }
+  }
+
+  // Show the scroll-to-latest button once the user has scrolled up away from the newest messages
+  toggleScrollToLatest() {
+    let scroll_area = document.querySelector("#chat_scroll_area");
+    let button = document.querySelector("#scroll_to_latest_button");
+    let distanceFromBottom = scroll_area.scrollHeight - scroll_area.scrollTop - scroll_area.clientHeight;
+    button.classList.toggle("hidden", distanceFromBottom < 200);
+  }
+
+  // A GIF or sticker picked in the media picker is sent straight away as its own encrypted message,
+  // leaving whatever the user has typed in the message box
+  async sendMedia(event) {
+    let input = document.querySelector("#new_chat_temp_message");
+    let draft = input.value;
+    input.value = buildMediaMessage(event.detail.type, event.detail.item);
+    await this.append(event);
+    input.value = draft;
+  }
+
+  scrollToLatest() {
+    let scroll_area = document.querySelector("#chat_scroll_area");
+    scroll_area.scrollTo({ top: scroll_area.scrollHeight, behavior: "smooth" });
   }
 
   async append(event) {
@@ -198,9 +231,13 @@ export default class extends Controller {
         newTemplate = newTemplate.replace("{{MESSAGE_REPLY}}", "");
       }
 
+      // Show a GIF or sticker straight away instead of its JSON payload
+      let media = parseMediaMessage(message);
+      let message_html = media ? createMediaElement(media).outerHTML : message;
+
       newTemplate = newTemplate
         .replace("{{CHAT_ID}}", temp_id)
-        .replace("{{MESSAGE}}", message)
+        .replace("{{MESSAGE}}", () => message_html)
         .replace("{{DATE}}", now.toISOString().slice(0, 10))
         .replace("{{MESSAGE_TIME}}", `${now.getHours()}:${now.getMinutes()}`);
 
@@ -234,10 +271,21 @@ export default class extends Controller {
       message_element.value = JSON.stringify(encryptedMessage);
       temp_message_element.value = "";
     }
-    if (attachments_element.files.length > 0) {
-      // Need to encrypt attachments
-      // const encryptedAttachments = await this.encryptAttachments(attachments_element.files, chat_pub_keys);
-      // attachments_element.value = JSON.stringify(encryptedAttachments);
+    // After uploading, ActiveStorage clicks submit again with the file input disabled.
+    // Only encrypt on the first pass so the manifest keeps matching the uploaded blobs.
+    if (attachments_element.files.length > 0 && !attachments_element.disabled) {
+      let manifest_element = chat_form.querySelector("#new_chat_attachments_manifest");
+      let encrypted_files = new DataTransfer();
+      let manifest = [];
+      for (let file of attachments_element.files) {
+        let { file: encrypted_file, metadata } = await CryptoHelper.encryptAttachment(file);
+        metadata.thumbnail = await createAttachmentThumbnail(file);
+        encrypted_files.items.add(encrypted_file);
+        manifest.push(metadata);
+      }
+      attachments_element.files = encrypted_files.files;
+      let encryptedManifest = await CryptoHelper.encryptMessage(chat_pub_keys, JSON.stringify(manifest));
+      manifest_element.value = JSON.stringify(encryptedManifest);
     }
 
     //Send request to server by submitting the request
@@ -250,11 +298,15 @@ export default class extends Controller {
     let temp_chat_id_element = chat_form.querySelector("#new_chat_temporary_chat_id");
     let message_element = chat_form.querySelector("#new_chat_message");
     let attachments_element = chat_form.querySelector("#new_chat_attachments");
+    let manifest_element = chat_form.querySelector("#new_chat_attachments_manifest");
     let cleanup_attachments = chat_form.querySelectorAll('input[type="hidden"][name="new_chat[attachments][]"]');
 
     message_element.value = "";
+    manifest_element.value = "";
     temp_chat_id_element.value = "";
     attachments_element.value = "";
+    // ActiveStorage leaves the input disabled after a direct upload, which would drop the next attachments
+    attachments_element.disabled = false;
 
     cleanup_attachments.forEach(element => {
       element.remove();
@@ -272,6 +324,19 @@ export default class extends Controller {
     show_attachment.dispatchEvent(new CustomEvent('set-show-attachment-data', { detail: { data: data, showMenu: true } }))
   }
 
+  // Clicking a quoted reply jumps to the original message, if it's loaded
+  scrollToMessage(event) {
+    let message = document.getElementById(event.currentTarget.dataset.replyToId);
+    if (!message) return;
+
+    message.scrollIntoView({ behavior: "smooth", block: "center" });
+    let bubble = message.querySelector(".message-bubble") || message;
+    bubble.animate(
+      [{ outline: "2px solid var(--primary-500)", outlineOffset: "2px", borderRadius: "1rem" }, { outline: "2px solid transparent", outlineOffset: "2px", borderRadius: "1rem" }],
+      { duration: 1500, easing: "ease-out" }
+    );
+  }
+
   appendDate(chat_list) {
     const date = new Date().toISOString().slice(0, 10);
     const separatorExists = document.querySelector(`.date-separator[data-date="${date}"]`);
@@ -279,6 +344,15 @@ export default class extends Controller {
       let newTemplate = this.getDateSeperatorTemplate(date);
       chat_list.insertAdjacentHTML("beforeend", newTemplate);
     }
+  }
+
+  // Keeps the first header for each date; it sits above the earliest message of that day
+  removeDuplicateDateSeparators() {
+    const seen = new Set();
+    this.element.querySelectorAll(".date-separator").forEach(separator => {
+      if (seen.has(separator.dataset.date)) separator.remove();
+      else seen.add(separator.dataset.date);
+    });
   }
 
   checkDateSeperatorOnMessage(node) {
@@ -313,11 +387,15 @@ export default class extends Controller {
     let reply_message_clone = document.getElementById(chat_id).cloneNode(true);
     let message_bubble = reply_message_clone.querySelector(".message-bubble");
     message_bubble.querySelector(`#chat_${chat_id}_seen_status`).remove();
-    message_bubble.lastChild.remove();
+    message_bubble.querySelector(".chat-reactions")?.remove();
     let reply_container = message_bubble.querySelector(".reply-container");
     if (reply_container) {
       reply_container.remove();
     }
+    // Show a GIF or sticker small in the reply banner
+    message_bubble.querySelectorAll('[data-message-decryption-display-value="full"]').forEach(element => {
+      element.dataset.messageDecryptionDisplayValue = "reply";
+    });
 
     //preparing template
     let original_message = message_bubble.firstElementChild;

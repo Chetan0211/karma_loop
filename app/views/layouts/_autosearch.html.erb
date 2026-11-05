@@ -21,7 +21,7 @@ posts
     <% end %>
   <% end %>
   <% if users.count > 0 %>
-    <h3 class="px-2 py-1 text-lg font-semibold text-[var(--txt-clr-default) uppercase">Users</h3>
+    <h3 class="px-2 py-1 text-lg font-semibold text-[var(--txt-clr-default)] uppercase">Users</h3>
     <% users.each do |user| %>
       <%= link_to user_profile_path(id: user.id), data:{turbo_frame:"_top"}, class:"flex items-center px-2 py-2 text-sm text-[var(--txt-clr-default)] hover:bg-[var(--background-clr-thick)] rounded-md" do %>
         <span class="h-6 w-6 rounded-full bg-[var(--background-clr-strong)] flex items-center justify-center mr-3">

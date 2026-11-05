@@ -10,6 +10,11 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def require_admin!
+    raise CanCan::AccessDenied, "Admins only." unless current_user&.is_admin?
+  end
+
   def set_current
     if current_user
       Current.user = current_user

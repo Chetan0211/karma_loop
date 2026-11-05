@@ -73,7 +73,7 @@ current_user:
   </div>
 </div>
 
-<script>
+<script nonce="<%= content_security_policy_nonce %>">
   const reply_comment_button_<%= comment.id.gsub('-', '_') %> = document.getElementById("reply_comment_button_<%= comment.id %>");
   const reply_comment_form_<%= comment.id.gsub('-', '_') %> = document.getElementById("reply_comment_form_<%= comment.id %>");
   const cancel_reply_comment_form_<%= comment.id.gsub('-', '_') %> = document.getElementById("cancel_reply_comment_form_<%= comment.id %>");

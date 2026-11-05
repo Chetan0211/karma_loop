@@ -1,3 +1,17 @@
+x-rails: &rails
+  build:
+    context: .
+    dockerfile: Dockerfile.development
+  image: karma_loop-dev
+  env_file: .env
+  environment: &rails-env
+    RAILS_ENV: development
+    DB_HOST: db
+    REDIS_URL: redis://redis:6379/1
+    ELASTICSEARCH_URL: http://elasticsearch:9200
+  volumes:
+    - .:/rails
+
 services:
   db:
     image: postgres:16
@@ -5,12 +19,16 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      DATABASE_URL: ${DATABASE_URL}
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5433:5432"
-  
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
     environment:
@@ -22,53 +40,39 @@ services:
       - "9201:9200"
     volumes:
       - esdata:/usr/share/elasticsearch/data
+
   redis:
     image: redis:7-alpine
     volumes:
       - redisdata:/data
     ports:
-      - "6380:6379" 
-    depends_on:
-      - db
-  sidekiq:
-    build:
-      context: .
-      dockerfile: Dockerfile.development
-    command: bundle exec sidekiq
-    volumes:
-      - .:/rails
-      # - bundle_cache:/usr/local/bundle
-    environment:
-      - RAILS_ENV=development
-      - DATABASE_URL=${DATABASE_URL}
-      - REDIS_URL=redis://redis:6379/1
-    depends_on:
-      - db
-      - redis
-      - web
+      - "6380:6379"
 
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile.development
-    volumes:
-      - .:/rails
-      # - bundle_cache:/usr/local/bundle
+    <<: *rails
+    command: sh -c "rm -f tmp/pids/server.pid && bin/rails db:prepare && bin/rails tailwindcss:build && bin/rails server -b 0.0.0.0"
     ports:
       - "3000:3000"
     stdin_open: true
     tty: true
-    environment:
-      - RAILS_ENV=development
-      - DATABASE_URL=${DATABASE_URL}
-      - REDIS_URL=redis://redis:6379/1
     depends_on:
-      - db
-      - redis
-      - elasticsearch
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      elasticsearch:
+        condition: service_started
+
+  sidekiq:
+    <<: *rails
+    command: bundle exec sidekiq -C config/sidekiq.yml
+    depends_on:
+      web:
+        condition: service_started
+      redis:
+        condition: service_started
 
 volumes:
   pgdata:
   redisdata:
-  # bundle_cache:
   esdata:

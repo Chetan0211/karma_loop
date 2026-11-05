@@ -14,8 +14,13 @@ class Users::PasswordsController < Devise::PasswordsController
 
   # GET /resource/password/edit?reset_password_token=abcdef
   def edit
-    super
     @user = User.with_reset_password_token(params[:reset_password_token])
+    unless @user&.reset_password_period_valid?
+      flash[:error] = "Your password reset link is invalid or has expired."
+      redirect_to new_user_password_path
+      return
+    end
+    super
   end
 
   # PUT /resource/password

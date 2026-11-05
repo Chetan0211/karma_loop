@@ -15,6 +15,7 @@
 #  encrypted_password     :string           default(""), not null
 #  is_admin               :boolean          default(FALSE), not null
 #  last_key_reset_at      :datetime
+#  last_seen_at           :datetime
 #  public_key             :string           not null
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
@@ -52,6 +53,15 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :confirmable
 
+  # Auto-confirm new users in development so no confirmation email is needed.
+  before_create :skip_confirmation!, if: -> { Rails.env.development? }
+
+  # Send Devise emails (confirmation, password reset) through Sidekiq so SMTP
+  # failures don't break the request and get retried.
+  def send_devise_notification(notification, *args)
+    devise_mailer.send(notification, self, *args).deliver_later
+  end
+
   has_many :posts, dependent: :destroy
   has_many :comments, dependent: :destroy, inverse_of: :commenter
 
@@ -70,6 +80,10 @@ class User < ApplicationRecord
 
   def all_chat_groups
     Group.where(type: %w[friend group]).joins(:group_users).where(group_users:{user_id: self.id}).left_joins(:chats).group("groups.id").order('MAX(chats.created_at) DESC NULLS LAST')
+  end
+
+  def friend_group_with(user)
+    Group.where(type: "friend", id: friend_groups).joins(:group_users).find_by(group_users:{user_id: user.id})
   end
 
   def following?(user)

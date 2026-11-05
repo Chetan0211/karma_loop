@@ -1,7 +1,13 @@
 <div class="bg-[var(--background-clr-body)] flex items-center justify-center min-h-screen">
   <div class="bg-[var(--background-clr-clear)] p-8 rounded-lg shadow-md w-full max-w-md mx-4 sm:mx-auto">
     <h2 class="text-2xl font-bold text-center text-[var(--txt-clr-strong)] mb-8">Welcome Back!</h2>
+    <% if params[:reason] == "locked" %>
+      <div class="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded mb-4 text-sm" role="status">
+        For your security, your chats are locked in this tab. Please sign in again to unlock them.
+      </div>
+    <% end %>
     <%= form_for(resource, as: resource_name, url: session_path(resource_name), data: { controller: "user--login", action: "submit->user--login#submit" }) do |f| %>
+      <div data-user--login-target="error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm" role="alert"></div>
       <div class="mb-4">
         <%= f.label :email, 
           class:"block text-sm font-medium text-[var(--txt-clr-default)] mb-1" %>
@@ -17,11 +23,18 @@
           <%= f.label :password, class:"block text-sm font-medium text-[var(--txt-clr-default)]" %>
           <%= link_to "Forgot password?", new_password_path(resource_name), class:"text-sm text-[var(--primary-600)] hover:underline" %>
         </div>
-        <%= f.password_field :password, 
-          autocomplete: "current-password", 
-          required: true,
-          placeholder: "Enter your password",
-          class:"w-full px-4 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent transition duration-150 ease-in-out" %>
+        <div class="relative" data-controller="password-visibility">
+          <%= f.password_field :password,
+            autocomplete: "current-password",
+            required: true,
+            placeholder: "Enter your password",
+            data: { password_visibility_target: "input" },
+            class:"w-full pl-4 pr-10 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent transition duration-150 ease-in-out" %>
+          <button type="button" data-action="password-visibility#toggle" aria-label="Show password"
+            class="absolute inset-y-0 right-0 flex items-center px-3 text-[var(--txt-clr-muted)] hover:text-[var(--txt-clr-strong)] focus:outline-none">
+            <i class="fa-solid fa-eye" data-password-visibility-target="icon"></i>
+          </button>
+        </div>
       </div>
       <% if devise_mapping.rememberable? %>
         <div class="flex items-center mb-6">

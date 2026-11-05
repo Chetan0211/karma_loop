@@ -10,7 +10,7 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= yield :page_javascript %>
     <%= javascript_importmap_tags %>
-    <script>
+    <script nonce="<%= content_security_policy_nonce %>">
       function getThemeMode() {
         const theme = localStorage.getItem('dark_mode');
         const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;

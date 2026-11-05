@@ -26,6 +26,9 @@ export default class extends Controller {
       body: new FormData(form)
     })
       .then(response => {
+        if (!response.headers.get("Content-Type")?.includes("application/json")) {
+          throw new Error(`Unexpected response (${response.status})`);
+        }
         return response.json()
       })
       .then(data => {
@@ -38,6 +41,7 @@ export default class extends Controller {
       })
       .catch((error) => {
         console.log("An error occurred while processing the signup request:", error);
+        alert("Something went wrong while signing up. Please try again.");
       });
   }
 

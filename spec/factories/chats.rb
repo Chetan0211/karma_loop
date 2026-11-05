@@ -2,13 +2,14 @@
 #
 # Table name: chats
 #
-#  id          :uuid             not null, primary key
-#  message     :text             not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  group_id    :uuid             not null
-#  reply_to_id :uuid
-#  user_id     :uuid             not null
+#  id                   :uuid             not null, primary key
+#  attachments_manifest :text
+#  message              :text             not null
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  group_id             :uuid             not null
+#  reply_to_id          :uuid
+#  user_id              :uuid             not null
 #
 # Indexes
 #

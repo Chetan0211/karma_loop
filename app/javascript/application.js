@@ -8,6 +8,9 @@ import "@rails/actiontext"
 import * as ActiveStorage from "@rails/activestorage";
 ActiveStorage.start();
 
+import AttachmentStream from "helpers/attachment_stream_helper";
+AttachmentStream.start();
+
 import 'alpine-turbo-drive-adapter'
 import Alpine from 'alpinejs'
 

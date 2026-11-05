@@ -7,8 +7,8 @@ class User::UpdatePassword < Trailblazer::Operation
   private
 
   def setup_model!(result, params: , **options)
-    result["model"] = User.find_by(reset_password_token: params[:reset_password_token])
-    return false if result["model"].nil?
+    result["model"] = User.with_reset_password_token(params[:reset_password_token])
+    return false if result["model"].nil? || !result["model"].reset_password_period_valid?
     result["model"].password = params[:password]
     result["model"].reset_password_token = nil
     result["model"].reset_password_sent_at = nil

@@ -2,7 +2,9 @@ require 'sidekiq/web'
 
 Rails.application.routes.draw do
   devise_for :users, controllers:{registrations: 'users/registrations', sessions: 'users/sessions', passwords: 'users/passwords'}
-  mount Sidekiq::Web => '/sidekiq'
+  authenticate :user, ->(user) { user.is_admin? } do
+    mount Sidekiq::Web => '/sidekiq'
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -10,7 +12,6 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   # user routes
-  patch "save_keys" => "user#save_keys", as: :save_keys
   get "secure_key" => "user#secure_key", as: :secure_key
   get "profile/:id" => "user#profile", as: :user_profile
   post "update_profile_picture/:id" => "user#update_profile_picture", as: :update_profile_picture
@@ -32,6 +33,7 @@ Rails.application.routes.draw do
   resources :chat, only: [:index, :create, :show]
   get "message_read" => "chat#message_read", as: :message_read
   post "create_message_reaction" => "chat#create_message_reaction", as: :create_message_reaction
+  get "giphy/search" => "giphy#search", as: :giphy_search
 
   # post routes
   resources :post, only: [:new, :create, :show] do

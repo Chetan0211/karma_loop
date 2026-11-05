@@ -1,18 +1,7 @@
 class UserController < ApplicationController
-  before_action :authenticate_user!, except: [:secure_key, :save_keys]
+  before_action :authenticate_user!, except: [:secure_key]
 
   def secure_key
-  end
-
-  def save_keys
-    result = User::SaveKeys.call({user_id: params[:user_id], public_key: params[:public_key], encrypted_key: params[:encrypted_key]})
-
-    if result.success?
-      render json: { success: true, message: "Keys saved successfully" }, status: :no_content
-    else
-      flash[:error] = "Failed to save keys"
-      render json: { success: false, errors: result['contract.default'].errors.full_messages }, status: :unprocessable_entity
-    end
   end
 
   def profile
@@ -24,21 +13,22 @@ class UserController < ApplicationController
 
   def update_profile_picture
     picture = profile_picture_params
-    UpdateProfilePicJob.perform_now(params[:id], picture["profile_picture"], picture["crop_x"], picture["crop_y"], picture["crop_size"])
+    UpdateProfilePicJob.perform_now(current_user.id, picture["profile_picture"], picture["prev_profile_picture"], picture["crop_x"], picture["crop_y"], picture["crop_size"])
     head :no_content
   end
 
   def update_profile
-    status = User::Update.call({params: profile_picture_params, user_id: params[:id]})
+    status = User::Update.call({params: profile_picture_params, user_id: current_user.id})
     if status.success?
-      redirect_to user_profile_path(id: params[:id])
+      redirect_to user_profile_path(id: current_user.id)
     else
-      #flash[:errors] = status['contract.default'].errors
+      flash[:error] = status['contract.default']&.errors&.full_messages&.join(", ").presence || "Can't able to update profile."
+      redirect_to user_profile_path(id: current_user.id)
     end
   end
 
   def remove_profile_picture
-    UpdateProfilePicJob.perform_now(params[:id], nil, 0, 0, 0)
+    UpdateProfilePicJob.perform_now(current_user.id, nil, nil, 0, 0, 0)
     head :no_content
   end
 
