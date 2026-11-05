@@ -1,30 +1,42 @@
 # Name of your application. Used to uniquely configure containers.
 service: karma_loop
 
-# Name of the container image.
+# Name of the container image (pushed to ghcr.io/chetan0211/karma_loop).
 image: chetan0211/karma_loop
 
-# Deploy to these servers.
+# Proxmox LXC container "karmaloop" (CT 102).
+# From the LAN we reach it directly; from GitHub Actions we go through the
+# VPS reverse tunnel (KAMAL_HOST=129.154.46.176, KAMAL_SSH_PORT=54322).
 servers:
   web:
     hosts:
-      - <%= ENV["SERVER_IP"] %>
+      - <%= ENV.fetch("KAMAL_HOST", "192.168.0.152") %>
   job:
     hosts:
-      - <%= ENV["SERVER_IP"] %>
+      - <%= ENV.fetch("KAMAL_HOST", "192.168.0.152") %>
     cmd: bundle exec sidekiq
 
+# Cloudflare terminates TLS and reaches us over the VPS tunnel
+# (VPS:8080 -> CT:80), so kamal-proxy itself serves plain HTTP on port 80.
 proxy:
   app_port: 3000
-  run:
-    http_port: 8080
+  ssl: false
+  forward_headers: true
   hosts:
     - kloop.chetan0211.org
+  healthcheck:
+    path: /up
+    interval: 3
+    timeout: 5
 
 ssh:
-  user: chetan
-  port: 54321
+  user: root
+  port: <%= ENV.fetch("KAMAL_SSH_PORT", 22) %>
   keys: ["~/.ssh/id_rsa_home_server"]
+  # Away from home: KAMAL_VIA_PROXMOX=1 jumps through the Proxmox host (VPS:54321).
+  <% if ENV["KAMAL_VIA_PROXMOX"] %>
+  proxy_command: "ssh -i ~/.ssh/id_rsa_home_server -p 54321 -W %h:%p root@129.154.46.176"
+  <% end %>
 
 registry:
   server: ghcr.io
@@ -39,31 +51,35 @@ builder:
 accessories:
   db:
     image: postgres:15
-    host: <%= ENV["DB_HOST_IP"] %>
-    port: 5432
+    host: <%= ENV.fetch("KAMAL_HOST", "192.168.0.152") %>
+    port: "127.0.0.1:5432:5432"
     env:
       clear:
         POSTGRES_USER: chetan
-        POSTGRES_DB: <%= ENV["POSTGRES_DB"] %>
+        POSTGRES_DB: karma_loop_production
       secret:
         - POSTGRES_PASSWORD
     volumes:
-      - /home/chetan/project_data/karma_loop/db_data:/var/lib/postgresql/data
+      - karma_loop_db_data:/var/lib/postgresql/data
   redis:
     image: redis:7
-    host: <%= ENV["REDIS_HOST_IP"] %>
-    port: 6379
+    host: <%= ENV.fetch("KAMAL_HOST", "192.168.0.152") %>
+    port: "127.0.0.1:6379:6379"
+    cmd: redis-server --appendonly yes
+    volumes:
+      - karma_loop_redis_data:/data
   elasticsearch:
     image: elasticsearch:8.11.0
-    host: <%= ENV["ELASTICSEARCH_HOST_IP"] %>
-    port: 9200
+    host: <%= ENV.fetch("KAMAL_HOST", "192.168.0.152") %>
+    port: "127.0.0.1:9200:9200"
     env:
       clear:
         discovery.type: single-node
         xpack.security.enabled: "false"
         xpack.security.http.ssl.enabled: "false"
+        ES_JAVA_OPTS: "-Xms512m -Xmx512m"
     volumes:
-      - /home/chetan/project_data/karma_loop/es_data:/usr/share/elasticsearch/dat
+      - karma_loop_es_data:/usr/share/elasticsearch/data
 
 env:
   clear:
@@ -85,4 +101,10 @@ env:
     - BREVO_SMTP_USER_NAME
     - BREVO_SMTP_PASSWORD
     - GIPHY_API_KEY
-  
+
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f
+  dbc: app exec --interactive --reuse "bin/rails dbconsole"
+  reindex: app exec --reuse "bin/rails searchkick:reindex:all"
