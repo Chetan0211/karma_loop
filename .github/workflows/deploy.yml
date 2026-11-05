@@ -45,7 +45,8 @@ jobs:
           CLOUDFLARE_R2_ENDPOINT: ${{ secrets.CLOUDFLARE_R2_ENDPOINT }}
           CLOUDFLARE_R2_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
           CLOUDFLARE_R2_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET_ACCESS_KEY }}
-          CLOUDFLARE_R2_BUCKET_NAME: ${{ secrets.CLOUDFLARE_R2_BUCKET_NAME }}
+          # Not sensitive, so it's an environment variable rather than a secret
+          CLOUDFLARE_R2_BUCKET_NAME: ${{ vars.CLOUDFLARE_R2_BUCKET_NAME }}
           CLOUDFLARE_R2_BUCKET_PUB_ENDPOINT: ${{ secrets.CLOUDFLARE_R2_BUCKET_PUB_ENDPOINT }}
           BREVO_SMTP_SERVER: ${{ secrets.BREVO_SMTP_SERVER }}
           BREVO_SMTP_PORT: ${{ secrets.BREVO_SMTP_PORT }}
