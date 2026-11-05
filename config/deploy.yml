@@ -107,4 +107,4 @@ aliases:
   shell: app exec --interactive --reuse "bash"
   logs: app logs -f
   dbc: app exec --interactive --reuse "bin/rails dbconsole"
-  reindex: app exec --reuse "bin/rails searchkick:reindex:all"
+  reindex: app exec --reuse --roles=web "bin/rails searchkick:reindex:all"
