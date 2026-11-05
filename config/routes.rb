@@ -33,6 +33,7 @@ Rails.application.routes.draw do
   resources :chat, only: [:index, :create, :show]
   get "message_read" => "chat#message_read", as: :message_read
   post "create_message_reaction" => "chat#create_message_reaction", as: :create_message_reaction
+  get "giphy/search" => "giphy#search", as: :giphy_search
 
   # post routes
   resources :post, only: [:new, :create, :show] do

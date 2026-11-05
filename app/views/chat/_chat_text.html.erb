@@ -18,6 +18,7 @@ chat
               <p class="text-xs italic truncate text-[var(--txt-clr-muted)]"
                  data-controller="message-decryption"
                  data-encrypted-message="<%= chat.reply_to.message %>"
+                 data-message-decryption-display-value="reply"
                  data-decryption-target="placeholder">
                 decrypting...
               </p>
@@ -30,6 +31,7 @@ chat
           <p class="text-sm break-words"
              data-controller="message-decryption"
              data-encrypted-message="<%= chat.message %>"
+             data-message-decryption-display-value="full"
              data-decryption-target="placeholder">
             decrypting...
           </p>

@@ -1,5 +1,6 @@
 import CryptoHelper from "helpers/crypto_helper"
 import KeyManager from "key_manager"
+import { messagePreviewText } from "helpers/media_message_helper"
 
 export function check_notification_access() {
   if (Notification.permission !== "granted" || Notification.permission !== "denied") {
@@ -38,7 +39,7 @@ async function decrypt_message(encrypted_message) {
   }
   try {
     const decrypted_message = await CryptoHelper.decryptMessage(privateKey, sanitize(encrypted_message));
-    return decrypted_message;
+    return messagePreviewText(decrypted_message);
   } catch (error) {
     return "New Message";
   }

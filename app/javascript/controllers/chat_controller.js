@@ -3,6 +3,7 @@ import { add, format, isToday, isYesterday } from 'date-fns'
 import CryptoHelper from "helpers/crypto_helper"
 import KeyManager from "key_manager"
 import { formatDateSeparator, createAttachmentThumbnail } from "helpers/chat_helper"
+import { buildMediaMessage, parseMediaMessage, createMediaElement } from "helpers/media_message_helper"
 import consumer from "channels/consumer"
 
 // Connects to data-controller="chat"
@@ -170,6 +171,16 @@ export default class extends Controller {
     button.classList.toggle("hidden", distanceFromBottom < 200);
   }
 
+  // A GIF or sticker picked in the media picker is sent straight away as its own encrypted message,
+  // leaving whatever the user has typed in the message box
+  async sendMedia(event) {
+    let input = document.querySelector("#new_chat_temp_message");
+    let draft = input.value;
+    input.value = buildMediaMessage(event.detail.type, event.detail.item);
+    await this.append(event);
+    input.value = draft;
+  }
+
   scrollToLatest() {
     let scroll_area = document.querySelector("#chat_scroll_area");
     scroll_area.scrollTo({ top: scroll_area.scrollHeight, behavior: "smooth" });
@@ -211,9 +222,13 @@ export default class extends Controller {
         newTemplate = newTemplate.replace("{{MESSAGE_REPLY}}", "");
       }
 
+      // Show a GIF or sticker straight away instead of its JSON payload
+      let media = parseMediaMessage(message);
+      let message_html = media ? createMediaElement(media).outerHTML : message;
+
       newTemplate = newTemplate
         .replace("{{CHAT_ID}}", temp_id)
-        .replace("{{MESSAGE}}", message)
+        .replace("{{MESSAGE}}", () => message_html)
         .replace("{{DATE}}", now.toISOString().slice(0, 10))
         .replace("{{MESSAGE_TIME}}", `${now.getHours()}:${now.getMinutes()}`);
 
@@ -359,6 +374,10 @@ export default class extends Controller {
     if (reply_container) {
       reply_container.remove();
     }
+    // Show a GIF or sticker small in the reply banner
+    message_bubble.querySelectorAll('[data-message-decryption-display-value="full"]').forEach(element => {
+      element.dataset.messageDecryptionDisplayValue = "reply";
+    });
 
     //preparing template
     let original_message = message_bubble.firstElementChild;

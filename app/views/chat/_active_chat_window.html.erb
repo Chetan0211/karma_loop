@@ -65,7 +65,7 @@ current_user
       group_id: group.id,
       chat_pub_keys: group.public_keys.to_json
     }, 
-    class: "flex items-center space-x-3" do |f| %>
+    class: "relative flex items-center space-x-3" do |f| %>
       <div @click.away="attachmentMenuOpen = false" class="relative -ml-3">
         <button @click="attachmentMenuOpen = !attachmentMenuOpen" type="button" class="text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 p-2 rounded-full">
           <%= icon(icon: :paperclip_icon, options:{class: "text-lg"}) %>
@@ -77,6 +77,38 @@ current_user
           <button type="button" @click="$refs.imageInput.click()" class="w-full text-left flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md"><%= icon(icon: :image_icon_regular, options:{class: "fa-fw mr-2"}) %> Images</button>
           <button type="button" @click="$refs.videoInput.click()" class="w-full text-left flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md"><%= icon(icon: :file_video_icon_regular, options:{class: "fa-fw mr-2"}) %> Videos</button>
           <button type="button" @click="$refs.documentInput.click()" class="w-full text-left flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md"><%= icon(icon: :file_lines_icon_regular, options:{class: "fa-fw mr-2"}) %> Document</button>
+        </div>
+      </div>
+      <!-- Emoji, GIF and sticker picker. The panel is positioned against the form so it fits on small screens -->
+      <div x-data="{ mediaPickerOpen: false }"
+      @click.away="mediaPickerOpen = false"
+      @keydown.escape.window="mediaPickerOpen = false"
+      @media-selected="mediaPickerOpen = false; showReplyBanner = false"
+      data-controller="media-picker"
+      data-media-picker-search-url-value="<%= giphy_search_path %>"
+      data-action="media-selected->chat#sendMedia">
+        <button type="button" @click="mediaPickerOpen = !mediaPickerOpen" data-action="click->media-picker#refreshEmojis" title="Emoji, GIFs and stickers" class="text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 p-2 rounded-full">
+          <span class="sr-only">Emoji, GIFs and stickers</span>
+          <%= icon(icon: :face_smile_icon_regular, options:{class: "text-lg"}) %>
+        </button>
+        <div x-show="mediaPickerOpen" x-transition style="display: none; width: min(22rem, 100%);" class="absolute bottom-full left-0 mb-2 z-20 flex flex-col rounded-lg shadow-lg bg-[var(--background-clr-clear)] border border-[var(--border-clr-subtle)] overflow-hidden">
+          <div class="flex border-b border-[var(--border-clr-subtle)] text-sm font-medium text-[var(--txt-clr-muted)]">
+            <button type="button" data-media-picker-target="tab" data-action="media-picker#switchTab" data-media-picker-kind-param="emoji" class="flex-1 py-2 border-b-2 text-[var(--primary-500)] border-[var(--primary-500)]">Emoji</button>
+            <button type="button" data-media-picker-target="tab" data-action="media-picker#switchTab" data-media-picker-kind-param="gifs" class="flex-1 py-2 border-b-2 border-transparent">GIFs</button>
+            <button type="button" data-media-picker-target="tab" data-action="media-picker#switchTab" data-media-picker-kind-param="stickers" class="flex-1 py-2 border-b-2 border-transparent">Stickers</button>
+          </div>
+          <div data-media-picker-target="emojiPanel" class="flex flex-col p-2">
+            <input type="search" data-media-picker-target="emojiSearch" data-action="input->media-picker#searchEmojis keydown.enter->media-picker#preventSubmit" placeholder="Search emoji" autocomplete="off" class="w-full px-3 py-1.5 border border-[var(--border-clr-default)] rounded-full text-sm bg-[var(--background-clr-thick)]">
+            <div data-media-picker-target="emojiCategories" class="flex gap-1 overflow-x-auto py-1 mt-1 border-b border-[var(--border-clr-subtle)]"></div>
+            <div data-media-picker-target="emojiGrid" class="overflow-y-auto custom-scrollbar" style="height: 16rem;"></div>
+          </div>
+          <div data-media-picker-target="giphyPanel" class="hidden flex flex-col p-2">
+            <input type="search" data-media-picker-target="giphySearch" data-action="input->media-picker#searchGiphy keydown.enter->media-picker#preventSubmit" placeholder="Search GIFs" autocomplete="off" class="w-full px-3 py-1.5 border border-[var(--border-clr-default)] rounded-full text-sm bg-[var(--background-clr-thick)]">
+            <div data-media-picker-target="giphyChips" class="flex gap-1 overflow-x-auto py-2"></div>
+            <p data-media-picker-target="giphyStatus" class="hidden p-4 text-center text-sm text-[var(--txt-clr-muted)]"></p>
+            <div data-media-picker-target="giphyGrid" data-action="scroll->media-picker#giphyScroll" class="overflow-y-auto custom-scrollbar" style="height: 15rem; column-count: 2; column-gap: 0.5rem;"></div>
+            <p class="pt-1 text-right text-[10px] text-[var(--txt-clr-muted)]">Powered by GIPHY</p>
+          </div>
         </div>
       </div>
       <%= f.hidden_field :group_id, value: group.id %>
