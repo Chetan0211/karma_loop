@@ -85,3 +85,15 @@ function createVideoThumbnail(file) {
     video.src = url;
   });
 }
+
+// The reactions pill is updated for everyone through a turbo stream broadcast
+export function sendReaction(url, chatId, reaction) {
+  return fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+    },
+    body: JSON.stringify({ message_interaction: { chat_id: chatId, reaction: reaction } })
+  });
+}

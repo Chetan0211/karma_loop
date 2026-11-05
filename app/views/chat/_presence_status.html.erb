@@ -1,0 +1,15 @@
+<!--
+params used here:
+user
+online (optional, looked up when not given)
+-->
+<% online = local_assigns.fetch(:online) { Presence.online?(user) } %>
+<p id="presence_status_<%= user.id %>" class="text-xs text-[var(--txt-clr-subtle)]">
+  <% if online %>
+    <span>Online</span>
+  <% elsif user.last_seen_at.present? %>
+    <span data-controller="last-seen" data-last-seen-at-value="<%= user.last_seen_at.iso8601 %>">Last seen <%= time_ago_in_words(user.last_seen_at) %> ago</span>
+  <% else %>
+    <span>Offline</span>
+  <% end %>
+</p>

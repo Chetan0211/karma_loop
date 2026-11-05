@@ -1,8 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
-import { emojiCategories, searchEmojis } from "helpers/emoji_data"
+import { searchEmojis, emojiCategoriesWithRecent, rememberEmoji } from "helpers/emoji_data"
 
-const RECENT_EMOJIS_KEY = "chat_recent_emojis";
-const RECENT_EMOJIS_LIMIT = 24;
 const SEARCH_DELAY = 400;
 
 // Emoji, GIF and sticker picker beside the chat input.
@@ -66,7 +64,7 @@ export default class extends Controller {
   }
 
   renderEmojiCategories() {
-    const buttons = this.categoriesWithRecent().map(category => {
+    const buttons = emojiCategoriesWithRecent().map(category => {
       const button = document.createElement("button");
       button.type = "button";
       button.title = category.name;
@@ -85,7 +83,7 @@ export default class extends Controller {
       this.emojiGridTarget.replaceChildren(results.length > 0 ? this.emojiSection(null, results) : this.emptyMessage("No emojis found"));
       return;
     }
-    this.emojiGridTarget.replaceChildren(...this.categoriesWithRecent().map(category => this.emojiSection(category.name, category.emojis)));
+    this.emojiGridTarget.replaceChildren(...emojiCategoriesWithRecent().map(category => this.emojiSection(category.name, category.emojis)));
   }
 
   searchEmojis() {
@@ -131,31 +129,9 @@ export default class extends Controller {
     input.value = input.value.slice(0, start) + emoji.char + input.value.slice(end);
     const cursor = start + emoji.char.length;
     input.setSelectionRange(cursor, cursor);
-    this.rememberEmoji(emoji);
+    rememberEmoji(emoji);
   }
 
-  categoriesWithRecent() {
-    const recent = this.recentEmojis();
-    const categories = emojiCategories();
-    return recent.length > 0 ? [{ name: "Recent", icon: "🕘", emojis: recent }, ...categories] : categories;
-  }
-
-  // Recently used emojis are only a convenience, so they live in this browser
-  recentEmojis() {
-    try {
-      const recent = JSON.parse(localStorage.getItem(RECENT_EMOJIS_KEY) || "[]");
-      return Array.isArray(recent) ? recent.filter(emoji => typeof emoji?.char == "string") : [];
-    } catch (error) {
-      return [];
-    }
-  }
-
-  rememberEmoji(emoji) {
-    const recent = [emoji, ...this.recentEmojis().filter(item => item.char != emoji.char)].slice(0, RECENT_EMOJIS_LIMIT);
-    try {
-      localStorage.setItem(RECENT_EMOJIS_KEY, JSON.stringify(recent));
-    } catch (error) {}
-  }
 
   // ---- GIFs and stickers ----
 

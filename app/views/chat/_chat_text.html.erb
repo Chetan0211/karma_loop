@@ -38,25 +38,20 @@ chat
         <% end %>
         <%= render partial: "chat/chat_seen_status", locals:{chat: chat, current_user: current_user} %>
       </div>
-      <!-- Reactions Display --> <!-- TODO: Yet to implement -->
-      <div x-show="false" class="flex space-x-1 mt-1" :class="<%= current_user.id == chat.user_id %> ? 'justify-end' : 'justify-start'">
-        <div class="bg-gray-200 dark:bg-gray-600 rounded-full px-2 py-0.5 text-xs flex items-center">
-          <span class="mr-1">emoji</span>
-          <span class="font-semibold text-gray-700 dark:text-gray-200">count</span>
-        </div>
-      </div>
+      <!-- Reactions Display -->
+      <%= render partial: "chat/chat_reactions", locals:{chat: chat, current_user: current_user} %>
     </div>
     <!-- Message Actions (Reply, React) -->
     <div class="flex-shrink-0 flex items-center space-x-1 p-1 md:opacity-0 group-hover:opacity-100 transition-opacity mx-2">
       <button @click="showReplyBanner = true" data-action="click->chat#replyMessage" data-chat-id="<%= chat.id %>" data-username="<%= (current_user.id == chat.user_id) ? "You" : chat.user.username %>" class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--background-clr-strong)]"><%= icon(icon: :reply_icon, options:{class: "text-xs text-[var(--txt-clr-muted)]"}) %></button>
-      <!-- Reactions selection --> <!-- TODO: Yet to implement -->
-      <div x-show="false" x-data="{ reactionsOpen: false }" @mouseleave="reactionsOpen = false" class="relative">
-        <button @click="reactionsOpen = !reactionsOpen" class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--background-clr-strong)]"><%= icon(icon: :face_smile_icon_regular, options:{class: "text-xs text-[var(--txt-clr-muted)]"}) %></button>
-        <div x-show="reactionsOpen" x-transition class="absolute bottom-full mb-2 flex space-x-1 bg-[var(--background-clr-clear)] shadow-lg rounded-full p-1">
-          <button @click="addReaction(message, '👍'); reactionsOpen = false" class="text-lg p-1 rounded-full hover:bg-[var(--background-clr-strong)]">👍</button>
-          <button @click="addReaction(message, '❤️'); reactionsOpen = false" class="text-lg p-1 rounded-full hover:bg-[var(--background-clr-strong)]">❤️</button>
-          <button @click="addReaction(message, '😂'); reactionsOpen = false" class="text-lg p-1 rounded-full hover:bg-[var(--background-clr-strong)]">😂</button>
-          <button @click="addReaction(message, '😮'); reactionsOpen = false" class="text-lg p-1 rounded-full hover:bg-[var(--background-clr-strong)]">😮</button>
+      <!-- Reactions selection -->
+      <div x-data="{ reactionsOpen: false }" @click.outside="reactionsOpen = false" class="relative">
+        <button type="button" @click="reactionsOpen = !reactionsOpen" aria-label="React" class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--background-clr-strong)]"><%= icon(icon: :face_smile_icon_regular, options:{class: "text-xs text-[var(--txt-clr-muted)]"}) %></button>
+        <div x-show="reactionsOpen" x-cloak x-transition class="absolute bottom-full mb-2 z-20 flex space-x-1 bg-[var(--background-clr-clear)] shadow-lg rounded-full p-1" :class="<%= current_user.id == chat.user_id %> ? 'left-0' : 'right-0'">
+          <% Chat::QUICK_REACTIONS.each do |emoji| %>
+            <button type="button" @click="reactionsOpen = false" data-action="click->chat#react" data-url="<%= create_message_reaction_path %>" data-chat-id="<%= chat.id %>" data-reaction="<%= emoji %>" class="text-lg p-1 rounded-full hover:bg-[var(--background-clr-strong)]"><%= emoji %></button>
+          <% end %>
+          <button type="button" @click="reactionsOpen = false" data-action="click->reaction-picker#open" data-reaction-picker-chat-id-param="<%= chat.id %>" title="More reactions" aria-label="More reactions" class="w-9 h-9 flex items-center justify-center rounded-full text-[var(--txt-clr-muted)] hover:bg-[var(--background-clr-strong)]"><%= icon(icon: :plus_icon) %></button>
         </div>
       </div>
     </div>

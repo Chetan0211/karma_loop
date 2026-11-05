@@ -2,8 +2,18 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="chat--index"
 export default class extends Controller {
+  static values = { openChatUrl: String }
+
   connect() {
     this.setupFetchGroups();
+    if (this.hasOpenChatUrlValue) this.openChat(this.openChatUrlValue);
+  }
+
+  // Opens a specific chat on page load, e.g. when coming from a user's profile.
+  openChat(url) {
+    fetch(url, { method: 'GET', headers: { 'Accept': 'text/vnd.turbo-stream.html' } })
+      .then(response => response.text())
+      .then(html => Turbo.renderStreamMessage(html))
   }
   setupFetchGroups() {
     this.fetchNewMessageObserver = new IntersectionObserver((entries) => {

@@ -51,22 +51,36 @@
         </div>
         <div class="mb-4">
           <%= f.label :password, class: "block text-sm font-medium text-[var(--txt-clr-default)] mb-1" %>
-          <%= f.password_field :password, 
-            autocomplete: "new-password",
-            placeholder:"Create a password",
-            value: flash[:signup_params]&.dig("password"),
-            class: "appearance-none rounded-md relative block w-full px-3 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] placeholder-[var(--txt-clr-subtle)] text-[var(--txt-clr-strong)] focus:outline-none focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] focus:z-10 sm:text-sm transition duration-150 ease-in-out" %>
+          <div class="relative" data-controller="password-visibility">
+            <%= f.password_field :password,
+              autocomplete: "new-password",
+              placeholder:"Create a password",
+              value: flash[:signup_params]&.dig("password"),
+              data: { password_visibility_target: "input" },
+              class: "appearance-none rounded-md relative block w-full pl-3 pr-10 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] placeholder-[var(--txt-clr-subtle)] text-[var(--txt-clr-strong)] focus:outline-none focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] focus:z-10 sm:text-sm transition duration-150 ease-in-out" %>
+            <button type="button" data-action="password-visibility#toggle" aria-label="Show password"
+              class="absolute inset-y-0 right-0 z-20 flex items-center px-3 text-[var(--txt-clr-muted)] hover:text-[var(--txt-clr-strong)] focus:outline-none">
+              <i class="fa-solid fa-eye" data-password-visibility-target="icon"></i>
+            </button>
+          </div>
           <% if flash[:error_details]&.dig("password").present?%>
             <p class="mt-1 text-xs text-red-600"><%= flash[:error_details]["password"].first %></p>
           <% end %>
         </div>
         <div class="mb-6">
           <%= f.label :password_confirmation, class: "block text-sm font-medium text-[var(--txt-clr-default)] mb-1" %>
-          <%= f.password_field :password_confirmation, 
-            autocomplete: "new-password",
-            placeholder: "Confirm your password", 
-            value: flash[:signup_params]&.dig("password_confirmation"),
-            class: "appearance-none rounded-md relative block w-full px-3 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] placeholder-[var(--txt-clr-subtle)] text-[var(--txt-clr-strong)] focus:outline-none focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] focus:z-10 sm:text-sm transition duration-150 ease-in-out" %>
+          <div class="relative" data-controller="password-visibility">
+            <%= f.password_field :password_confirmation,
+              autocomplete: "new-password",
+              placeholder: "Confirm your password",
+              value: flash[:signup_params]&.dig("password_confirmation"),
+              data: { password_visibility_target: "input" },
+              class: "appearance-none rounded-md relative block w-full pl-3 pr-10 py-2 border border-[var(--border-clr-default)] bg-[var(--background-clr-thick)] placeholder-[var(--txt-clr-subtle)] text-[var(--txt-clr-strong)] focus:outline-none focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] focus:z-10 sm:text-sm transition duration-150 ease-in-out" %>
+            <button type="button" data-action="password-visibility#toggle" aria-label="Show password"
+              class="absolute inset-y-0 right-0 z-20 flex items-center px-3 text-[var(--txt-clr-muted)] hover:text-[var(--txt-clr-strong)] focus:outline-none">
+              <i class="fa-solid fa-eye" data-password-visibility-target="icon"></i>
+            </button>
+          </div>
           <% if flash[:error_details]&.dig("password_confirmation").present?%>
             <p class="mt-1 text-xs text-red-600"><%= flash[:error_details]["password_confirmation"].first %></p>
           <% end %>

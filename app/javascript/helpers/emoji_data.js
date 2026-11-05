@@ -539,3 +539,30 @@ export function searchEmojis(query) {
   }
   return results;
 }
+
+const RECENT_EMOJIS_KEY = "chat_recent_emojis";
+const RECENT_EMOJIS_LIMIT = 24;
+
+// Recently used emojis are only a convenience, so they live in this browser
+export function recentEmojis() {
+  try {
+    const recent = JSON.parse(localStorage.getItem(RECENT_EMOJIS_KEY) || "[]");
+    return Array.isArray(recent) ? recent.filter(emoji => typeof emoji?.char == "string") : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+export function rememberEmoji(emoji) {
+  const recent = [emoji, ...recentEmojis().filter(item => item.char != emoji.char)].slice(0, RECENT_EMOJIS_LIMIT);
+  try {
+    localStorage.setItem(RECENT_EMOJIS_KEY, JSON.stringify(recent));
+  } catch (error) {}
+}
+
+// emojiCategories() with a "Recent" category first when there is one
+export function emojiCategoriesWithRecent() {
+  const recent = recentEmojis();
+  const categories = emojiCategories();
+  return recent.length > 0 ? [{ name: "Recent", icon: "🕘", emojis: recent }, ...categories] : categories;
+}

@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { add, format, isToday, isYesterday } from 'date-fns'
 import CryptoHelper from "helpers/crypto_helper"
 import KeyManager from "key_manager"
-import { formatDateSeparator, createAttachmentThumbnail } from "helpers/chat_helper"
+import { formatDateSeparator, createAttachmentThumbnail, sendReaction } from "helpers/chat_helper"
 import { buildMediaMessage, parseMediaMessage, createMediaElement } from "helpers/media_message_helper"
 import consumer from "channels/consumer"
 
@@ -16,6 +16,10 @@ export default class extends Controller {
       KeyManager.logoutUser();
     }
     this.observer = new MutationObserver((mutations) => {
+      // Older pages come with their own date headers, so a day split across two pages gets two
+      if (mutations.some(mutation => [...mutation.addedNodes].some(node => node.nodeType === 1 && node.matches(".date-separator")))) {
+        this.removeDuplicateDateSeparators();
+      }
       mutations.forEach((mutation) => {
         // For every node that was added...
         mutation.addedNodes.forEach((node) => {
@@ -148,6 +152,11 @@ export default class extends Controller {
     if (chat_list.querySelector(".chat-unread-separator") == null) {
       node.insertAdjacentHTML('beforebegin', newTemplate);
     }
+  }
+
+  react(event) {
+    const { url, chatId, reaction } = event.currentTarget.dataset;
+    sendReaction(url, chatId, reaction);
   }
 
   markMessageAsRead(node) {
@@ -337,6 +346,15 @@ export default class extends Controller {
     }
   }
 
+  // Keeps the first header for each date; it sits above the earliest message of that day
+  removeDuplicateDateSeparators() {
+    const seen = new Set();
+    this.element.querySelectorAll(".date-separator").forEach(separator => {
+      if (seen.has(separator.dataset.date)) separator.remove();
+      else seen.add(separator.dataset.date);
+    });
+  }
+
   checkDateSeperatorOnMessage(node) {
     const date = node.dataset.date;
     const separatorExists = document.querySelector(`.date-separator[data-date="${date}"]`);
@@ -369,7 +387,7 @@ export default class extends Controller {
     let reply_message_clone = document.getElementById(chat_id).cloneNode(true);
     let message_bubble = reply_message_clone.querySelector(".message-bubble");
     message_bubble.querySelector(`#chat_${chat_id}_seen_status`).remove();
-    message_bubble.lastChild.remove();
+    message_bubble.querySelector(".chat-reactions")?.remove();
     let reply_container = message_bubble.querySelector(".reply-container");
     if (reply_container) {
       reply_container.remove();

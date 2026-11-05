@@ -1,3 +1,8 @@
+<%
+  own_profile = @user.id == current_user.id
+  profile_chat_group = current_user.friend_group_with(@user) unless own_profile
+  profile_chat_url = own_profile ? chat_index_path : (profile_chat_group && chat_index_path(group_id: profile_chat_group.id))
+%>
 <div data-controller="user--profile" id="profile_component" x-data="{ 
 activeTab: 'posts', 
 isEditModalOpen: false, 
@@ -52,10 +57,12 @@ x-init="footer_active_tab = 'profile'">
           <% if @user.id != current_user.id %>
             <%= render partial: "shared/helpers/follow_request_button", locals:{user: @user} %>
           <% end %>
-          <button class="flex-1 bg-[var(--background-clr-thick)] hover:bg-[var(--background-clr-strong)] text-[var(--txt-clr-default)] text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out border border-[var(--border-clr-default)]">
-            <%= icon(icon: :comment_dot_icon_regular) %>
-            <span>Chat</span>
-          </button>
+          <% if profile_chat_url %>
+            <%= link_to profile_chat_url, class: "flex-1 flex items-center justify-center gap-1 bg-[var(--background-clr-thick)] hover:bg-[var(--background-clr-strong)] text-[var(--txt-clr-default)] text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out border border-[var(--border-clr-default)]" do %>
+              <%= icon(icon: :comment_dot_icon_regular) %>
+              <span>Chat</span>
+            <% end %>
+          <% end %>
         </div>
       </div>
     </div>
@@ -136,10 +143,12 @@ x-init="footer_active_tab = 'profile'">
             <% if @user.id != current_user.id %>
               <%= render partial: "shared/helpers/follow_request_button", locals:{user: @user} %>
             <% end %>
-            <button class="flex-1 bg-[var(--background-clr-thick)] hover:bg-[var(--background-clr-strong)] text-[var(--txt-clr-default)] text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out border border-[var(--border-clr-default)]">
-              <%= icon(icon: :comment_dot_icon_regular) %>
-              <span>Chat</span>
-            </button>
+            <% if profile_chat_url %>
+              <%= link_to profile_chat_url, class: "flex-1 flex items-center justify-center gap-1 bg-[var(--background-clr-thick)] hover:bg-[var(--background-clr-strong)] text-[var(--txt-clr-default)] text-sm font-bold py-2 px-4 rounded-full transition duration-150 ease-in-out border border-[var(--border-clr-default)]" do %>
+                <%= icon(icon: :comment_dot_icon_regular) %>
+                <span>Chat</span>
+              <% end %>
+            <% end %>
           </div>
         </div>
         <div class="bg-[var(--background-clr-clear)] p-4 rounded-md shadow">

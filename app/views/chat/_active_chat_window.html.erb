@@ -5,7 +5,23 @@ current_user
 -->
 <%# TODO: member will throw error when we are showing th group. Need to fix it. %>
 <% member = group.type == "friend" ? group.members(current_user).first : nil %>
-<div class="flex flex-col h-full" data-controller="chat" x-data="chatAlpine" data-group-id="<%= group.id %>">
+<div class="flex flex-col h-full" data-controller="chat reaction-picker" x-data="chatAlpine" data-group-id="<%= group.id %>"
+  data-reaction-picker-url-value="<%= create_message_reaction_path %>"
+  data-action="keydown@window->reaction-picker#closeOnEscape">
+  <!-- Full emoji picker for reactions, shared by all messages and opened from a message's "+" button -->
+  <div data-reaction-picker-target="overlay" data-action="click->reaction-picker#closeOnBackdrop" class="hidden fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/30 p-2">
+    <div class="flex flex-col w-full max-w-sm rounded-lg shadow-lg bg-[var(--background-clr-clear)] border border-[var(--border-clr-subtle)] overflow-hidden" role="dialog" aria-label="Choose a reaction">
+      <div class="flex items-center justify-between px-3 pt-2">
+        <p class="text-sm font-semibold text-[var(--txt-clr-strong)]">React with an emoji</p>
+        <button type="button" data-action="reaction-picker#close" aria-label="Close" class="w-7 h-7 flex items-center justify-center rounded-full text-[var(--txt-clr-muted)] hover:bg-[var(--background-clr-strong)]"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="flex flex-col p-2">
+        <input type="search" data-reaction-picker-target="search" data-action="input->reaction-picker#search" placeholder="Search emoji" autocomplete="off" class="w-full px-3 py-1.5 border border-[var(--border-clr-default)] rounded-full text-sm bg-[var(--background-clr-thick)]">
+        <div data-reaction-picker-target="categories" class="flex gap-1 overflow-x-auto py-1 mt-1 border-b border-[var(--border-clr-subtle)]"></div>
+        <div data-reaction-picker-target="grid" class="overflow-y-auto custom-scrollbar" style="height: 16rem;"></div>
+      </div>
+    </div>
+  </div>
   <!-- Active Chat Header -->
   <div class="p-4 border-b border-[var(--border-clr-subtle)] bg-[var(--background-clr-clear)] flex items-center space-x-4 flex-shrink-0">
     <button @click="activeChat = null" class="text-[var(--txt-clr-subtle)] md:hidden">
@@ -22,12 +38,16 @@ current_user
         <% else %>
         <% end %>
       </span>
-      <!--Need to show if a person is online or not-->
-      <span x-show="activeChat.online" x-cloak class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-white dark:ring-gray-800"></span>
+      <% if group.type == "friend" %>
+        <%= render partial: "chat/presence_dot", locals:{user: member} %>
+      <% end %>
     </div>
     <div>
       <p class="font-semibold text-[var(--txt-clr-strong)]"><%= group.type == "friend" ? member.username : group.name %></p>
-      <p class="text-xs text-[var(--txt-clr-subtle)]">user online or offline</p>
+      <% if group.type == "friend" %>
+        <%= turbo_stream_from "presence_#{member.id}" %>
+        <%= render partial: "chat/presence_status", locals:{user: member} %>
+      <% end %>
     </div>
   </div>
   <!-- Chat Messages Area -->
